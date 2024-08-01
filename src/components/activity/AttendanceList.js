@@ -11,6 +11,7 @@ import {
     TablePagination,
     Typography
 } from '@mui/material';
+import { useAuth } from '../auth/AuthContext';
 
 // Utility function to format date as DD/MM/YYYY
 const formatDate = (dateString) => {
@@ -23,6 +24,7 @@ const formatDate = (dateString) => {
 
 // Utility function to format time as HH:MM AM/PM
 const formatTime = (dateString) => {
+
     const date = new Date(dateString);
     const hours = date.getHours();
     const minutes = date.getMinutes();
@@ -33,6 +35,9 @@ const formatTime = (dateString) => {
 };
 
 function AttendanceList() {
+
+    const { user } = useAuth();
+
     const [activities, setActivities] = useState([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -41,7 +46,9 @@ function AttendanceList() {
         const fetchAttendance = async () => {
             try {
                 const response = await axios.get(
-                    'https://namami-infotech.com/HR-SMILE-BACKEND/src/attendance/view_attendance.php'
+                    'https://namami-infotech.com/HR-SMILE-BACKEND/src/attendance/view_attendance.php', {
+                    params: { EmpId: user.empId }
+                }
                 );
                 if (response.data.success) {
                     const data = response.data.data;

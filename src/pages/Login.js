@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../components/auth/AuthContext';
 import { Container, TextField, Button, Box, Typography } from '@mui/material';
 import axios from 'axios';
-import logo from '../assets/HRSmileLogo.jpeg'; // Replace with the path to your logo file
+import logo from '../assets/HRSmileLogo.jpeg';
 
 function Login() {
     const [empId, setEmpId] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const navigate = useNavigate(); // useNavigate hook
+    const { login } = useAuth();
+    const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -19,12 +21,10 @@ function Login() {
             });
 
             if (response.data.success) {
-                console.log('Login successful');
-                navigate('/dashboard')
-
+                login(empId); // Update Auth Context and localStorage
+                navigate('/dashboard');
             } else {
                 setError('Invalid credentials. Please try again.');
-
             }
         } catch (error) {
             setError('An error occurred. Please try again.');

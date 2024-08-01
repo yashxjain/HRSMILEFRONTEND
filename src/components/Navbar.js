@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from "react-router-dom";
+import React from 'react';
+import { useAuth } from '../components/auth/AuthContext';
+import { Link, useNavigate } from 'react-router-dom';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-
 import { AppBar, Toolbar, Typography, Avatar, Button, Menu, MenuItem, Box, IconButton } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
-function Navbar({ userName }) {
-    const [anchorEl, setAnchorEl] = useState(null);
+function Navbar() {
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const { user, logout } = useAuth();
     const navigate = useNavigate();
+
     const handleMenu = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -17,8 +19,8 @@ function Navbar({ userName }) {
     };
 
     const handleLogout = () => {
-        navigate('/')
-
+        logout(); // Update Auth Context
+        navigate('/');
         handleClose();
     };
 
@@ -29,10 +31,8 @@ function Navbar({ userName }) {
                     HR Dashboard
                 </Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-
-
                     <Typography variant="body1" sx={{ mr: 2 }}>
-                        {userName}
+                        {user ? user.empId : 'Guest'}
                     </Typography>
                     <Button color="inherit" onClick={handleMenu}>
                         <Avatar sx={{ mr: 2 }}>
@@ -47,7 +47,7 @@ function Navbar({ userName }) {
                         <MenuItem onClick={handleClose}>Profile</MenuItem>
                         <MenuItem onClick={handleLogout}>Logout</MenuItem>
                     </Menu>
-                    <IconButton >
+                    <IconButton>
                         <NotificationsIcon />
                     </IconButton>
                 </Box>

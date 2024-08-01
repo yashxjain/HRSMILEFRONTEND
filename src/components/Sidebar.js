@@ -22,6 +22,7 @@ function Sidebar() {
         { path: '/policy', name: 'Policy' },
         { path: '/attendance', name: 'Attendance' },
         { path: '/notification', name: 'Notification' },
+        { path: '/leave', name: 'Leave' }
     ];
 
     const drawer = (

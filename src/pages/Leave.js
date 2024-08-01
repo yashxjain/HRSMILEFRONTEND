@@ -1,0 +1,48 @@
+import React, { useState } from 'react';
+import Navbar from '../components/Navbar';
+import Sidebar from '../components/Sidebar';
+import { Box, Button } from '@mui/material';
+import ApplyLeave from '../components/leave/ApplyLeave';
+import ViewLeave from '../components/leave/ViewLeave';
+import { useAuth } from '../components/auth/AuthContext'; // Assuming AuthContext is where you get user info
+
+const drawerWidth = 15; // Set a fixed width for the sidebar
+
+function Leave() {
+    const { user } = useAuth();
+    const [openApplyLeaveDialog, setOpenApplyLeaveDialog] = useState(false);
+
+    const handleOpenApplyLeaveDialog = () => setOpenApplyLeaveDialog(true);
+    const handleCloseApplyLeaveDialog = () => setOpenApplyLeaveDialog(false);
+
+    const handleLeaveApplied = () => {
+        // Handle the leave application success here if needed
+        // For example, showing a confirmation message or refreshing data
+        handleCloseApplyLeaveDialog();
+    };
+
+    return (
+        <Box sx={{ display: 'flex' }}>
+            {/* Sidebar with fixed width */}
+            <Box sx={{ width: drawerWidth, flexShrink: 0 }}>
+                <Sidebar />
+            </Box>
+            <Box component="main" sx={{ flexGrow: 1, p: 3, ml: drawerWidth }}>
+                <Navbar />
+                <div style={{ marginTop: "20px" }}>
+                    <Button variant="contained" color="primary" onClick={handleOpenApplyLeaveDialog}>
+                        Apply for Leave
+                    </Button>
+                    <ApplyLeave
+                        open={openApplyLeaveDialog}
+                        onClose={handleCloseApplyLeaveDialog}
+                        onLeaveApplied={handleLeaveApplied}
+                    />
+                    {user && user.empId && <ViewLeave EmpId={user.empId} />}
+                </div>
+            </Box>
+        </Box>
+    );
+}
+
+export default Leave;

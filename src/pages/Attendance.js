@@ -7,7 +7,7 @@ import AttendanceList from '../components/activity/AttendanceList';
 
 function Attendance() {
     const isMobile = useMediaQuery('(max-width:600px)');
-    const drawerWidth = isMobile ? 0 : 240;
+    const drawerWidth = isMobile ? 0 : 225;
 
     return (
         <Box sx={{ display: 'flex', height: '100vh' }}>

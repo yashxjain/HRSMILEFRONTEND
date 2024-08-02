@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
-import { Box, Button } from '@mui/material';
+import { Box, Button, useMediaQuery } from '@mui/material';
 import ApplyLeave from '../components/leave/ApplyLeave';
 import ViewLeave from '../components/leave/ViewLeave';
 import { useAuth } from '../components/auth/AuthContext'; // Assuming AuthContext is where you get user info
 
-const drawerWidth = 15; // Set a fixed width for the sidebar
 
 function Leave() {
     const { user } = useAuth();
+    const isMobile = useMediaQuery('(max-width:600px)');
+    const drawerWidth = isMobile ? 0 : 25;
     const [openApplyLeaveDialog, setOpenApplyLeaveDialog] = useState(false);
 
     const handleOpenApplyLeaveDialog = () => setOpenApplyLeaveDialog(true);

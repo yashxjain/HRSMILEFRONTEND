@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
-import { Box, Button } from '@mui/material';
+import { Box, Button, useMediaQuery } from '@mui/material';
 import ApplyExpense from '../components/expense/ApplyExpense';
 import { useAuth } from '../components/auth/AuthContext';
 import ViewExpense from '../components/expense/ViewExpense';
 
-const drawerWidth = 15; // Set a fixed width for the sidebar (240px is a common width for sidebars)
 
 function Expense() {
     const { user } = useAuth();
     const [openApplyExpenseDialog, setOpenApplyExpenseDialog] = useState(false);
 
-
+    const isMobile = useMediaQuery('(max-width:600px)');
+    const drawerWidth = isMobile ? 0 : 25;
 
     const handleOpenApplyExpenseDialog = () => setOpenApplyExpenseDialog(true);
     const handleCloseApplyExpenseDialog = () => setOpenApplyExpenseDialog(false);

@@ -1,13 +1,15 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
-import { Box } from '@mui/material';
+import { Box, useMediaQuery } from '@mui/material';
 import PolicyList from '../components/policy/PolicyList';
 import AddPolicy from '../components/policy/AddPolicy'
 
-const drawerWidth = 15; // Set a fixed width for the sidebar
 
 function Policy() {
+
+    const isMobile = useMediaQuery('(max-width:600px)');
+    const drawerWidth = isMobile ? 0 : 25;
     return (
         <Box sx={{ display: 'flex' }}>
             {/* Sidebar with fixed width */}

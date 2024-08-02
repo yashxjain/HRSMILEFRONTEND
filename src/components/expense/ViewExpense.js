@@ -71,7 +71,6 @@ function ViewExpense() {
                             <TableCell>Expense Date</TableCell>
                             <TableCell>Expense Type</TableCell>
                             <TableCell>Expense Amount</TableCell>
-                            <TableCell>Image</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -82,7 +81,7 @@ function ViewExpense() {
                                     <TableCell>{formatDate(expense.expenseDate)}</TableCell>
                                     <TableCell>{expense.expenseType}</TableCell>
                                     <TableCell>{expense.expenseAmount}</TableCell>
-                                    <TableCell>{expense.image ? <a href={expense.image} target="_blank" rel="noopener noreferrer">View</a> : 'No Image'}</TableCell>
+                                    {/* <TableCell>{expense.image ? <a href={expense.image} target="_blank" rel="noopener noreferrer">View</a> : 'No Image'}</TableCell> */}
                                 </TableRow>
                             ))}
                     </TableBody>

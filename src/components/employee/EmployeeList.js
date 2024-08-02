@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Button, Typography, IconButton, Grid, TablePagination } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Button, Typography, IconButton, Grid, TablePagination, Box } from '@mui/material';
 import axios from 'axios';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -51,7 +51,6 @@ function EmployeeList() {
         setSelectedEmployee(employee);
         setOpenDetail(true);
     };
-
 
     const handleCloseDetail = () => {
         setOpenDetail(false);
@@ -163,7 +162,6 @@ function EmployeeList() {
         }
     };
 
-
     const filteredEmployees = employees.filter(employee =>
         employee.Name.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -191,57 +189,57 @@ function EmployeeList() {
                     </Button>
                 </Grid>
             </Grid>
-            <TableContainer component={Paper} sx={{ mt: 2 }}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Employee ID</TableCell>
-                            <TableCell>Name</TableCell>
-                            <TableCell>Mobile</TableCell>
-                            <TableCell>Email</TableCell>
-                            <TableCell>Role</TableCell>
-                            <TableCell>Status</TableCell>
-                            <TableCell>Actions</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {filteredEmployees.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((employee) => (
-                            <TableRow
-                                key={employee.EmpId}
-                                hover
-                                onClick={() => handleRowClick(employee)}
-                                sx={{ cursor: 'pointer' }}
-                            >
-                                <TableCell>{employee.EmpId}</TableCell>
-                                <TableCell>{employee.Name}</TableCell>
-                                <TableCell>{employee.Mobile}</TableCell>
-                                <TableCell>{employee.EmailId}</TableCell>
-                                <TableCell>{employee.Role}</TableCell>
-                                <TableCell>{employee.IsActive ? 'Active' : 'Inactive'}</TableCell>
-                                <TableCell>
-                                    <IconButton onClick={(e) => { e.stopPropagation(); handleOpenForm('edit', employee); }}>
-                                        <EditIcon />
-                                    </IconButton>
-                                    <IconButton onClick={(e) => { e.stopPropagation(); handleDisableEmployee(); }}>
-                                        <DeleteIcon />
-                                    </IconButton>
-                                    {employee.IsActive ? (
-                                        <IconButton onClick={(e) => { e.stopPropagation(); handleDisableEmployee(); }}>
-                                            <CancelIcon />
-                                        </IconButton>
-                                    ) : (
-                                        <IconButton onClick={(e) => { e.stopPropagation(); handleEnableEmployee(); }}>
-                                            <CheckIcon />
-                                        </IconButton>
-                                    )}
-
-                                </TableCell>
+            <Box sx={{ overflowX: 'auto', mt: 2 }}>
+                <TableContainer component={Paper}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Employee ID</TableCell>
+                                <TableCell>Name</TableCell>
+                                <TableCell>Mobile</TableCell>
+                                <TableCell>Email</TableCell>
+                                <TableCell>Role</TableCell>
+                                <TableCell>Status</TableCell>
+                                <TableCell>Actions</TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-
-            </TableContainer>
+                        </TableHead>
+                        <TableBody>
+                            {filteredEmployees.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((employee) => (
+                                <TableRow
+                                    key={employee.EmpId}
+                                    hover
+                                    onClick={() => handleRowClick(employee)}
+                                    sx={{ cursor: 'pointer' }}
+                                >
+                                    <TableCell>{employee.EmpId}</TableCell>
+                                    <TableCell>{employee.Name}</TableCell>
+                                    <TableCell>{employee.Mobile}</TableCell>
+                                    <TableCell>{employee.EmailId}</TableCell>
+                                    <TableCell>{employee.Role}</TableCell>
+                                    <TableCell>{employee.IsActive ? 'Active' : 'Inactive'}</TableCell>
+                                    <TableCell>
+                                        <IconButton onClick={(e) => { e.stopPropagation(); handleOpenForm('edit', employee); }}>
+                                            <EditIcon />
+                                        </IconButton>
+                                        <IconButton onClick={(e) => { e.stopPropagation(); handleDisableEmployee(); }}>
+                                            <DeleteIcon />
+                                        </IconButton>
+                                        {employee.IsActive ? (
+                                            <IconButton onClick={(e) => { e.stopPropagation(); handleDisableEmployee(); }}>
+                                                <CancelIcon />
+                                            </IconButton>
+                                        ) : (
+                                            <IconButton onClick={(e) => { e.stopPropagation(); handleEnableEmployee(); }}>
+                                                <CheckIcon />
+                                            </IconButton>
+                                        )}
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </Box>
             <TablePagination
                 component="div"
                 count={filteredEmployees.length}

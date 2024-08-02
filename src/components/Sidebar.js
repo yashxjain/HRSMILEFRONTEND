@@ -1,20 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { Drawer, List, ListItem, ListItemText, Box, IconButton, AppBar, Toolbar, Typography } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
 import HRSmileLogo from '../assets/HRSmileLogo.jpeg';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 
-function Sidebar() {
+function Sidebar({ mobileOpen, onDrawerToggle }) {
     const location = useLocation();
-    const [mobileOpen, setMobileOpen] = useState(false);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
-    const handleDrawerToggle = () => {
-        setMobileOpen(!mobileOpen);
-    };
 
     const routes = [
         { path: '/dashboard', name: 'Dashboard' },
@@ -47,7 +41,7 @@ function Sidebar() {
                                 color: 'white',
                             },
                         }}
-                        onClick={() => setMobileOpen(false)}
+                        onClick={isMobile ? onDrawerToggle : null}
                     >
                         <ListItemText primary={route.name} />
                     </ListItem>
@@ -60,31 +54,19 @@ function Sidebar() {
         <Box sx={{ display: 'flex' }}>
             {isMobile ? (
                 <>
-                    <AppBar position="fixed" sx={{ zIndex: theme.zIndex.drawer + 1 }}>
-                        <Toolbar>
-                            <IconButton
-                                color="inherit"
-                                aria-label="open drawer"
-                                edge="start"
-                                onClick={handleDrawerToggle}
-                                sx={{ mr: 2 }}
-                            >
-                                <MenuIcon />
-                            </IconButton>
-                            <Typography variant="h6" noWrap component="div">
-                                HRMS
-                            </Typography>
-                        </Toolbar>
-                    </AppBar>
                     <Drawer
                         variant="temporary"
                         open={mobileOpen}
-                        onClose={handleDrawerToggle}
+                        onClose={onDrawerToggle}
                         ModalProps={{
                             keepMounted: true, // Better open performance on mobile.
                         }}
                         sx={{
-                            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 240 },
+                            '& .MuiDrawer-paper': {
+                                boxSizing: 'border-box',
+                                width: 240,
+                                zIndex: theme.zIndex.appBar + 1, // Ensure Drawer appears above AppBar
+                            },
                         }}
                     >
                         {drawer}

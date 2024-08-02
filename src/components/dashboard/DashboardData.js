@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Card, CardContent, Typography, Divider } from '@mui/material';
+import { Grid, Card, CardContent, Typography, Divider, useMediaQuery } from '@mui/material';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js';
 
@@ -20,10 +20,12 @@ const data = {
 };
 
 const DashboardData = () => {
+    const isSmallScreen = useMediaQuery('(max-width:600px)');
+
     return (
         <Grid container spacing={3}>
             {/* Employee Statistics Card */}
-            <Grid item xs={12} md={6} lg={4}>
+            <Grid item xs={12} sm={6} md={4}>
                 <Card>
                     <CardContent>
                         <Typography variant="h6">Total Employees</Typography>
@@ -33,19 +35,11 @@ const DashboardData = () => {
                 </Card>
             </Grid>
 
-            {/* Attendance Overview Card */}
-            <Grid item xs={12} md={6} lg={4}>
-                <Card>
-                    <CardContent>
-                        <Typography variant="h6">Attendance Overview</Typography>
-                        <Divider sx={{ my: 2 }} />
-                        <Bar data={data} options={{ responsive: true, plugins: { legend: { position: 'top' }, title: { display: true, text: 'Monthly Attendance' } } }} />
-                    </CardContent>
-                </Card>
-            </Grid>
+
+
 
             {/* Other Cards */}
-            <Grid item xs={12} md={6} lg={4}>
+            <Grid item xs={12} sm={6} md={4}>
                 <Card>
                     <CardContent>
                         <Typography variant="h6">Other Metrics</Typography>
@@ -54,6 +48,8 @@ const DashboardData = () => {
                     </CardContent>
                 </Card>
             </Grid>
+
+
         </Grid>
     );
 }

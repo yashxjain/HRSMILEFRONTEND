@@ -16,12 +16,10 @@ function Dashboard() {
             </Box>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <Navbar />
-                <br />
                 <Container maxWidth="lg">
                     <Grid container spacing={3}>
                         <Grid item xs={12}>
-                            <Box>
-
+                            <Box sx={{ mt: 4 }}>
                                 <DashboardData />
                             </Box>
 

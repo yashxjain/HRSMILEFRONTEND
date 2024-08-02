@@ -45,7 +45,7 @@ function Expense() {
                         onExpenseApplied={handleExpenseApplied}
                     />
                     {/* Uncomment and update the ViewLeave component as needed */}
-                    {user && user.empId && <ViewExpense EmpId={user.empId} />}
+                    {user && user.emp_id && <ViewExpense EmpId={user.emp_id} />}
                 </div>
             </Box>
         </Box>

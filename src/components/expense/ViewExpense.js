@@ -23,14 +23,14 @@ function ViewExpense() {
         const fetchExpenses = async () => {
             try {
                 // Ensure user is not null before making the request
-                if (!user || !user.empId) {
+                if (!user || !user.emp_id) {
                     setError('User is not authenticated');
                     setLoading(false);
                     return;
                 }
 
                 const response = await axios.get('https://namami-infotech.com/HR-SMILE-BACKEND/src/expense/get_expense.php', {
-                    params: { EmpId: user.empId }
+                    params: { EmpId: user.emp_id }
                 });
 
                 if (response.data.success) {

@@ -39,7 +39,7 @@ function Leave() {
                         onClose={handleCloseApplyLeaveDialog}
                         onLeaveApplied={handleLeaveApplied}
                     />
-                    {user && user.empId && <ViewLeave EmpId={user.empId} />}
+                    {user && user.emp_id && <ViewLeave EmpId={user.emp_id} />}
                 </div>
             </Box>
         </Box>

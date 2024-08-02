@@ -21,12 +21,18 @@ function ViewLeave() {
 
     useEffect(() => {
         const fetchLeaves = async () => {
-            try {
+            // Early exit if user is not authenticated
+            if (!user || !user.emp_id) {
+                setError('User is not authenticated');
+                setLoading(false);
+                return;
+            }
 
+            try {
                 const response = await axios.get('https://namami-infotech.com/HR-SMILE-BACKEND/src/leave/get_leave.php', {
                     params: { EmpId: user.emp_id }
                 });
-                // console.log(response.data.data)
+                console.log('API Response:', response.data); // Debugging
                 if (response.data.success) {
                     setLeaves(response.data.data);
                 } else {
@@ -42,6 +48,7 @@ function ViewLeave() {
 
         fetchLeaves();
     }, [user]);
+
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);

@@ -12,6 +12,7 @@ import Policy from './pages/Policy';
 import Attendance from './pages/Attendance';
 import Notification from './pages/Notification';
 import Leave from './pages/Leave';
+import Expense from './pages/Expense';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
             <Route path="/attendance" element={<Attendance />} />
             <Route path="/notification" element={<Notification />} />
             <Route path="/leave" element={<Leave />} />
+            <Route path="/expense" element={<Expense />} />
 
           </Routes>
         </Router>

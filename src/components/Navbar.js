@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '../components/auth/AuthContext';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import { AppBar, Toolbar, Typography, Avatar, Button, Menu, MenuItem, Box, IconButton } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -25,29 +25,32 @@ function Navbar() {
     };
 
     return (
-        <AppBar position="static">
+        <AppBar position="static" sx={{ bgcolor: 'primary.main' }}>
             <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography variant="h6">
+                <Typography variant="h6" sx={{ fontWeight: 'bold', letterSpacing: 1 }}>
                     HR Dashboard
                 </Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <Typography variant="body1" sx={{ mr: 2 }}>
                         {user ? user.empId : 'Guest'}
                     </Typography>
-                    <Button color="inherit" onClick={handleMenu}>
-                        <Avatar sx={{ mr: 2 }}>
+                    <IconButton onClick={handleMenu} color="inherit">
+                        <Avatar sx={{ bgcolor: 'secondary.main' }}>
                             <AccountCircleIcon />
                         </Avatar>
-                    </Button>
+                    </IconButton>
                     <Menu
                         anchorEl={anchorEl}
                         open={Boolean(anchorEl)}
                         onClose={handleClose}
+                        PaperProps={{
+                            sx: { width: 200, mt: 2 },
+                        }}
                     >
                         <MenuItem onClick={handleClose}>Profile</MenuItem>
                         <MenuItem onClick={handleLogout}>Logout</MenuItem>
                     </Menu>
-                    <IconButton>
+                    <IconButton color="inherit">
                         <NotificationsIcon />
                     </IconButton>
                 </Box>

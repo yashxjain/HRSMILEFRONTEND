@@ -13,10 +13,20 @@ function ApplyLeave({ open, onClose, onLeaveApplied }) {
         Status: 'Pending', // Default status
     });
 
+    // Function to format the date to 'yyyy-mm-dd' for the date input fields
+    const formatDate = (date) => {
+        return date.toISOString().split('T')[0];
+    };
+
+    // Get the current date
+    const today = new Date();
+
+    // Handle field changes
     const handleChange = (field, value) => {
         setLeaveDetails({ ...leaveDetails, [field]: value });
     };
 
+    // Handle form submission
     const handleSubmit = async () => {
         if (!user || !user.empId) {
             console.error('User is not authenticated');
@@ -58,6 +68,9 @@ function ApplyLeave({ open, onClose, onLeaveApplied }) {
                     variant="outlined"
                     fullWidth
                     margin="normal"
+                    inputProps={{
+                        min: formatDate(today) // Minimum date is today
+                    }}
                 />
                 <TextField
                     label="End Date"
@@ -68,6 +81,9 @@ function ApplyLeave({ open, onClose, onLeaveApplied }) {
                     variant="outlined"
                     fullWidth
                     margin="normal"
+                    inputProps={{
+                        min: leaveDetails.startDate || formatDate(today) // Minimum date is the start date or today
+                    }}
                 />
                 <TextField
                     label="Reason"

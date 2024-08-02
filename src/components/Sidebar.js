@@ -4,17 +4,18 @@ import { Drawer, List, ListItem, ListItemText, Box, IconButton, AppBar, Toolbar,
 import MenuIcon from '@mui/icons-material/Menu';
 import HRSmileLogo from '../assets/HRSmileLogo.jpeg';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 
 function Sidebar() {
     const location = useLocation();
     const [mobileOpen, setMobileOpen] = useState(false);
-    const isMobile = useMediaQuery('(max-width:420px)');
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
     };
 
-    // Define your routes
     const routes = [
         { path: '/dashboard', name: 'Dashboard' },
         { path: '/employees', name: 'Employees' },
@@ -22,11 +23,12 @@ function Sidebar() {
         { path: '/policy', name: 'Policy' },
         { path: '/attendance', name: 'Attendance' },
         { path: '/notification', name: 'Notification' },
-        { path: '/leave', name: 'Leave' }
+        { path: '/leave', name: 'Leave' },
+        { path: '/expense', name: 'Expense' },
     ];
 
     const drawer = (
-        <Box sx={{ width: 150 }}>
+        <Box sx={{ width: 240, display: 'flex', flexDirection: 'column', height: '100vh', bgcolor: 'background.paper' }}>
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 2 }}>
                 <img src={HRSmileLogo} alt="HRMS Logo" style={{ width: '100px', marginBottom: '20px' }} />
             </Box>
@@ -38,10 +40,10 @@ function Sidebar() {
                         component={Link}
                         to={route.path}
                         sx={{
-                            backgroundColor: location.pathname === route.path ? 'primary.main' : 'transparent',
+                            backgroundColor: location.pathname === route.path ? theme.palette.primary.main : 'transparent',
                             color: location.pathname === route.path ? 'white' : 'inherit',
                             '&:hover': {
-                                backgroundColor: 'primary.light',
+                                backgroundColor: theme.palette.primary.light,
                                 color: 'white',
                             },
                         }}
@@ -57,53 +59,49 @@ function Sidebar() {
     return (
         <Box sx={{ display: 'flex' }}>
             {isMobile ? (
-                <AppBar position="fixed">
-                    <Toolbar>
-                        <IconButton
-                            color="inherit"
-                            aria-label="open drawer"
-                            edge="start"
-                            onClick={handleDrawerToggle}
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                        <Typography variant="h6" noWrap component="div">
-                            HRMS
-                        </Typography>
-                    </Toolbar>
-                </AppBar>
+                <>
+                    <AppBar position="fixed" sx={{ zIndex: theme.zIndex.drawer + 1 }}>
+                        <Toolbar>
+                            <IconButton
+                                color="inherit"
+                                aria-label="open drawer"
+                                edge="start"
+                                onClick={handleDrawerToggle}
+                                sx={{ mr: 2 }}
+                            >
+                                <MenuIcon />
+                            </IconButton>
+                            <Typography variant="h6" noWrap component="div">
+                                HRMS
+                            </Typography>
+                        </Toolbar>
+                    </AppBar>
+                    <Drawer
+                        variant="temporary"
+                        open={mobileOpen}
+                        onClose={handleDrawerToggle}
+                        ModalProps={{
+                            keepMounted: true, // Better open performance on mobile.
+                        }}
+                        sx={{
+                            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 240 },
+                        }}
+                    >
+                        {drawer}
+                    </Drawer>
+                </>
             ) : (
                 <Drawer
                     variant="permanent"
                     sx={{
-                        display: { xs: 'none', md: 'block' },
-                        '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 150 },
+                        display: { xs: 'none', sm: 'block' },
+                        '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 240 },
                     }}
                     open
                 >
                     {drawer}
                 </Drawer>
             )}
-            <Drawer
-                variant="temporary"
-                open={mobileOpen}
-                onClose={handleDrawerToggle}
-                ModalProps={{
-                    keepMounted: true, // Better open performance on mobile.
-                }}
-                sx={{
-                    display: { xs: 'block', md: 'none' },
-                    '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 250 },
-                }}
-            >
-                {drawer}
-            </Drawer>
-            <Box
-                component="main"
-                sx={{ flexGrow: 1, p: 3, mt: isMobile ? 7 : 0 }}
-            >
-                {/* Your main content goes here */}
-            </Box>
         </Box>
     );
 }

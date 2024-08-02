@@ -68,8 +68,8 @@ function ViewLeave() {
                 <Table >
                     <TableHead>
                         <TableRow>
-                            <TableCell>Start Date</TableCell>
-                            <TableCell>End Date</TableCell>
+                            <TableCell> Date</TableCell>
+
                             <TableCell>Reason</TableCell>
                             <TableCell>Status</TableCell>
                         </TableRow>
@@ -79,8 +79,7 @@ function ViewLeave() {
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             .map((leave) => (
                                 <TableRow key={leave.Id}>
-                                    <TableCell>{formatDate(leave.StartDate)}</TableCell>
-                                    <TableCell>{formatDate(leave.EndDate)}</TableCell>
+                                    <TableCell>{formatDate(leave.StartDate)} - {formatDate(leave.EndDate)}</TableCell>
                                     <TableCell>{leave.Reason}</TableCell>
                                     <TableCell>{leave.Status}</TableCell>
                                 </TableRow>

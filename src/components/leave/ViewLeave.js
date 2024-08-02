@@ -64,8 +64,8 @@ function ViewLeave() {
     return (
         <Box>
             <br />
-            <TableContainer component={Paper}>
-                <Table>
+            <TableContainer component={Paper} style={{ overflowX: 'auto' }}>
+                <Table >
                     <TableHead>
                         <TableRow>
                             <TableCell>Start Date</TableCell>

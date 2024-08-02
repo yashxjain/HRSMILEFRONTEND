@@ -84,11 +84,12 @@ function AddPolicyDialog({ open, onClose, onPolicyAdded }) {
                         onChange={(e) => setPolicyDescription(e.target.value)}
                     />
                     <input
-                        accept="application/pdf"
+                        accept="image/*,application/pdf"
                         type="file"
                         onChange={handleFileChange}
                         style={{ marginTop: '16px', marginBottom: '16px' }}
                     />
+
                     <Button type="submit" color="primary" variant="contained" sx={{ mt: 2 }}>
                         Add Policy
                     </Button>

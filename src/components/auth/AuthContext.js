@@ -13,10 +13,9 @@ export function AuthProvider({ children }) {
         }
     }, []);
 
-    const login = (empId) => {
-        const user = { empId };
-        localStorage.setItem('user', JSON.stringify(user));
-        setUser(user);
+    const login = (userData) => {
+        localStorage.setItem('user', JSON.stringify(userData));
+        setUser(userData);
     };
 
     const logout = () => {

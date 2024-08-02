@@ -182,6 +182,7 @@ function EmployeeList() {
                     <Button
                         variant="contained"
                         color="primary"
+                        style={{ backgroundColor: "#1B3156" }}
                         startIcon={<AddIcon />}
                         onClick={() => handleOpenForm('add')}
                     >
@@ -192,15 +193,15 @@ function EmployeeList() {
             <Box sx={{ overflowX: 'auto', mt: 2 }}>
                 <TableContainer component={Paper}>
                     <Table>
-                        <TableHead>
+                        <TableHead style={{ backgroundColor: "#1B3156" }}>
                             <TableRow>
-                                <TableCell>Employee ID</TableCell>
-                                <TableCell>Name</TableCell>
-                                <TableCell>Mobile</TableCell>
-                                <TableCell>Email</TableCell>
-                                <TableCell>Role</TableCell>
-                                <TableCell>Status</TableCell>
-                                <TableCell>Actions</TableCell>
+                                <TableCell style={{ color: "white" }}>Employee ID</TableCell>
+                                <TableCell style={{ color: "white" }}>Name</TableCell>
+                                <TableCell style={{ color: "white" }}>Mobile</TableCell>
+                                <TableCell style={{ color: "white" }}>Email</TableCell>
+                                <TableCell style={{ color: "white" }}>Role</TableCell>
+                                <TableCell style={{ color: "white" }}>Status</TableCell>
+                                <TableCell style={{ color: "white" }}>Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -370,7 +371,7 @@ function EmployeeList() {
                             value={formData.IsActive}
                             onChange={(e) => setFormData({ ...formData, IsActive: Number(e.target.value) })}
                         />
-                        <Button type="submit" color="primary" variant="contained" sx={{ mt: 2 }}>
+                        <Button type="submit" color="primary" variant="contained" sx={{ mt: 2 }} style={{ backgroundColor: "#1B3156" }}>
                             {formMode === 'add' ? 'Add Employee' : 'Update Employee'}
                         </Button>
                     </form>

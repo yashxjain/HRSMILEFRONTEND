@@ -22,15 +22,9 @@ function ViewLeave() {
     useEffect(() => {
         const fetchLeaves = async () => {
             try {
-                // Ensure user is not null before making the request
-                if (!user || !user.empId) {
-                    setError('User is not authenticated');
-                    setLoading(false);
-                    return;
-                }
 
                 const response = await axios.get('https://namami-infotech.com/HR-SMILE-BACKEND/src/leave/get_leave.php', {
-                    params: { EmpId: user.empId }
+                    params: { EmpId: user.emp_id }
                 });
                 // console.log(response.data.data)
                 if (response.data.success) {

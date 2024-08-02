@@ -39,7 +39,7 @@ function Login() {
             });
 
             if (response.data.success) {
-                login(empId); // Update Auth Context and localStorage
+                login(response.data.data);
                 setTimeout(() => {
                     setLoading(false);
                     navigate('/dashboard');
@@ -59,13 +59,13 @@ function Login() {
         <ThemeProvider theme={theme}>
             <Container maxWidth="sm">
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
+                    <Avatar sx={{ m: 1, bgcolor: '#1B3156' }}>
                         <LockOutlinedIcon />
                     </Avatar>
                     <Box sx={{ mb: 2 }}>
                         <img src={logo} alt="HRMS Logo" style={{ width: '120px', height: '120px' }} />
                     </Box>
-                    <Typography variant="h4" align="center" gutterBottom>
+                    <Typography variant="h4" align="center" style={{ color: "#6695AF" }} gutterBottom>
                         HR SMILE Login
                     </Typography>
                     {error && (
@@ -97,6 +97,7 @@ function Login() {
                             fullWidth
                             variant="contained"
                             color="primary"
+                            style={{ backgroundColor: "#1B3156" }}
                             type="submit"
                             sx={{ mt: 3, py: 1.5 }}
                             disabled={loading} // Disable button when loading

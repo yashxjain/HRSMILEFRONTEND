@@ -55,17 +55,17 @@ function PolicyList() {
 
     return (
         <div>
-            <Button variant="contained" color="primary" onClick={handleOpenDialog} sx={{ mb: 2 }}>
+            <Button variant="contained" color="primary" onClick={handleOpenDialog} sx={{ mb: 2 }} style={{ backgroundColor: "#1B3156" }}>
                 Add Policy
             </Button>
             <TableContainer component={Paper}>
                 <Table>
-                    <TableHead>
+                    <TableHead style={{ backgroundColor: "#1B3156" }}>
                         <TableRow>
-                            <TableCell>Policy Name</TableCell>
-                            <TableCell>Description</TableCell>
-                            <TableCell>URL</TableCell>
-                            <TableCell>Action</TableCell>
+                            <TableCell style={{ color: "white" }}>Policy Name</TableCell>
+                            <TableCell style={{ color: "white" }}>Description</TableCell>
+                            <TableCell style={{ color: "white" }}>URL</TableCell>
+                            <TableCell style={{ color: "white" }}>Action</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>

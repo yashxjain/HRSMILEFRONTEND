@@ -37,7 +37,8 @@ function AddHoliday({ open, onClose, onHolidayAdded }) {
 
     return (
         <Dialog open={open} onClose={onClose}>
-            <DialogTitle>Add Holidays</DialogTitle>
+            <DialogTitle style={{ backgroundColor: "#1B3156", color: "white" }} >Add Holidays</DialogTitle>
+            <br />
             <DialogContent>
                 {holidays.map((holiday, index) => (
                     <div key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>

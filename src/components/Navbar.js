@@ -24,13 +24,12 @@ function Navbar() {
     };
 
     const handleClose = () => {
-        setAnchorEl(null);
+        navigate("/profile")
     };
 
     const handleLogout = () => {
         logout(); // Update Auth Context
         navigate('/');
-        handleClose();
     };
 
     const handleDrawerToggle = () => {
@@ -49,7 +48,7 @@ function Navbar() {
     ];
 
     const drawer = (
-        <Box sx={{ width: 240, display: 'flex', flexDirection: 'column', height: '100vh', bgcolor: 'background.paper' }}>
+        <Box sx={{ width: 240, display: 'flex', flexDirection: 'column', height: '100vh', bgcolor: '#6695AF' }}>
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 2 }}>
                 <img src={HRSmileLogo} alt="HRMS Logo" style={{ width: '100px', marginBottom: '20px' }} />
             </Box>
@@ -64,7 +63,7 @@ function Navbar() {
                             backgroundColor: location.pathname === route.path ? theme.palette.primary.main : 'transparent',
                             color: location.pathname === route.path ? 'white' : 'inherit',
                             '&:hover': {
-                                backgroundColor: theme.palette.primary.light,
+                                backgroundColor: "#1B3156",
                                 color: 'white',
                             },
                         }}
@@ -79,7 +78,7 @@ function Navbar() {
 
     return (
         <>
-            <AppBar position="static" sx={{ bgcolor: 'primary.main' }}>
+            <AppBar position="static" sx={{ bgcolor: '#1B3156' }} style={{ borderRadius: "20px" }}>
                 <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         {isMobile && (
@@ -93,10 +92,10 @@ function Navbar() {
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <Typography variant="body1" sx={{ mr: 2 }}>
-                            {user ? user.empId : 'Guest'}
+                            {user ? user.username : 'Guest'}
                         </Typography>
                         <IconButton onClick={handleMenu} color="inherit">
-                            <Avatar sx={{ bgcolor: 'secondary.main' }}>
+                            <Avatar sx={{ bgcolor: '#e46e00' }}>
                                 <AccountCircleIcon />
                             </Avatar>
                         </IconButton>

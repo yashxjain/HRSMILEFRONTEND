@@ -45,7 +45,7 @@ function AttendanceList() {
             try {
                 const response = await axios.get(
                     'https://namami-infotech.com/HR-SMILE-BACKEND/src/attendance/view_attendance.php', {
-                    params: { EmpId: user.empId }
+                    params: { EmpId: user.emp_id }
                 }
                 );
                 if (response.data.success) {
@@ -145,21 +145,21 @@ function AttendanceList() {
     }));
 
     return (
-        <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+        <Paper sx={{ width: '100%', overflow: 'hidden' }} style={{ backgroundColor: "#1B3156" }}>
             <TableContainer>
                 <Table>
-                    <TableHead>
+                    <TableHead style={{ backgroundColor: "#1B3156" }}>
                         <TableRow>
-                            <TableCell>Emp ID</TableCell>
-                            <TableCell>Date</TableCell>
-                            {!isMobile && <TableCell>In</TableCell>}
-                            {!isMobile && <TableCell>In Location</TableCell>}
-                            {!isMobile && <TableCell>Out</TableCell>}
-                            {!isMobile && <TableCell>Out Location</TableCell>}
-                            <TableCell>Working Hours</TableCell>
+                            <TableCell style={{ color: "white" }}>Emp ID</TableCell>
+                            <TableCell style={{ color: "white" }}>Date</TableCell>
+                            {!isMobile && <TableCell style={{ color: "white" }}>In</TableCell>}
+                            {!isMobile && <TableCell style={{ color: "white" }}>In Location</TableCell>}
+                            {!isMobile && <TableCell style={{ color: "white" }}>Out</TableCell>}
+                            {!isMobile && <TableCell style={{ color: "white" }}>Out Location</TableCell>}
+                            <TableCell style={{ color: "white" }}>Working Hours</TableCell>
                         </TableRow>
                     </TableHead>
-                    <TableBody>
+                    <TableBody style={{ backgroundColor: "white" }} >
                         {groupedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(({ date, activities }) => (
                             <React.Fragment key={date}>
                                 <TableRow>
@@ -213,6 +213,7 @@ function AttendanceList() {
                 rowsPerPage={rowsPerPage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
                 rowsPerPageOptions={[5, 10, 25]}
+                style={{ color: "white" }}
             />
         </Paper>
     );

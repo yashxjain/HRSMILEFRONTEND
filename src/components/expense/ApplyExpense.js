@@ -27,21 +27,14 @@ function ApplyExpense({ open, onClose, onExpenseApplied }) {
     };
 
     const handleSubmit = async () => {
-        if (!user || !user.empId) {
+        if (!user || !user.emp_id) {
             console.error('User is not authenticated');
-            return;
-        }
-
-        // Validate that all required fields are filled
-        const isValid = expenseEntries.every(entry => entry.expenseDate && entry.expenseType && entry.expenseAmount);
-        if (!isValid) {
-            console.error('Please provide valid expense data.');
             return;
         }
 
         try {
             const payload = {
-                empId: user.empId,
+                empId: user.emp_id,
                 expenses: expenseEntries
             };
             const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/expense/apply_expense.php', payload);
@@ -60,14 +53,6 @@ function ApplyExpense({ open, onClose, onExpenseApplied }) {
         <Dialog open={open} onClose={onClose}>
             <DialogTitle>Apply for Expenses</DialogTitle>
             <DialogContent>
-                <TextField
-                    label="Employee ID"
-                    value={user?.empId || ''}
-                    variant="outlined"
-                    fullWidth
-                    margin="normal"
-                    disabled
-                />
                 {expenseEntries.map((entry, index) => (
                     <div key={index} style={{ marginBottom: 10 }}>
                         <TextField
@@ -90,7 +75,6 @@ function ApplyExpense({ open, onClose, onExpenseApplied }) {
                         />
                         <TextField
                             label="Expense Amount"
-                            type="number"
                             value={entry.expenseAmount}
                             onChange={(e) => handleChange(index, 'expenseAmount', e.target.value)}
                             variant="outlined"

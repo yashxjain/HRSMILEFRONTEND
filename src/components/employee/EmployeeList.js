@@ -52,9 +52,9 @@ function EmployeeList() {
         setOpenDetail(true);
     };
 
-    const handleCloseDetail = () => {
+    const handleCloseDetail = (employee) => {
         setOpenDetail(false);
-        setSelectedEmployee(null);
+        setSelectedEmployee(employee);
     };
 
     const handleChangePage = (event, newPage) => {

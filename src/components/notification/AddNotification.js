@@ -45,7 +45,7 @@ function AddNotification({ open, onClose, onNotificationAdded }) {
     };
 
     return (
-        <>
+        <Dialog open={open} onClose={onClose}>
             <DialogTitle>Add Notification</DialogTitle>
             <DialogContent>
                 <TextField
@@ -98,7 +98,7 @@ function AddNotification({ open, onClose, onNotificationAdded }) {
                     Submit
                 </Button>
             </DialogActions>
-        </>
+        </Dialog>
     );
 }
 

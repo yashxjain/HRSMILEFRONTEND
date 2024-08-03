@@ -14,6 +14,7 @@ import Notification from './pages/Notification';
 import Leave from './pages/Leave';
 import Expense from './pages/Expense';
 import EmpProfile from './pages/EmpProfile';
+import PrivateRoute from './components/auth/PrivateRoute';
 
 function App() {
   return (
@@ -22,16 +23,15 @@ function App() {
         <Router>
           <Routes>
             <Route path="/" element={<Login />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/employees" element={<Employee />} />
-            <Route path="/holiday" element={<Holiday />} />
-            <Route path="/policy" element={<Policy />} />
-            <Route path="/attendance" element={<Attendance />} />
-            <Route path="/notification" element={<Notification />} />
-            <Route path="/leave" element={<Leave />} />
-            <Route path="/expense" element={<Expense />} />
-            <Route path="/profile" element={<EmpProfile />} />
-
+            <Route path="/dashboard" element={<PrivateRoute element={Dashboard} />} />
+            <Route path="/employees" element={<PrivateRoute element={Employee} />} />
+            <Route path="/holiday" element={<PrivateRoute element={Holiday} />} />
+            <Route path="/policy" element={<PrivateRoute element={Policy} />} />
+            <Route path="/attendance" element={<PrivateRoute element={Attendance} />} />
+            <Route path="/notification" element={<PrivateRoute element={Notification} />} />
+            <Route path="/leave" element={<PrivateRoute element={Leave} />} />
+            <Route path="/expense" element={<PrivateRoute element={Expense} />} />
+            <Route path="/profile" element={<PrivateRoute element={EmpProfile} />} />
           </Routes>
         </Router>
       </AuthProvider>

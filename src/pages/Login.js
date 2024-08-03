@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/auth/AuthContext';
-import { Container, TextField, Button, Box, Typography, Paper, Avatar, CircularProgress } from '@mui/material';
+import {
+    Container, TextField, Button, Box, Typography, Paper, Avatar, CircularProgress, Grid, IconButton, InputAdornment
+} from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import axios from 'axios';
 import logo from '../assets/HRSmileLogo.jpeg';
+import logo1 from '../assets/NamamiInfotech.jpeg';
 
 const theme = createTheme({
     palette: {
@@ -24,6 +29,8 @@ const theme = createTheme({
 function Login() {
     const [empId, setEmpId] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
+
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false); // Loading state
     const { login } = useAuth();
@@ -54,58 +61,92 @@ function Login() {
             console.error('Login error:', error);
         }
     };
+    const handleClickShowPassword = () => setShowPassword(!showPassword);
 
     return (
         <ThemeProvider theme={theme}>
-            <Container maxWidth="sm">
-                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <Avatar sx={{ m: 1, bgcolor: '#1B3156' }}>
-                        <LockOutlinedIcon />
-                    </Avatar>
-                    <Box sx={{ mb: 2 }}>
-                        <img src={logo} alt="HRMS Logo" style={{ width: '120px', height: '120px' }} />
-                    </Box>
-                    <Typography variant="h4" align="center" style={{ color: "#6695AF" }} gutterBottom>
-                        HR SMILE Login
-                    </Typography>
-                    {error && (
-                        <Typography variant="body2" color="error" align="center">
-                            {error}
-                        </Typography>
-                    )}
-                    <form onSubmit={handleLogin} style={{ width: '100%' }}>
-                        <TextField
-                            fullWidth
-                            label="Username"
-                            margin="normal"
-                            variant="outlined"
-                            value={empId}
-                            onChange={(e) => setEmpId(e.target.value)}
-                            sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
-                        />
-                        <TextField
-                            fullWidth
-                            label="Password"
-                            type="password"
-                            margin="normal"
-                            variant="outlined"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
-                        />
-                        <Button
-                            fullWidth
-                            variant="contained"
-                            color="primary"
-                            style={{ backgroundColor: "#1B3156" }}
-                            type="submit"
-                            sx={{ mt: 3, py: 1.5 }}
-                            disabled={loading} // Disable button when loading
-                        >
-                            {loading ? <CircularProgress size={24} /> : 'Login'}
-                        </Button>
-                    </form>
-                </Box>
+            <Container maxWidth="lg">
+                <Grid container spacing={4} alignItems="center" >
+                    {/* Left side: Company logo, name, and title */}
+                    <Grid item xs={12} md={6}>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                            <img src={logo1} alt="Namami Infotech Logo" style={{ width: '150px', marginBottom: '20px' }} />
+                            <Typography variant="h4" align="center" sx={{ color: '#1B3156', fontWeight: 'bold' }}>
+                                Namami Infotech
+                            </Typography>
+                            <Typography variant="h5" align="center" sx={{ color: '#6695AF', mt: 1 }}>
+                                Concept To Creation
+                            </Typography>
+                            <Typography variant="h6" align="center" sx={{ color: '#6695AF', mt: 1 }}>
+                                Leading the Future of Technology
+                            </Typography>
+                        </Box>
+                    </Grid>
+
+                    {/* Right side: Login form and HR Smile logo */}
+                    <Grid item xs={12} md={6}>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                            <Avatar sx={{ m: 1, bgcolor: '#1B3156' }}>
+                                <LockOutlinedIcon />
+                            </Avatar>
+                            <img src={logo} alt="Namami Infotech Logo" style={{ width: '150px', marginBottom: '20px' }} />
+
+                            <Typography variant="h4" align="center" sx={{ color: '#6695AF' }} gutterBottom>
+                                HR SMILE Login
+                            </Typography>
+                            {error && (
+                                <Typography variant="body2" color="error" align="center">
+                                    {error}
+                                </Typography>
+                            )}
+                            <form onSubmit={handleLogin} style={{ width: '100%' }}>
+                                <TextField
+                                    fullWidth
+                                    label="Username"
+                                    margin="normal"
+                                    variant="outlined"
+                                    value={empId}
+                                    onChange={(e) => setEmpId(e.target.value)}
+                                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                                />
+                                <TextField
+                                    fullWidth
+                                    label="Password"
+                                    type={showPassword ? 'text' : 'password'}
+                                    margin="normal"
+                                    variant="outlined"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                                    InputProps={{
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={handleClickShowPassword}
+                                                    edge="end"
+                                                >
+                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                                <Button
+                                    fullWidth
+                                    variant="contained"
+                                    color="primary"
+                                    style={{ backgroundColor: "#1B3156" }}
+                                    type="submit"
+                                    sx={{ mt: 3, py: 1.5 }}
+                                    disabled={loading} // Disable button when loading
+                                >
+                                    {loading ? <CircularProgress size={24} /> : 'Login'}
+                                </Button>
+                            </form>
+                        </Box>
+                    </Grid>
+                </Grid>
             </Container>
         </ThemeProvider>
     );

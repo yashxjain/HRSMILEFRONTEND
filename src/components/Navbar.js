@@ -13,7 +13,7 @@ function Navbar() {
     const [anchorEl, setAnchorEl] = useState(null);
     const [mobileOpen, setMobileOpen] = useState(false);
     const { user, logout } = useAuth();
-    const location = useLocation(); // Get current location
+    const location = useLocation();
 
     const navigate = useNavigate();
     const theme = useTheme();
@@ -24,11 +24,11 @@ function Navbar() {
     };
 
     const handleClose = () => {
-        navigate("/profile")
+        navigate("/profile");
     };
 
     const handleLogout = () => {
-        logout(); // Update Auth Context
+        logout();
         navigate('/');
     };
 
@@ -78,7 +78,7 @@ function Navbar() {
 
     return (
         <>
-            <AppBar position="static" sx={{ bgcolor: '#1B3156' }} style={{ borderRadius: "20px" }}>
+            <AppBar position="sticky" sx={{ bgcolor: '#1B3156', top: 0 }} style={{ borderRadius: "20px" }}>
                 <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         {isMobile && (

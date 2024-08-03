@@ -22,7 +22,16 @@ function Sidebar({ mobileOpen, onDrawerToggle }) {
     ];
 
     const drawer = (
-        <Box sx={{ width: 240, display: 'flex', flexDirection: 'column', height: '100vh', bgcolor: '#6695AF' }}>
+        <Box
+            sx={{
+                width: 240,
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100vh',
+                bgcolor: '#6695AF',
+                overflowY: 'auto', // Allow internal scrolling
+            }}
+        >
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 2 }}>
                 <img src={HRSmileLogo} alt="HRMS Logo" style={{ width: '100px', marginBottom: '20px' }} />
             </Box>
@@ -41,7 +50,7 @@ function Sidebar({ mobileOpen, onDrawerToggle }) {
                                 color: 'white',
                             },
                             transition: 'background-color 0.3s ease, color 0.3s ease',
-                            borderRadius: '10px', // Smooth color transitions
+                            borderRadius: '10px',
                         }}
                         onClick={isMobile ? onDrawerToggle : null}
                     >
@@ -66,9 +75,9 @@ function Sidebar({ mobileOpen, onDrawerToggle }) {
                         '& .MuiDrawer-paper': {
                             boxSizing: 'border-box',
                             width: 240,
-                            zIndex: theme.zIndex.appBar + 1, // Ensure Drawer appears above AppBar
-                            backgroundColor: '#1B3156', // Background color for mobile drawer
-                            transition: 'transform 0.3s ease', // Smooth drawer transition
+                            zIndex: theme.zIndex.appBar + 1,
+                            backgroundColor: '#1B3156',
+                            transition: 'transform 0.3s ease',
                         },
                     }}
                 >
@@ -82,8 +91,8 @@ function Sidebar({ mobileOpen, onDrawerToggle }) {
                     '& .MuiDrawer-paper': {
                         boxSizing: 'border-box',
                         width: 240,
-                        backgroundColor: '#1B3156', // Background color for permanent drawer
-                        transition: 'transform 0.3s ease', // Smooth drawer transition
+                        backgroundColor: '#1B3156',
+                        transition: 'transform 0.3s ease',
                     },
                 }}
                 open

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/auth/AuthContext';
 import {
-    Container, TextField, Button, Box, Typography, Paper, Avatar, CircularProgress, Grid, IconButton, InputAdornment
+    Container, TextField, Button, Box, Typography, Avatar, CircularProgress, Grid, IconButton, InputAdornment
 } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
@@ -66,18 +66,55 @@ function Login() {
     return (
         <ThemeProvider theme={theme}>
             <Container maxWidth="lg">
-                <Grid container spacing={4} alignItems="center" >
+                <Grid container spacing={4} alignItems="center" sx={{ textAlign: { xs: 'center', md: 'left' } }}>
                     {/* Left side: Company logo, name, and title */}
                     <Grid item xs={12} md={6}>
-                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                            <img src={logo1} alt="Namami Infotech Logo" style={{ width: '150px', marginBottom: '20px' }} />
-                            <Typography variant="h4" align="center" sx={{ color: '#1B3156', fontWeight: 'bold' }}>
+                        <Box sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            textAlign: { xs: 'center', md: 'left' }
+                        }}>
+                            <img
+                                src={logo1}
+                                alt="Namami Infotech Logo"
+                                style={{
+                                    width: '100px', // Adjust size for mobile
+                                    marginBottom: '20px',
+                                    display: { xs: 'block', md: 'none' } // Hide on larger screens
+                                }}
+                            />
+                            <Typography
+                                variant="h4"
+                                align="center"
+                                sx={{
+                                    color: '#1B3156',
+                                    fontWeight: 'bold',
+                                    fontSize: { xs: '1.5rem', md: '2rem' } // Adjust font size for mobile
+                                }}
+                            >
                                 Namami Infotech
                             </Typography>
-                            <Typography variant="h5" align="center" sx={{ color: '#6695AF', mt: 1 }}>
+                            <Typography
+                                variant="h5"
+                                align="center"
+                                sx={{
+                                    color: '#6695AF',
+                                    mt: 1,
+                                    fontSize: { xs: '1rem', md: '1.5rem' } // Adjust font size for mobile
+                                }}
+                            >
                                 Concept To Creation
                             </Typography>
-                            <Typography variant="h6" align="center" sx={{ color: '#6695AF', mt: 1 }}>
+                            <Typography
+                                variant="h6"
+                                align="center"
+                                sx={{
+                                    color: '#6695AF',
+                                    mt: 1,
+                                    fontSize: { xs: '0.875rem', md: '1.25rem' } // Adjust font size for mobile
+                                }}
+                            >
                                 Leading the Future of Technology
                             </Typography>
                         </Box>
@@ -89,7 +126,14 @@ function Login() {
                             <Avatar sx={{ m: 1, bgcolor: '#1B3156' }}>
                                 <LockOutlinedIcon />
                             </Avatar>
-                            <img src={logo} alt="Namami Infotech Logo" style={{ width: '150px', marginBottom: '20px' }} />
+                            <img
+                                src={logo}
+                                alt="HR Smile Logo"
+                                style={{
+                                    width: '150px',
+                                    marginBottom: '20px'
+                                }}
+                            />
 
                             <Typography variant="h4" align="center" sx={{ color: '#6695AF' }} gutterBottom>
                                 HR SMILE Login
@@ -141,7 +185,7 @@ function Login() {
                                     sx={{
                                         mt: 3,
                                         py: 1.5,
-                                        mb: { xs: 2, md: 0 } // Adds 2 units of margin-bottom on extra small screens, 0 on medium and above
+                                        mb: { xs: 2, md: 0 } // Adds padding-bottom for mobile view
                                     }}
                                     disabled={loading} // Disable button when loading
                                 >

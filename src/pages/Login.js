@@ -138,7 +138,11 @@ function Login() {
                                     color="primary"
                                     style={{ backgroundColor: "#1B3156" }}
                                     type="submit"
-                                    sx={{ mt: 3, py: 1.5 }}
+                                    sx={{
+                                        mt: 3,
+                                        py: 1.5,
+                                        mb: { xs: 2, md: 0 } // Adds 2 units of margin-bottom on extra small screens, 0 on medium and above
+                                    }}
                                     disabled={loading} // Disable button when loading
                                 >
                                     {loading ? <CircularProgress size={24} /> : 'Login'}

@@ -5,66 +5,59 @@ import axios from 'axios';
 function AddPolicyDialog({ open, onClose, onPolicyAdded }) {
     const [policyName, setPolicyName] = useState('');
     const [policyDescription, setPolicyDescription] = useState('');
-    const [policyFile, setPolicyFile] = useState(null); // State to store the selected file
+    const [policyURL, setPolicyURL] = useState(''); // State to store the policy URL
+    const [pdfBase64, setPdfBase64] = useState(''); // State to store the base64 encoded PDF
 
     const handleFileChange = (e) => {
-        setPolicyFile(e.target.files[0]);
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPdfBase64(reader.result.split(',')[1]); // Remove the base64 prefix
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!policyFile) {
-            alert('Please select a PDF file.');
+        if (!pdfBase64 || !policyURL) {
+            alert('Please provide a PDF file and a policy URL.');
             return;
         }
 
         try {
-            // Prepare the form data
-            const formData = new FormData();
-            formData.append('file', policyFile);
-            formData.append('PolicyName', policyName);
-            formData.append('PolicyDescription', policyDescription);
-
-            // Upload the file to the server
             const response = await axios.post(
-                'https://namami-infotech.com/HR-SMILE-BACKEND/src/policy/upload_policy.php', // Your backend endpoint
-                formData,
+                'https://namami-infotech.com/HR-SMILE-BACKEND/src/policy/add_policy.php',
                 {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
+                    PolicyName: policyName,
+                    PolicyDescription: policyDescription,
+                    PolicyURL: policyURL,
+                    PolicyPDF: pdfBase64
                 }
             );
 
             if (response.data.success) {
-                const policyURL = response.data.fileUrl; // URL returned from the server after upload
-                // Save policy details with the file URL
-                await axios.post(
-                    'https://namami-infotech.com/HR-SMILE-BACKEND/src/policy/add_policy.php',
-                    {
-                        PolicyName: policyName,
-                        PolicyDescription: policyDescription,
-                        PolicyURL: policyURL
-                    }
-                );
                 onPolicyAdded(); // Refresh the list
                 setPolicyName('');
                 setPolicyDescription('');
-                setPolicyFile(null);
+                setPolicyURL('');
+                setPdfBase64('');
                 onClose();
             } else {
-                console.error('Failed to upload file');
+                console.error('Failed to add policy:', response.data.message);
             }
         } catch (error) {
             console.error('Error adding policy:', error);
         }
     };
 
+
     return (
         <Dialog open={open} onClose={onClose}>
-            <DialogTitle style={{ backgroundColor: "#1B3156" }}>Add Policy</DialogTitle>
+            <DialogTitle style={{ backgroundColor: "#1B3156", color: "white" }}>Add Policy</DialogTitle>
             <DialogContent>
-                <form onSubmit={handleSubmit} encType="multipart/form-data">
+                <form onSubmit={handleSubmit}>
                     <TextField
                         fullWidth
                         label="Policy Name"
@@ -83,8 +76,16 @@ function AddPolicyDialog({ open, onClose, onPolicyAdded }) {
                         value={policyDescription}
                         onChange={(e) => setPolicyDescription(e.target.value)}
                     />
+                    <TextField
+                        fullWidth
+                        label="Policy URL"
+                        margin="normal"
+                        variant="outlined"
+                        value={policyURL}
+                        onChange={(e) => setPolicyURL(e.target.value)}
+                    />
                     <input
-                        accept="image/*,application/pdf"
+                        accept="application/pdf"
                         type="file"
                         onChange={handleFileChange}
                         style={{ marginTop: '16px', marginBottom: '16px' }}

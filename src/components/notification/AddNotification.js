@@ -7,10 +7,17 @@ function AddNotification({ open, onClose, onNotificationAdded }) {
     const [body, setBody] = useState('');
     const [url, setUrl] = useState('');
     const [pushTime, setPushTime] = useState('');
-    const [image, setImage] = useState(null);
+    const [base64Image, setBase64Image] = useState(null);
 
     const handleFileChange = (event) => {
-        setImage(event.target.files[0]);
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setBase64Image(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
     const handleSubmit = async () => {
@@ -20,8 +27,7 @@ function AddNotification({ open, onClose, onNotificationAdded }) {
             formData.append('body', body);
             formData.append('url', url);
             formData.append('push_time', pushTime);
-            formData.append('image', image);
-
+            formData.append('image', base64Image); // Use the base64 image string
 
             const response = await axios.post(
                 'https://namami-infotech.com/HR-SMILE-BACKEND/src/notification/add_notification.php',

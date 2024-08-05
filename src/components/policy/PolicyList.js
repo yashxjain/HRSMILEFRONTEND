@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, TablePagination } from '@mui/material';
-import AddPolicy from './AddPolicy';
+import AddPolicyDialog from './AddPolicy';
 
 function PolicyList() {
     const [policies, setPolicies] = useState([]);
@@ -15,7 +15,7 @@ function PolicyList() {
             if (response.data.success) {
                 setPolicies(response.data.data);
             } else {
-                console.error('Failed to fetch policies');
+                console.error('Failed to fetch policies:', response.data.message);
             }
         } catch (err) {
             console.error('Error fetching policies:', err);
@@ -26,10 +26,9 @@ function PolicyList() {
         try {
             const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/policy/disable_policy.php', { PolicyId: policyId, action });
             if (response.data.success) {
-                console.log(`Policy ${action}d successfully`);
                 fetchPolicies(); // Refresh the list
             } else {
-                console.error(`Failed to ${action} policy`);
+                console.error(`Failed to ${action} policy:`, response.data.message);
             }
         } catch (err) {
             console.error(`Error ${action}ing policy:`, err);
@@ -53,6 +52,30 @@ function PolicyList() {
         setPage(0);
     };
 
+    const handleViewPDF = (pdfBase64) => {
+        try {
+            const byteCharacters = atob(pdfBase64); // Decode base64
+            const byteArrays = [];
+
+            for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+                const slice = byteCharacters.slice(offset, offset + 512);
+                const byteNumbers = new Array(slice.length);
+                for (let i = 0; i < slice.length; i++) {
+                    byteNumbers[i] = slice.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                byteArrays.push(byteArray);
+            }
+
+            const blob = new Blob(byteArrays, { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+
+            window.open(url, '_blank');
+        } catch (error) {
+            console.error('Error opening PDF:', error);
+        }
+    };
+
     return (
         <div>
             <Button variant="contained" color="primary" onClick={handleOpenDialog} sx={{ mb: 2 }} style={{ backgroundColor: "#1B3156" }}>
@@ -65,6 +88,7 @@ function PolicyList() {
                             <TableCell style={{ color: "white" }}>Policy Name</TableCell>
                             <TableCell style={{ color: "white" }}>Description</TableCell>
                             <TableCell style={{ color: "white" }}>URL</TableCell>
+                            <TableCell style={{ color: "white" }}>View</TableCell>
                             <TableCell style={{ color: "white" }}>Action</TableCell>
                         </TableRow>
                     </TableHead>
@@ -73,7 +97,21 @@ function PolicyList() {
                             <TableRow key={policy.PolicyId}>
                                 <TableCell>{policy.PolicyName}</TableCell>
                                 <TableCell>{policy.PolicyDescription}</TableCell>
-                                <TableCell><a href={policy.PolicyURL} style={{ textDecoration: "none", text: "bold", color: "blue" }}>{policy.PolicyName}</a></TableCell>
+                                <TableCell>
+                                    <a href={policy.PolicyURL} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "blue" }}>
+                                        {policy.PolicyName}
+                                    </a>
+                                </TableCell>
+                                <TableCell>
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={() => handleViewPDF(policy.PolicyPDF)}
+                                    >
+                                        View PDF
+                                    </Button>
+
+                                </TableCell>
                                 <TableCell>
                                     {policy.IsActive ? (
                                         <Button
@@ -107,7 +145,7 @@ function PolicyList() {
                 onRowsPerPageChange={handleChangeRowsPerPage}
                 rowsPerPageOptions={[5, 10, 25]}
             />
-            <AddPolicy open={dialogOpen} onClose={handleCloseDialog} onPolicyAdded={handlePolicyAdded} />
+            <AddPolicyDialog open={dialogOpen} onClose={handleCloseDialog} onPolicyAdded={handlePolicyAdded} />
         </div>
     );
 }

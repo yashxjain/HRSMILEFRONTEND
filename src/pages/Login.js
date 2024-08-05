@@ -79,44 +79,14 @@ function Login() {
                                 src={logo1}
                                 alt="Namami Infotech Logo"
                                 style={{
-                                    width: '100px', // Adjust size for mobile
+                                    width: '200px', // Adjust size for mobile
                                     marginBottom: '20px',
                                     display: { xs: 'block', md: 'none' } // Hide on larger screens
                                 }}
                             />
-                            <Typography
-                                variant="h4"
-                                align="center"
-                                sx={{
-                                    color: '#1B3156',
-                                    fontWeight: 'bold',
-                                    fontSize: { xs: '1.5rem', md: '2rem' } // Adjust font size for mobile
-                                }}
-                            >
-                                Namami Infotech
-                            </Typography>
-                            <Typography
-                                variant="h5"
-                                align="center"
-                                sx={{
-                                    color: '#6695AF',
-                                    mt: 1,
-                                    fontSize: { xs: '1rem', md: '1.5rem' } // Adjust font size for mobile
-                                }}
-                            >
-                                Concept To Creation
-                            </Typography>
-                            <Typography
-                                variant="h6"
-                                align="center"
-                                sx={{
-                                    color: '#6695AF',
-                                    mt: 1,
-                                    fontSize: { xs: '0.875rem', md: '1.25rem' } // Adjust font size for mobile
-                                }}
-                            >
-                                Leading the Future of Technology
-                            </Typography>
+
+
+                          
                         </Box>
                     </Grid>
 

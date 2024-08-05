@@ -8,7 +8,7 @@ import { useAuth } from '../auth/AuthContext';
 function ApplyExpense({ open, onClose, onExpenseApplied }) {
     const { user } = useAuth();
     const [expenseEntries, setExpenseEntries] = useState([
-        { expenseDate: '', expenseType: '', expenseAmount: '', image: null }
+        { empId: user.emp_id, expenseDate: '', expenseType: '', expenseAmount: '', image: null }
     ]);
 
     const handleChange = (index, field, value) => {
@@ -18,12 +18,24 @@ function ApplyExpense({ open, onClose, onExpenseApplied }) {
     };
 
     const handleAddEntry = () => {
-        setExpenseEntries([...expenseEntries, { expenseDate: '', expenseType: '', expenseAmount: '', image: null }]);
+        setExpenseEntries([...expenseEntries, { empId: user.emp_id, expenseDate: '', expenseType: '', expenseAmount: '', image: null }]);
     };
 
     const handleRemoveEntry = (index) => {
         const newEntries = expenseEntries.filter((_, i) => i !== index);
         setExpenseEntries(newEntries);
+    };
+
+    const handleImageChange = (index, file) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            const newEntries = [...expenseEntries];
+            newEntries[index].image = reader.result;
+            setExpenseEntries(newEntries);
+        };
+        if (file) {
+            reader.readAsDataURL(file);
+        }
     };
 
     const handleSubmit = async () => {
@@ -34,7 +46,6 @@ function ApplyExpense({ open, onClose, onExpenseApplied }) {
 
         try {
             const payload = {
-                empId: user.emp_id,
                 expenses: expenseEntries
             };
             const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/expense/apply_expense.php', payload);
@@ -81,8 +92,14 @@ function ApplyExpense({ open, onClose, onExpenseApplied }) {
                             fullWidth
                             margin="normal"
                         />
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleImageChange(index, e.target.files[0])}
+                            style={{ marginTop: 10 }}
+                        />
                         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 10 }}>
-                            <IconButton onClick={() => handleAddEntry()} color="primary">
+                            <IconButton onClick={handleAddEntry} color="primary">
                                 <AddCircleOutlineIcon />
                             </IconButton>
                             {expenseEntries.length > 1 && (

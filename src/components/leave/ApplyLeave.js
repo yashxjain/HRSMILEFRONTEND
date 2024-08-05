@@ -6,7 +6,7 @@ import { useAuth } from '../auth/AuthContext';
 function ApplyLeave({ open, onClose, onLeaveApplied }) {
     const { user } = useAuth();
     const [leaveDetails, setLeaveDetails] = useState({
-        EmpId: user?.empId || '', // Set default to an empty string if user is null
+        EmpId: user?.emp_id || '', // Set default to an empty string if user is null
         startDate: '',
         endDate: '',
         reason: '',
@@ -28,7 +28,7 @@ function ApplyLeave({ open, onClose, onLeaveApplied }) {
 
     // Handle form submission
     const handleSubmit = async () => {
-        if (!user || !user.empId) {
+        if (!user || !user.emp_id) {
             console.error('User is not authenticated');
             return;
         }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, TableFooter, TablePagination } from '@mui/material';
+import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, TableFooter, TablePagination, Button } from '@mui/material';
 import axios from 'axios';
 import { useAuth } from '../auth/AuthContext';
 
@@ -22,7 +22,6 @@ function ViewExpense() {
     useEffect(() => {
         const fetchExpenses = async () => {
             try {
-                // Ensure user is not null before making the request
                 if (!user || !user.emp_id) {
                     setError('User is not authenticated');
                     setLoading(false);
@@ -58,6 +57,35 @@ function ViewExpense() {
         setPage(0);
     };
 
+    const handleViewImage = (base64Data) => {
+        // Ensure base64Data includes the correct data URL scheme
+        if (!base64Data.startsWith('data:image/')) {
+            base64Data = `data:image/png;base64,${base64Data}`;
+        }
+
+        // Create a new Blob from the base64 string
+        const byteString = atob(base64Data.split(',')[1]);
+        const mimeString = base64Data.split(',')[0].split(':')[1].split(';')[0];
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+
+        for (let i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i);
+        }
+
+        const blob = new Blob([ab], { type: mimeString });
+
+        // Create a URL for the Blob and open it in a new tab
+        const blobUrl = URL.createObjectURL(blob);
+        window.open(blobUrl, '_blank');
+
+        // Optional: Revoke the object URL after some time to free memory
+        setTimeout(() => {
+            URL.revokeObjectURL(blobUrl);
+        }, 1000);
+    };
+
+
     if (loading) return <CircularProgress />;
     if (error) return <Typography color="error">{error}</Typography>;
 
@@ -71,6 +99,7 @@ function ViewExpense() {
                             <TableCell>Expense Date</TableCell>
                             <TableCell>Expense Type</TableCell>
                             <TableCell>Expense Amount</TableCell>
+                            <TableCell>Image</TableCell> {/* New column for the "View" button */}
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -81,7 +110,19 @@ function ViewExpense() {
                                     <TableCell>{formatDate(expense.expenseDate)}</TableCell>
                                     <TableCell>{expense.expenseType}</TableCell>
                                     <TableCell>{expense.expenseAmount}</TableCell>
-                                    {/* <TableCell>{expense.image ? <a href={expense.image} target="_blank" rel="noopener noreferrer">View</a> : 'No Image'}</TableCell> */}
+                                    <TableCell>
+                                        {expense.image ? (
+                                            <Button
+                                                variant="contained"
+                                                color="primary"
+                                                onClick={() => handleViewImage(expense.image)}
+                                            >
+                                                View
+                                            </Button>
+                                        ) : (
+                                            'No Image'
+                                        )}
+                                    </TableCell>
                                 </TableRow>
                             ))}
                     </TableBody>

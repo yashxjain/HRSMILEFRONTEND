@@ -9,7 +9,6 @@ function ViewNotifications() {
     const [error, setError] = useState('');
     const [dialogOpen, setDialogOpen] = useState(false);
 
-
     const fetchNotifications = async () => {
         try {
             const response = await axios.get('https://namami-infotech.com/HR-SMILE-BACKEND/src/notification/get_notification.php');
@@ -21,7 +20,9 @@ function ViewNotifications() {
         }
     };
 
-    fetchNotifications();
+    useEffect(() => {
+        fetchNotifications();
+    }, []); // Empty dependency array means this effect runs once on mount
 
     const handleOpenDialog = () => setDialogOpen(true);
     const handleCloseDialog = () => setDialogOpen(false);
@@ -63,8 +64,7 @@ function ViewNotifications() {
                     </TableBody>
                 </Table>
             </TableContainer>
-            <AddNotification open={dialogOpen} onClose={handleCloseDialog} onPolicyAdded={onNotificationAdded} />
-
+            <AddNotification open={dialogOpen} onClose={handleCloseDialog} onNotificationAdded={onNotificationAdded} />
         </div>
     );
 }

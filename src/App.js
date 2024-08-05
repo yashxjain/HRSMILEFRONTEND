@@ -15,6 +15,7 @@ import Leave from './pages/Leave';
 import Expense from './pages/Expense';
 import EmpProfile from './pages/EmpProfile';
 import PrivateRoute from './components/auth/PrivateRoute';
+import Travel from './pages/Travel';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
             <Route path="/leave" element={<PrivateRoute element={Leave} />} />
             <Route path="/expense" element={<PrivateRoute element={Expense} />} />
             <Route path="/profile" element={<PrivateRoute element={EmpProfile} />} />
+            <Route path="/travel" element={<PrivateRoute element={Travel} />} />
           </Routes>
         </Router>
       </AuthProvider>

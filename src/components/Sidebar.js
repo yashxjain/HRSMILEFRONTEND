@@ -19,10 +19,26 @@ function Sidebar({ mobileOpen, onDrawerToggle }) {
         { path: '/notification', name: 'Notification' },
         { path: '/leave', name: 'Leave' },
         { path: '/expense', name: 'Expense' },
+        { path: '/travel', name: 'Travel' },
     ];
 
     const drawer = (
-        <Box sx={{ width: 240, display: 'flex', flexDirection: 'column', height: '100vh', bgcolor: '#6695AF' }}>
+        <Box
+            sx={{
+                width: 240,
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100vh',
+                bgcolor: '#6695AF',
+                overflowY: 'auto', // Enable vertical scrolling
+                overflowX: 'hidden', // Hide horizontal scrollbar
+                '&::-webkit-scrollbar': {
+                    display: 'none', // Hide scrollbar for WebKit browsers (e.g., Chrome, Safari)
+                },
+                scrollbarWidth: 'none', // Hide scrollbar for Firefox
+                msOverflowStyle: 'none', // Hide scrollbar for IE and Edge
+            }}
+        >
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 2 }}>
                 <img src={HRSmileLogo} alt="HRMS Logo" style={{ width: '100px', marginBottom: '20px' }} />
             </Box>
@@ -68,7 +84,13 @@ function Sidebar({ mobileOpen, onDrawerToggle }) {
                             width: 240,
                             zIndex: theme.zIndex.appBar + 1, // Ensure Drawer appears above AppBar
                             backgroundColor: '#1B3156', // Background color for mobile drawer
-                            transition: 'transform 0.3s ease', // Smooth drawer transition
+                            overflowY: 'auto', // Enable vertical scrolling
+                            overflowX: 'hidden', // Hide horizontal scrollbar
+                            '&::-webkit-scrollbar': {
+                                display: 'none', // Hide scrollbar for WebKit browsers (e.g., Chrome, Safari)
+                            },
+                            scrollbarWidth: 'none', // Hide scrollbar for Firefox
+                            msOverflowStyle: 'none', // Hide scrollbar for IE and Edge
                         },
                     }}
                 >
@@ -83,7 +105,13 @@ function Sidebar({ mobileOpen, onDrawerToggle }) {
                         boxSizing: 'border-box',
                         width: 240,
                         backgroundColor: '#1B3156', // Background color for permanent drawer
-                        transition: 'transform 0.3s ease', // Smooth drawer transition
+                        overflowY: 'auto', // Enable vertical scrolling
+                        overflowX: 'hidden', // Hide horizontal scrollbar
+                        '&::-webkit-scrollbar': {
+                            display: 'none', // Hide scrollbar for WebKit browsers (e.g., Chrome, Safari)
+                        },
+                        scrollbarWidth: 'none', // Hide scrollbar for Firefox
+                        msOverflowStyle: 'none', // Hide scrollbar for IE and Edge
                     },
                 }}
                 open

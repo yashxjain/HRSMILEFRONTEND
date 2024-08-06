@@ -67,12 +67,12 @@ function ViewLeave() {
             <br />
             <TableContainer component={Paper} style={{ overflowX: 'auto' }}>
                 <Table >
-                    <TableHead>
+                    <TableHead style={{ backgroundColor: "#1B3156" }}>
                         <TableRow>
-                            <TableCell> Date</TableCell>
+                            <TableCell style={{ color: "white" }}> Date</TableCell>
 
-                            <TableCell>Reason</TableCell>
-                            <TableCell>Status</TableCell>
+                            <TableCell style={{ color: "white" }}>Reason</TableCell>
+                            <TableCell style={{ color: "white" }}>Status</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>

@@ -4,15 +4,16 @@ import { Drawer, List, ListItem, ListItemText, Box, Slide } from '@mui/material'
 import HRSmileLogo from '../assets/HRSmileLogo.jpeg';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
+import { useAuth } from './auth/AuthContext'; 
 
 function Sidebar({ mobileOpen, onDrawerToggle }) {
     const location = useLocation();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const { user } = useAuth(); // Get the current user from the AuthContext
 
     const routes = [
         { path: '/dashboard', name: 'Dashboard' },
-        { path: '/employees', name: 'Employees' },
         { path: '/holiday', name: 'Holiday' },
         { path: '/policy', name: 'Policy' },
         { path: '/attendance', name: 'Attendance' },
@@ -22,6 +23,11 @@ function Sidebar({ mobileOpen, onDrawerToggle }) {
         { path: '/travel', name: 'Travel' },
     ];
 
+    // Conditionally include the "Employees" tab based on the user's role
+    if (user && user.role === 'HR') {
+        routes.splice(1, 0, { path: '/employees', name: 'Employees' }); // Insert "Employees" at the desired index
+    }
+
     const drawer = (
         <Box
             sx={{
@@ -30,13 +36,13 @@ function Sidebar({ mobileOpen, onDrawerToggle }) {
                 flexDirection: 'column',
                 height: '100vh',
                 bgcolor: '#6695AF',
-                overflowY: 'auto', // Enable vertical scrolling
-                overflowX: 'hidden', // Hide horizontal scrollbar
+                overflowY: 'auto',
+                overflowX: 'hidden',
                 '&::-webkit-scrollbar': {
-                    display: 'none', // Hide scrollbar for WebKit browsers (e.g., Chrome, Safari)
+                    display: 'none',
                 },
-                scrollbarWidth: 'none', // Hide scrollbar for Firefox
-                msOverflowStyle: 'none', // Hide scrollbar for IE and Edge
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none',
             }}
         >
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 2 }}>
@@ -57,7 +63,7 @@ function Sidebar({ mobileOpen, onDrawerToggle }) {
                                 color: 'white',
                             },
                             transition: 'background-color 0.3s ease, color 0.3s ease',
-                            borderRadius: '10px', // Smooth color transitions
+                            borderRadius: '10px',
                         }}
                         onClick={isMobile ? onDrawerToggle : null}
                     >
@@ -76,21 +82,21 @@ function Sidebar({ mobileOpen, onDrawerToggle }) {
                     open={mobileOpen}
                     onClose={onDrawerToggle}
                     ModalProps={{
-                        keepMounted: true, // Better open performance on mobile.
+                        keepMounted: true,
                     }}
                     sx={{
                         '& .MuiDrawer-paper': {
                             boxSizing: 'border-box',
                             width: 240,
-                            zIndex: theme.zIndex.appBar + 1, // Ensure Drawer appears above AppBar
-                            backgroundColor: '#1B3156', // Background color for mobile drawer
-                            overflowY: 'auto', // Enable vertical scrolling
-                            overflowX: 'hidden', // Hide horizontal scrollbar
+                            zIndex: theme.zIndex.appBar + 1,
+                            backgroundColor: '#1B3156',
+                            overflowY: 'auto',
+                            overflowX: 'hidden',
                             '&::-webkit-scrollbar': {
-                                display: 'none', // Hide scrollbar for WebKit browsers (e.g., Chrome, Safari)
+                                display: 'none',
                             },
-                            scrollbarWidth: 'none', // Hide scrollbar for Firefox
-                            msOverflowStyle: 'none', // Hide scrollbar for IE and Edge
+                            scrollbarWidth: 'none',
+                            msOverflowStyle: 'none',
                         },
                     }}
                 >
@@ -104,14 +110,14 @@ function Sidebar({ mobileOpen, onDrawerToggle }) {
                     '& .MuiDrawer-paper': {
                         boxSizing: 'border-box',
                         width: 240,
-                        backgroundColor: '#1B3156', // Background color for permanent drawer
-                        overflowY: 'auto', // Enable vertical scrolling
-                        overflowX: 'hidden', // Hide horizontal scrollbar
+                        backgroundColor: '#1B3156',
+                        overflowY: 'auto',
+                        overflowX: 'hidden',
                         '&::-webkit-scrollbar': {
-                            display: 'none', // Hide scrollbar for WebKit browsers (e.g., Chrome, Safari)
+                            display: 'none',
                         },
-                        scrollbarWidth: 'none', // Hide scrollbar for Firefox
-                        msOverflowStyle: 'none', // Hide scrollbar for IE and Edge
+                        scrollbarWidth: 'none',
+                        msOverflowStyle: 'none',
                     },
                 }}
                 open

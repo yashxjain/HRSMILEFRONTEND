@@ -126,15 +126,17 @@ function EmployeeList() {
         }
     };
 
-    const handleDisableEmployee = async () => {
-        if (!selectedEmployee) {
-            console.error('No employee selected');
+    const handleDisableEmployee = async (employee) => {
+        if (!employee || !employee.EmpId) {
+            console.error('Please provide both Employee ID and action');
             return;
         }
         try {
-            const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/employee/disable_employee.php', { EmpId: selectedEmployee.EmpId });
+            const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/employee/disable_employee.php', {
+                EmpId: employee.EmpId,
+                action: 'disable'
+            });
             if (response.data.success) {
-                handleCloseDetail();
                 fetchEmployees(); // Re-fetch employees after disable
             } else {
                 console.error('Error:', response.data.message);
@@ -144,15 +146,17 @@ function EmployeeList() {
         }
     };
 
-    const handleEnableEmployee = async () => {
-        if (!selectedEmployee) {
-            console.error('No employee selected');
+    const handleEnableEmployee = async (employee) => {
+        if (!employee || !employee.EmpId) {
+            console.error('Please provide both Employee ID and action');
             return;
         }
         try {
-            const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/employee/enable_employee.php', { EmpId: selectedEmployee.EmpId });
+            const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/employee/disable_employee.php', {
+                EmpId: employee.EmpId,
+                action: 'enable'
+            });
             if (response.data.success) {
-                handleCloseDetail();
                 fetchEmployees(); // Re-fetch employees after enable
             } else {
                 console.error('Error:', response.data.message);
@@ -161,6 +165,8 @@ function EmployeeList() {
             console.error('Error:', error);
         }
     };
+
+
 
     const filteredEmployees = employees.filter(employee =>
         employee.Name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -222,19 +228,17 @@ function EmployeeList() {
                                         <IconButton onClick={(e) => { e.stopPropagation(); handleOpenForm('edit', employee); }}>
                                             <EditIcon />
                                         </IconButton>
-                                        <IconButton onClick={(e) => { e.stopPropagation(); handleDisableEmployee(); }}>
-                                            <DeleteIcon />
-                                        </IconButton>
                                         {employee.IsActive ? (
-                                            <IconButton onClick={(e) => { e.stopPropagation(); handleDisableEmployee(); }}>
+                                            <IconButton onClick={(e) => { e.stopPropagation(); handleDisableEmployee(employee); }}>
                                                 <CancelIcon />
                                             </IconButton>
                                         ) : (
-                                            <IconButton onClick={(e) => { e.stopPropagation(); handleEnableEmployee(); }}>
+                                            <IconButton onClick={(e) => { e.stopPropagation(); handleEnableEmployee(employee); }}>
                                                 <CheckIcon />
                                             </IconButton>
                                         )}
                                     </TableCell>
+
                                 </TableRow>
                             ))}
                         </TableBody>
@@ -260,7 +264,7 @@ function EmployeeList() {
                             <Typography variant="body1">Employee ID: {selectedEmployee.EmpId}</Typography>
                             <Typography variant="body1">Mobile: {selectedEmployee.Mobile}</Typography>
                             <Typography variant="body1">Email: {selectedEmployee.EmailId}</Typography>
-                            <Typography variant="body1">Role ID: {selectedEmployee.RoleId}</Typography>
+                            <Typography variant="body1">Role: {selectedEmployee.Role}</Typography>
                             <Typography variant="body1">Status: {selectedEmployee.IsActive ? 'Active' : 'Inactive'}</Typography>
                         </div>
                     )}

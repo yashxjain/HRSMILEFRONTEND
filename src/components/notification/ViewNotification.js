@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, CircularProgress, Button } from '@mui/material';
 import axios from 'axios';
 import AddNotification from './AddNotification';
-
+import { useAuth } from '../auth/AuthContext';
 function ViewNotifications() {
     const [notifications, setNotifications] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [dialogOpen, setDialogOpen] = useState(false);
-
+    const { user } = useAuth()
     const fetchNotifications = async () => {
         try {
             const response = await axios.get('https://namami-infotech.com/HR-SMILE-BACKEND/src/notification/get_notification.php');
@@ -33,18 +33,19 @@ function ViewNotifications() {
 
     return (
         <div>
-            <Button variant="contained" color="primary" onClick={handleOpenDialog} sx={{ mb: 2 }} style={{ backgroundColor: "#1B3156" }}>
+            {user && user.role == "HR" ? <Button variant="contained" color="primary" onClick={handleOpenDialog} sx={{ mb: 2 }} style={{ backgroundColor: "#1B3156" }}>
                 Add Notification
-            </Button>
+            </Button> : null}
+
             <TableContainer component={Paper}>
                 <Table>
-                    <TableHead>
+                    <TableHead style={{ backgroundColor: "#1B3156" }}>
                         <TableRow>
-                            <TableCell>Subject</TableCell>
-                            <TableCell>Body</TableCell>
-                            <TableCell>URL</TableCell>
-                            <TableCell>Push Time</TableCell>
-                            <TableCell>Image</TableCell>
+                            <TableCell style={{ color: "white" }}>Subject</TableCell>
+                            <TableCell style={{ color: "white" }}>Body</TableCell>
+                            <TableCell style={{ color: "white" }}>URL</TableCell>
+                            <TableCell style={{ color: "white" }}>Push Time</TableCell>
+                            <TableCell style={{ color: "white" }}>Image</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>

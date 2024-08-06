@@ -10,8 +10,9 @@ import {
     Paper,
     TablePagination,
     Typography,
-    Box,
-    useMediaQuery
+    useMediaQuery,
+    Alert,
+    Button
 } from '@mui/material';
 import { useAuth } from '../auth/AuthContext';
 
@@ -33,21 +34,25 @@ const formatTime = (dateString) => {
     return `${formattedHours}:${formattedMinutes} ${ampm}`;
 };
 
+const generateMapUrl = (geoLocation) => `https://www.google.com/maps/@${geoLocation},15z?entry=ttu`;
+
 function AttendanceList() {
     const { user } = useAuth();
     const [activities, setActivities] = useState([]);
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [error, setError] = useState(null);
     const isMobile = useMediaQuery('(max-width:600px)');
 
     useEffect(() => {
         const fetchAttendance = async () => {
             try {
+                const params = user.role === 'HR' ? { role: "HR" } : { EmpId: user.emp_id };
                 const response = await axios.get(
-                    'https://namami-infotech.com/HR-SMILE-BACKEND/src/attendance/view_attendance.php', {
-                    params: { EmpId: user.emp_id }
-                }
+                    'https://namami-infotech.com/HR-SMILE-BACKEND/src/attendance/view_attendance.php',
+                    { params }
                 );
+
                 if (response.data.success) {
                     const data = response.data.data;
 
@@ -87,9 +92,9 @@ function AttendanceList() {
                                 empId,
                                 date,
                                 firstIn: firstIn ? formatTime(firstIn.MobileDateTime) : 'N/A',
-                                firstInLocation: firstIn ? `https://www.google.com/maps/@${firstIn.GeoLocation},15z?entry=ttu` : 'N/A',
+                                firstInLocation: firstIn ? generateMapUrl(firstIn.GeoLocation) : 'N/A',
                                 lastOut: lastOut ? formatTime(lastOut.MobileDateTime) : 'N/A',
-                                lastOutLocation: lastOut ? `https://www.google.com/maps/@${lastOut.GeoLocation},15z?entry=ttu` : 'N/A',
+                                lastOutLocation: lastOut ? generateMapUrl(lastOut.GeoLocation) : 'N/A',
                                 workingHours
                             });
                         });
@@ -101,15 +106,15 @@ function AttendanceList() {
 
                     setActivities(sortedData);
                 } else {
-                    console.error('Failed to fetch attendance data');
+                    setError('Failed to fetch attendance data');
                 }
             } catch (error) {
-                console.error('Error fetching attendance:', error);
+                setError('Error fetching attendance: ' + error.message);
             }
         };
 
         fetchAttendance();
-    }, [user.empId]);
+    }, [user.emp_id, user.role]);
 
     const calculateWorkingHours = (startTime, endTime) => {
         const start = new Date(startTime);
@@ -143,79 +148,102 @@ function AttendanceList() {
         date,
         activities: groupedByDate[date]
     }));
+    const exportToCsv = () => {
+        const csvRows = [
+            ['Emp ID', 'Date', 'In', 'In Location', 'Out', 'Out Location', 'Working Hours'],
+        ];
+
+        activities.forEach(({ empId, date, firstIn, firstInLocation, lastOut, lastOutLocation, workingHours }) => {
+            csvRows.push([empId, date, firstIn, firstInLocation, lastOut, lastOutLocation, workingHours]);
+        });
+
+        const csvContent = csvRows.map(row => row.join(',')).join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.href = url;
+        link.setAttribute('download', 'attendance.csv');
+        link.click();
+        URL.revokeObjectURL(url);
+    };
 
     return (
-        <Paper sx={{ width: '100%', overflow: 'hidden' }} style={{ backgroundColor: "#1B3156" }}>
-            <TableContainer>
-                <Table>
-                    <TableHead style={{ backgroundColor: "#1B3156" }}>
-                        <TableRow>
-                            <TableCell style={{ color: "white" }}>Emp ID</TableCell>
-                            <TableCell style={{ color: "white" }}>Date</TableCell>
-                            {!isMobile && <TableCell style={{ color: "white" }}>In</TableCell>}
-                            {!isMobile && <TableCell style={{ color: "white" }}>In Location</TableCell>}
-                            {!isMobile && <TableCell style={{ color: "white" }}>Out</TableCell>}
-                            {!isMobile && <TableCell style={{ color: "white" }}>Out Location</TableCell>}
-                            <TableCell style={{ color: "white" }}>Working Hours</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody style={{ backgroundColor: "white" }} >
-                        {groupedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(({ date, activities }) => (
-                            <React.Fragment key={date}>
-                                <TableRow>
-                                    <TableCell colSpan={isMobile ? 3 : 7}>
-                                        <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
-                                            {date}
-                                        </Typography>
-                                    </TableCell>
-                                </TableRow>
-                                {activities.map(({ empId, firstIn, firstInLocation, lastOut, lastOutLocation, workingHours }) => (
-                                    <TableRow key={`${empId}-${date}`}>
-                                        <TableCell>{empId}</TableCell>
-                                        <TableCell>{date}</TableCell>
-                                        {!isMobile && <TableCell>{firstIn}</TableCell>}
-                                        {!isMobile && (
-                                            <TableCell>
-                                                {firstInLocation !== 'N/A' ? (
-                                                    <a href={firstInLocation} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
-                                                        View Location
-                                                    </a>
-                                                ) : (
-                                                    'N/A'
-                                                )}
-                                            </TableCell>
-                                        )}
-                                        {!isMobile && <TableCell>{lastOut}</TableCell>}
-                                        {!isMobile && (
-                                            <TableCell>
-                                                {lastOutLocation !== 'N/A' ? (
-                                                    <a href={lastOutLocation} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
-                                                        View Location
-                                                    </a>
-                                                ) : (
-                                                    'N/A'
-                                                )}
-                                            </TableCell>
-                                        )}
-                                        <TableCell>{workingHours}</TableCell>
+        <> <Button variant="contained" style={{ backgroundColor: "#1B3156", color: "white" }} onClick={exportToCsv} sx={{ m: 2 }}>
+            Export to CSV
+        </Button>
+            <Paper sx={{ width: '100%', overflow: 'hidden' }} style={{ backgroundColor: "#1B3156" }}>
+                {error && <Alert severity="error">{error}</Alert>}
+
+                <TableContainer>
+                    <Table>
+                        <TableHead style={{ backgroundColor: "#1B3156" }}>
+                            <TableRow>
+                                <TableCell style={{ color: "white" }}>Emp ID</TableCell>
+                                <TableCell style={{ color: "white" }}>Date</TableCell>
+                                {!isMobile && <TableCell style={{ color: "white" }}>In</TableCell>}
+                                {!isMobile && <TableCell style={{ color: "white" }}>In Location</TableCell>}
+                                {!isMobile && <TableCell style={{ color: "white" }}>Out</TableCell>}
+                                {!isMobile && <TableCell style={{ color: "white" }}>Out Location</TableCell>}
+                                <TableCell style={{ color: "white" }}>Working Hours</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody style={{ backgroundColor: "white" }}>
+                            {groupedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(({ date, activities }) => (
+                                <React.Fragment key={date}>
+                                    <TableRow>
+                                        <TableCell colSpan={isMobile ? 3 : 7}>
+                                            <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
+                                                {date}
+                                            </Typography>
+                                        </TableCell>
                                     </TableRow>
-                                ))}
-                            </React.Fragment>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-            <TablePagination
-                component="div"
-                count={activities.length}
-                page={page}
-                onPageChange={handleChangePage}
-                rowsPerPage={rowsPerPage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-                rowsPerPageOptions={[5, 10, 25]}
-                style={{ color: "white" }}
-            />
-        </Paper>
+                                    {activities.map(({ empId, firstIn, firstInLocation, lastOut, lastOutLocation, workingHours }) => (
+                                        <TableRow key={`${empId}-${date}`}>
+                                            <TableCell>{empId}</TableCell>
+                                            <TableCell>{date}</TableCell>
+                                            {!isMobile && <TableCell>{firstIn}</TableCell>}
+                                            {!isMobile && (
+                                                <TableCell>
+                                                    {firstInLocation !== 'N/A' ? (
+                                                        <a href={firstInLocation} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+                                                            View Location
+                                                        </a>
+                                                    ) : (
+                                                        'N/A'
+                                                    )}
+                                                </TableCell>
+                                            )}
+                                            {!isMobile && <TableCell>{lastOut}</TableCell>}
+                                            {!isMobile && (
+                                                <TableCell>
+                                                    {lastOutLocation !== 'N/A' ? (
+                                                        <a href={lastOutLocation} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+                                                            View Location
+                                                        </a>
+                                                    ) : (
+                                                        'N/A'
+                                                    )}
+                                                </TableCell>
+                                            )}
+                                            <TableCell>{workingHours}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </React.Fragment>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+                <TablePagination
+                    component="div"
+                    count={activities.length}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    rowsPerPage={rowsPerPage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                    rowsPerPageOptions={[5, 10, 25]}
+                    style={{ color: "white" }}
+                />
+            </Paper></>
     );
 }
 

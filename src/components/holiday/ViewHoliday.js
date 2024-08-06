@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, TablePagination } from '@mui/material';
 import AddHoliday from './AddHoliday';
-
+import { useAuth } from '../auth/AuthContext';
 function ViewHoliday() {
+    const { user } = useAuth();
+
     const [holidays, setHolidays] = useState([]);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [page, setPage] = useState(0);
@@ -50,9 +52,10 @@ function ViewHoliday() {
     };
     return (
         <div>
-            <Button variant="contained" color="primary" onClick={handleOpenDialog} sx={{ mb: 2 }} style={{ backgroundColor: "#1B3156" }}>
+            {user && user.role === 'HR' ? <Button variant="contained" color="primary" onClick={handleOpenDialog} sx={{ mb: 2 }} style={{ backgroundColor: "#1B3156" }}>
                 Add Holiday
-            </Button>
+            </Button> : null}
+
             <TableContainer component={Paper}>
                 <Table>
                     <TableHead style={{ backgroundColor: "#1B3156" }}>

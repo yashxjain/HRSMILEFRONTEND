@@ -31,7 +31,7 @@ function Leave() {
             <Box component="main" sx={{ flexGrow: 1, p: 3, ml: drawerWidth }}>
                 <Navbar />
                 <div style={{ marginTop: "20px" }}>
-                    <Button variant="contained" color="primary" onClick={handleOpenApplyLeaveDialog}>
+                    <Button variant="contained" color="primary" onClick={handleOpenApplyLeaveDialog} style={{ backgroundColor: "#1B3156" }}>
                         Apply for Leave
                     </Button>
                     <ApplyLeave

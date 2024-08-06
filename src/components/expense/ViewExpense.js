@@ -94,12 +94,12 @@ function ViewExpense() {
             <br />
             <TableContainer component={Paper}>
                 <Table>
-                    <TableHead>
+                    <TableHead style={{ backgroundColor: "#1B3156" }}>
                         <TableRow>
-                            <TableCell>Expense Date</TableCell>
-                            <TableCell>Expense Type</TableCell>
-                            <TableCell>Expense Amount</TableCell>
-                            <TableCell>Image</TableCell> {/* New column for the "View" button */}
+                            <TableCell style={{ color: "white" }}>Expense Date</TableCell>
+                            <TableCell style={{ color: "white" }}>Expense Type</TableCell>
+                            <TableCell style={{ color: "white" }}>Expense Amount</TableCell>
+                            <TableCell style={{ color: "white" }}>Image</TableCell> {/* New column for the "View" button */}
                         </TableRow>
                     </TableHead>
                     <TableBody>

@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, TablePagination } from '@mui/material';
 import AddPolicyDialog from './AddPolicy';
+import { useAuth } from '../auth/AuthContext';
 
 function PolicyList() {
+    const { user } = useAuth();
+
     const [policies, setPolicies] = useState([]);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [page, setPage] = useState(0);
@@ -78,9 +81,10 @@ function PolicyList() {
 
     return (
         <div>
-            <Button variant="contained" color="primary" onClick={handleOpenDialog} sx={{ mb: 2 }} style={{ backgroundColor: "#1B3156" }}>
+            {user && user.role === 'HR' ? <Button variant="contained" color="primary" onClick={handleOpenDialog} sx={{ mb: 2 }} style={{ backgroundColor: "#1B3156" }}>
                 Add Policy
-            </Button>
+            </Button> : null}
+
             <TableContainer component={Paper}>
                 <Table>
                     <TableHead style={{ backgroundColor: "#1B3156" }}>
@@ -89,51 +93,68 @@ function PolicyList() {
                             <TableCell style={{ color: "white" }}>Description</TableCell>
                             <TableCell style={{ color: "white" }}>URL</TableCell>
                             <TableCell style={{ color: "white" }}>View</TableCell>
-                            <TableCell style={{ color: "white" }}>Action</TableCell>
+                            {user && user.role === 'HR' ? <TableCell style={{ color: "white" }}>Action</TableCell> : null}
+
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {policies.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((policy) => (
-                            <TableRow key={policy.PolicyId}>
-                                <TableCell>{policy.PolicyName}</TableCell>
-                                <TableCell>{policy.PolicyDescription}</TableCell>
-                                <TableCell>
-                                    <a href={policy.PolicyURL} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "blue" }}>
-                                        {policy.PolicyName}
-                                    </a>
-                                </TableCell>
-                                <TableCell>
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        onClick={() => handleViewPDF(policy.PolicyPDF)}
-                                    >
-                                        View PDF
-                                    </Button>
+                        {policies
+                            .filter((policy) => {
+                                // If user is HR, show all policies
+                                if (user && user.role === 'HR') return true;
 
-                                </TableCell>
-                                <TableCell>
-                                    {policy.IsActive ? (
-                                        <Button
-                                            variant="contained"
-                                            color="secondary"
-                                            onClick={() => handleTogglePolicyStatus(policy.Id, 'disable')}
+                                // Otherwise, show only active policies (IsActive is 1)
+                                return policy.IsActive === 1;
+                            })
+                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            .map((policy) => (
+                                <TableRow key={policy.PolicyId}>
+                                    <TableCell>{policy.PolicyName}</TableCell>
+                                    <TableCell>{policy.PolicyDescription}</TableCell>
+                                    <TableCell>
+                                        <a
+                                            href={policy.PolicyURL}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{ textDecoration: "none", color: "blue" }}
                                         >
-                                            Disable
-                                        </Button>
-                                    ) : (
+                                            {policy.PolicyName}
+                                        </a>
+                                    </TableCell>
+                                    <TableCell>
                                         <Button
                                             variant="contained"
                                             color="primary"
-                                            onClick={() => handleTogglePolicyStatus(policy.Id, 'enable')}
+                                            onClick={() => handleViewPDF(policy.PolicyPDF)}
                                         >
-                                            Enable
+                                            View PDF
                                         </Button>
+                                    </TableCell>
+                                    {user && user.role === 'HR' && (
+                                        <TableCell>
+                                            {policy.IsActive ? (
+                                                <Button
+                                                    variant="contained"
+                                                    color="secondary"
+                                                    onClick={() => handleTogglePolicyStatus(policy.Id, 'disable')}
+                                                >
+                                                    Disable
+                                                </Button>
+                                            ) : (
+                                                <Button
+                                                    variant="contained"
+                                                    color="primary"
+                                                    onClick={() => handleTogglePolicyStatus(policy.Id, 'enable')}
+                                                >
+                                                    Enable
+                                                </Button>
+                                            )}
+                                        </TableCell>
                                     )}
-                                </TableCell>
-                            </TableRow>
-                        ))}
+                                </TableRow>
+                            ))}
                     </TableBody>
+
                 </Table>
             </TableContainer>
             <TablePagination

@@ -92,14 +92,14 @@ function ViewTravel({ EmpId }) {
                 <>
                     <TableContainer component={Paper}>
                         <Table>
-                            <TableHead>
+                            <TableHead style={{ backgroundColor: "#1B3156" }}>
                                 <TableRow>
-                                    <TableCell>Date</TableCell>
-                                    <TableCell>Destination</TableCell>
-                                    <TableCell>Amount</TableCell>
-                                    <TableCell>Time From</TableCell>
-                                    <TableCell>Time To</TableCell>
-                                    <TableCell>Receipt</TableCell>
+                                    <TableCell style={{ color: "white" }}>Date</TableCell>
+                                    <TableCell style={{ color: "white" }}>Destination</TableCell>
+                                    <TableCell style={{ color: "white" }}>Amount</TableCell>
+                                    <TableCell style={{ color: "white" }}>Time From</TableCell>
+                                    <TableCell style={{ color: "white" }}>Time To</TableCell>
+                                    <TableCell style={{ color: "white" }}>Receipt</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>

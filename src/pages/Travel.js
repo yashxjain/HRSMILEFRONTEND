@@ -35,7 +35,7 @@ function Travel() {
                 <Navbar />
                 <div style={{ marginTop: "20px" }}>
 
-                    <Button variant="contained" color="primary" onClick={handleOpenApplyExpenseDialog} style={{ marginLeft: '10px' }}>
+                    <Button variant="contained" color="primary" onClick={handleOpenApplyExpenseDialog} style={{ marginLeft: '10px', backgroundColor: "#1B3156" }} >
                         Apply for Expense
                     </Button>
 
@@ -45,7 +45,7 @@ function Travel() {
                         onExpenseApplied={handleExpenseApplied}
                     />
                     <br />
-                    <br/>
+                    <br />
                     {/* Uncomment and update the ViewLeave component as needed */}
                     {user && user.emp_id && <ViewTravel EmpId={user.emp_id} />}
                 </div>

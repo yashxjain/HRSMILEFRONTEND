@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, TableFooter, TablePagination, Button } from '@mui/material';
+import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, TableFooter, TablePagination, Button, IconButton } from '@mui/material';
 import axios from 'axios';
+import CheckIcon from '@mui/icons-material/Check';
+import CancelIcon from '@mui/icons-material/Cancel';
 import { useAuth } from '../auth/AuthContext';
-
 function ViewTravel({ EmpId }) {
     const [travelExpenses, setTravelExpenses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
-
+    const { user } = useAuth()
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         const day = String(date.getDate()).padStart(2, '0');
@@ -28,7 +29,7 @@ function ViewTravel({ EmpId }) {
                 }
 
                 const response = await axios.get('https://namami-infotech.com/HR-SMILE-BACKEND/src/travel/get_travel.php', {
-                    params: { empId: EmpId }
+                    params: { empId: user.emp_id, role: user.role }
                 });
 
                 if (response.data.success) {
@@ -45,7 +46,8 @@ function ViewTravel({ EmpId }) {
         };
 
         fetchTravelExpenses();
-    }, [EmpId]);
+    }, [EmpId, user.emp_id, user.role]); // Include user.emp_id and user.role here
+
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -56,33 +58,28 @@ function ViewTravel({ EmpId }) {
         setPage(0);
     };
 
-    const handleViewImage = (base64Data) => {
-        // Ensure base64Data includes the correct data URL scheme
-        if (!base64Data.startsWith('data:image/')) {
-            base64Data = `data:image/png;base64,${base64Data}`;
+    const handleStatusChange = async (id, status) => {
+
+        try {
+            const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/travel/update_status.php', {
+                id,
+                status
+            });
+
+            if (response.data.success) {
+                setTravelExpenses(travelExpenses.map(expense =>
+                    expense.id === id ? { ...expense, status } : expense
+                ));
+
+            } else {
+                setError(response.data.message);
+            }
+        } catch (error) {
+            setError('Error updating travel status');
+            console.error('Error:', error);
         }
-
-        // Create a new Blob from the base64 string
-        const byteString = atob(base64Data.split(',')[1]);
-        const mimeString = base64Data.split(',')[0].split(':')[1].split(';')[0];
-        const ab = new ArrayBuffer(byteString.length);
-        const ia = new Uint8Array(ab);
-
-        for (let i = 0; i < byteString.length; i++) {
-            ia[i] = byteString.charCodeAt(i);
-        }
-
-        const blob = new Blob([ab], { type: mimeString });
-
-        // Create a URL for the Blob and open it in a new tab
-        const blobUrl = URL.createObjectURL(blob);
-        window.open(blobUrl, '_blank');
-
-        // Optional: Revoke the object URL after some time to free memory
-        setTimeout(() => {
-            URL.revokeObjectURL(blobUrl);
-        }, 1000);
     };
+
 
     return (
         <Box>
@@ -96,25 +93,35 @@ function ViewTravel({ EmpId }) {
                                 <TableRow>
                                     <TableCell style={{ color: "white" }}>Date</TableCell>
                                     <TableCell style={{ color: "white" }}>Destination</TableCell>
-                                    <TableCell style={{ color: "white" }}>Amount</TableCell>
-                                    <TableCell style={{ color: "white" }}>Time From</TableCell>
-                                    <TableCell style={{ color: "white" }}>Time To</TableCell>
-                                    <TableCell style={{ color: "white" }}>Receipt</TableCell>
+                                    <TableCell style={{ color: "white" }}>From</TableCell>
+                                    <TableCell style={{ color: "white" }}>To</TableCell>
+                                    <TableCell style={{ color: "white" }}>Type</TableCell>
+                                    <TableCell style={{ color: "white" }}>Status</TableCell>
+                                    {user && user.role === 'HR' ? <TableCell style={{ color: "white" }}>Actions</TableCell> : null}
+
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {travelExpenses.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((expense, index) => (
-                                    <TableRow key={index}>
-                                        <TableCell>{formatDate(expense.ExpenseDate)}</TableCell>
-                                        <TableCell>{expense.TravelDestination}</TableCell>
-                                        <TableCell>{expense.expenseAmount}</TableCell>
-                                        <TableCell>{expense.TravelTimeFrom}</TableCell>
-                                        <TableCell>{expense.TravelTimeTo}</TableCell>
-                                        <TableCell>
-                                            <Button variant="contained" color="primary" onClick={() => handleViewImage(expense.TravelReceipt)}>
-                                                View Receipt
-                                            </Button>
-                                        </TableCell>
+                                {travelExpenses.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((expense) => (
+                                    <TableRow key={expense.id}>
+                                        <TableCell>{(expense.travelDate)}</TableCell>
+                                        <TableCell>{expense.travelDestination}</TableCell>
+                                        <TableCell>{expense.travelFrom}</TableCell>
+                                        <TableCell>{expense.travelTo}</TableCell>
+                                        <TableCell>{expense.travelType}</TableCell>
+                                        <TableCell>{expense.status}</TableCell>
+                                        {user && user.role == "HR" ? <TableCell>
+                                            {expense.status === 'Pending' && (
+                                                <>
+                                                    <IconButton onClick={() => handleStatusChange(expense.id, 'Approved')} color="primary">
+                                                        <CheckIcon />
+                                                    </IconButton>
+                                                    <IconButton onClick={() => handleStatusChange(expense.id, 'Rejected')} color="secondary">
+                                                        <CancelIcon />
+                                                    </IconButton>
+                                                </>
+                                            )}
+                                        </TableCell> : null}
                                     </TableRow>
                                 ))}
                             </TableBody>

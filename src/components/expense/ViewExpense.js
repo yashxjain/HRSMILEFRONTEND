@@ -29,7 +29,7 @@ function ViewExpense() {
                 }
 
                 const response = await axios.get('https://namami-infotech.com/HR-SMILE-BACKEND/src/expense/get_expense.php', {
-                    params: { EmpId: user.emp_id }
+                    params: { EmpId: user.emp_id, role: user.role }
                 });
 
                 if (response.data.success) {
@@ -58,12 +58,10 @@ function ViewExpense() {
     };
 
     const handleViewImage = (base64Data) => {
-        // Ensure base64Data includes the correct data URL scheme
         if (!base64Data.startsWith('data:image/')) {
             base64Data = `data:image/png;base64,${base64Data}`;
         }
 
-        // Create a new Blob from the base64 string
         const byteString = atob(base64Data.split(',')[1]);
         const mimeString = base64Data.split(',')[0].split(':')[1].split(';')[0];
         const ab = new ArrayBuffer(byteString.length);
@@ -75,16 +73,37 @@ function ViewExpense() {
 
         const blob = new Blob([ab], { type: mimeString });
 
-        // Create a URL for the Blob and open it in a new tab
         const blobUrl = URL.createObjectURL(blob);
         window.open(blobUrl, '_blank');
 
-        // Optional: Revoke the object URL after some time to free memory
         setTimeout(() => {
             URL.revokeObjectURL(blobUrl);
         }, 1000);
     };
 
+    const handleStatusChange = async (detailId, status) => {
+        try {
+            const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/expense/update_expense.php', {
+                detailId,
+                status,
+                role: user.role
+            });
+
+            if (response.data.success) {
+                // Update the status in the local state
+                setExpenses(prevExpenses =>
+                    prevExpenses.map(expense =>
+                        expense.detailId === detailId ? { ...expense, Status: status } : expense
+                    )
+                );
+            } else {
+                setError(response.data.message);
+            }
+        } catch (error) {
+            setError('Error updating expense status');
+            console.error('Error:', error);
+        }
+    };
 
     if (loading) return <CircularProgress />;
     if (error) return <Typography color="error">{error}</Typography>;
@@ -99,14 +118,16 @@ function ViewExpense() {
                             <TableCell style={{ color: "white" }}>Expense Date</TableCell>
                             <TableCell style={{ color: "white" }}>Expense Type</TableCell>
                             <TableCell style={{ color: "white" }}>Expense Amount</TableCell>
-                            <TableCell style={{ color: "white" }}>Image</TableCell> {/* New column for the "View" button */}
+                            <TableCell style={{ color: "white" }}>Bill</TableCell>
+                            <TableCell style={{ color: "white" }}>Status</TableCell>
+                            {user && user.role === 'HR' && <TableCell style={{ color: "white" }}>Actions</TableCell>}
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {expenses
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             .map((expense) => (
-                                <TableRow key={expense.id}>
+                                <TableRow key={expense.detailId}>
                                     <TableCell>{formatDate(expense.expenseDate)}</TableCell>
                                     <TableCell>{expense.expenseType}</TableCell>
                                     <TableCell>{expense.expenseAmount}</TableCell>
@@ -123,6 +144,29 @@ function ViewExpense() {
                                             'No Image'
                                         )}
                                     </TableCell>
+                                    <TableCell>{expense.Status}</TableCell>
+                                    {user && user.role === 'HR' && (
+                                        <TableCell>
+                                            <Button
+                                                variant="contained"
+                                                color="success"
+                                                onClick={() => handleStatusChange(expense.detailId, 'Approved')}
+                                                disabled={expense.Status === 'Approved'}
+                                                sx={{ marginRight: 1 }} // Add right margin for spacing
+                                            >
+                                                Approve
+                                            </Button>
+                                            <Button
+                                                variant="contained"
+                                                color="error"
+                                                onClick={() => handleStatusChange(expense.detailId, 'Rejected')}
+                                                disabled={expense.Status === 'Rejected'}
+                                            >
+                                                Reject
+                                            </Button>
+                                        </TableCell>
+
+                                    )}
                                 </TableRow>
                             ))}
                     </TableBody>

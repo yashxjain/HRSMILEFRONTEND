@@ -27,6 +27,10 @@ function Navbar() {
         navigate("/profile");
     };
 
+    const handleNotification = () => {
+        navigate("/notification");
+    };
+
     const handleLogout = () => {
         logout();
         navigate('/');
@@ -111,7 +115,7 @@ function Navbar() {
                             <MenuItem onClick={handleLogout}>Logout</MenuItem>
                         </Menu>
                         <IconButton color="inherit">
-                            <NotificationsIcon />
+                            <NotificationsIcon onClick={handleNotification} />
                         </IconButton>
                     </Box>
                 </Toolbar>

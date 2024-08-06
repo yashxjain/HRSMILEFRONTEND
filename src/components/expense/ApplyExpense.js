@@ -8,7 +8,7 @@ import { useAuth } from '../auth/AuthContext';
 function ApplyExpense({ open, onClose, onExpenseApplied }) {
     const { user } = useAuth();
     const [expenseEntries, setExpenseEntries] = useState([
-        { empId: user.emp_id, expenseDate: '', expenseType: '', expenseAmount: '', image: null }
+        { empId: user.emp_id, expenseDate: '', expenseType: '', expenseAmount: '', image: null, Status: "Pending" }
     ]);
 
     const handleChange = (index, field, value) => {
@@ -18,7 +18,7 @@ function ApplyExpense({ open, onClose, onExpenseApplied }) {
     };
 
     const handleAddEntry = () => {
-        setExpenseEntries([...expenseEntries, { empId: user.emp_id, expenseDate: '', expenseType: '', expenseAmount: '', image: null }]);
+        setExpenseEntries([...expenseEntries, { empId: user.emp_id, expenseDate: '', expenseType: '', expenseAmount: '', image: null, Status: "Pending" }]);
     };
 
     const handleRemoveEntry = (index) => {

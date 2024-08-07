@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, TablePagination } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, TablePagination, IconButton } from '@mui/material';
 import AddHoliday from './AddHoliday';
+import EditHoliday from './EditHoliday'; // Import the EditHoliday component
 import { useAuth } from '../auth/AuthContext';
+import EditIcon from '@mui/icons-material/Edit';
+
 function ViewHoliday() {
     const { user } = useAuth();
-
     const [holidays, setHolidays] = useState([]);
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [editDialogOpen, setEditDialogOpen] = useState(false); // State for edit dialog
+    const [selectedHoliday, setSelectedHoliday] = useState(null); // State for selected holiday
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -23,26 +27,37 @@ function ViewHoliday() {
             console.error('Error fetching holidays:', err);
         }
     };
+
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
 
-    // Handle change in number of rows per page
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     };
+
     const handleOpenDialog = () => setDialogOpen(true);
     const handleCloseDialog = () => setDialogOpen(false);
+
+    const handleOpenEditDialog = (holiday) => {
+        setSelectedHoliday(holiday);
+        setEditDialogOpen(true);
+    };
+    const handleCloseEditDialog = () => setEditDialogOpen(false);
+
     const handleHolidayAdded = () => fetchHolidays(); // Refresh the list
+
     const getDayOfWeek = (dateString) => {
         const date = new Date(dateString);
         const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         return daysOfWeek[date.getDay()];
     };
+
     useEffect(() => {
         fetchHolidays();
     }, []);
+
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         const day = String(date.getDate()).padStart(2, '0');
@@ -50,11 +65,20 @@ function ViewHoliday() {
         const year = date.getFullYear();
         return `${day}/${month}/${year}`;
     };
+
     return (
         <div>
-            {user && user.role === 'HR' ? <Button variant="contained" color="primary" onClick={handleOpenDialog} sx={{ mb: 2 }} style={{ backgroundColor: "#1B3156" }}>
-                Add Holiday
-            </Button> : null}
+            {user && user.role === 'HR' && (
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleOpenDialog}
+                    sx={{ mb: 2 }}
+                    style={{ backgroundColor: "#1B3156" }}
+                >
+                    Add Holiday
+                </Button>
+            )}
 
             <TableContainer component={Paper}>
                 <Table>
@@ -63,6 +87,7 @@ function ViewHoliday() {
                             <TableCell style={{ color: "white" }}>Date</TableCell>
                             <TableCell style={{ color: "white" }}>Day</TableCell>
                             <TableCell style={{ color: "white" }}>Title</TableCell>
+                            {user && user.role === 'HR' && <TableCell style={{ color: "white" }}>Actions</TableCell>}
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -71,6 +96,13 @@ function ViewHoliday() {
                                 <TableCell>{formatDate(holiday.date)}</TableCell>
                                 <TableCell>{getDayOfWeek(holiday.date)}</TableCell>
                                 <TableCell>{holiday.title}</TableCell>
+                                {user && user.role === 'HR' && (
+                                    <TableCell>
+                                        <IconButton onClick={() => handleOpenEditDialog(holiday)} aria-label="edit">
+                                            <EditIcon />
+                                        </IconButton>
+                                    </TableCell>
+                                )}
                             </TableRow>
                         ))}
                     </TableBody>
@@ -86,6 +118,7 @@ function ViewHoliday() {
                 rowsPerPageOptions={[5, 10, 25]}
             />
             <AddHoliday open={dialogOpen} onClose={handleCloseDialog} onHolidayAdded={handleHolidayAdded} />
+            <EditHoliday open={editDialogOpen} onClose={handleCloseEditDialog} holiday={selectedHoliday} onHolidayUpdated={fetchHolidays} />
         </div>
     );
 }

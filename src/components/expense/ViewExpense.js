@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, TableFooter, TablePagination, Button } from '@mui/material';
+import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, TableFooter, TablePagination, Button, IconButton } from '@mui/material';
 import axios from 'axios';
+import CheckIcon from '@mui/icons-material/Check';
+
+import CancelIcon from '@mui/icons-material/Cancel';
+
 import { useAuth } from '../auth/AuthContext';
 
 function ViewExpense() {
@@ -104,17 +108,54 @@ function ViewExpense() {
             console.error('Error:', error);
         }
     };
+    const exportToCsv = () => {
+        // Define the CSV header
+        const csvRows = [
+            ['Employee Id', 'Expense Date', 'Expense Type', 'Expense Amount', 'Status']
+        ];
 
+        // Populate the CSV rows with leave data
+        expenses.forEach(({ empId, expenseDate, expenseType, expenseAmount, Status }) => {
+            csvRows.push([
+                empId,
+                formatDate(expenseDate), // Assuming formatDate is a function to format the date
+                expenseType,
+                expenseAmount,
+                Status
+            ]);
+        });
+
+        // Convert the array of rows to CSV format
+        const csvContent = csvRows.map(row => row.join(',')).join('\n');
+
+        // Create a Blob and link to download the CSV file
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.href = url;
+        link.setAttribute('download', 'expense.csv');
+        link.click();
+        URL.revokeObjectURL(url);
+    };
     if (loading) return <CircularProgress />;
     if (error) return <Typography color="error">{error}</Typography>;
 
     return (
         <Box>
             <br />
+            <Button
+                variant="contained"
+                color="primary"
+                onClick={exportToCsv}
+                style={{ marginBottom: '16px', backgroundColor: "#1B3156", float: "right" }}
+            >
+                Export CSV
+            </Button>
             <TableContainer component={Paper}>
                 <Table>
                     <TableHead style={{ backgroundColor: "#1B3156" }}>
                         <TableRow>
+                            <TableCell style={{ color: "white" }}>Employee Id</TableCell>
                             <TableCell style={{ color: "white" }}>Expense Date</TableCell>
                             <TableCell style={{ color: "white" }}>Expense Type</TableCell>
                             <TableCell style={{ color: "white" }}>Expense Amount</TableCell>
@@ -128,6 +169,7 @@ function ViewExpense() {
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             .map((expense) => (
                                 <TableRow key={expense.detailId}>
+                                    <TableCell>{expense.empId}</TableCell>
                                     <TableCell>{formatDate(expense.expenseDate)}</TableCell>
                                     <TableCell>{expense.expenseType}</TableCell>
                                     <TableCell>{expense.expenseAmount}</TableCell>
@@ -147,23 +189,23 @@ function ViewExpense() {
                                     <TableCell>{expense.Status}</TableCell>
                                     {user && user.role === 'HR' && (
                                         <TableCell>
-                                            <Button
+                                            <IconButton
                                                 variant="contained"
                                                 color="success"
                                                 onClick={() => handleStatusChange(expense.detailId, 'Approved')}
                                                 disabled={expense.Status === 'Approved'}
                                                 sx={{ marginRight: 1 }} // Add right margin for spacing
                                             >
-                                                Approve
-                                            </Button>
-                                            <Button
+                                                <CheckIcon />
+                                            </IconButton>
+                                            <IconButton
                                                 variant="contained"
                                                 color="error"
                                                 onClick={() => handleStatusChange(expense.detailId, 'Rejected')}
                                                 disabled={expense.Status === 'Rejected'}
                                             >
-                                                Reject
-                                            </Button>
+                                                <CancelIcon />
+                                            </IconButton>
                                         </TableCell>
 
                                     )}

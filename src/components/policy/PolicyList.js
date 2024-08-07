@@ -92,7 +92,7 @@ function PolicyList() {
                             <TableCell style={{ color: "white" }}>Policy Name</TableCell>
                             <TableCell style={{ color: "white" }}>Description</TableCell>
                             <TableCell style={{ color: "white" }}>URL</TableCell>
-                            <TableCell style={{ color: "white" }}>View</TableCell>
+                            <TableCell style={{ color: "white" }}>Policy</TableCell>
                             {user && user.role === 'HR' ? <TableCell style={{ color: "white" }}>Action</TableCell> : null}
 
                         </TableRow>

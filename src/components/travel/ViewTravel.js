@@ -79,10 +79,48 @@ function ViewTravel({ EmpId }) {
             console.error('Error:', error);
         }
     };
+    const exportToCsv = () => {
+        // Define the CSV header
+        const csvRows = [
+            ['Employee Id', 'Date', 'Destination', 'From', 'To', 'Type', 'Status']
+        ];
 
+        // Populate the CSV rows with leave data
+        travelExpenses.forEach(({ empId, travelDate, travelDestination, travelFrom, travelTo, travelType, status }) => {
+            csvRows.push([
+                empId,
+                formatDate(travelDate), // Assuming formatDate is a function to format the date
+                travelDestination,
+                travelFrom,
+                travelTo,
+                travelType,
+                status
+            ]);
+        });
+
+        // Convert the array of rows to CSV format
+        const csvContent = csvRows.map(row => row.join(',')).join('\n');
+
+        // Create a Blob and link to download the CSV file
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.href = url;
+        link.setAttribute('download', 'travel.csv');
+        link.click();
+        URL.revokeObjectURL(url);
+    };
 
     return (
         <Box>
+            <Button
+                variant="contained"
+                color="primary"
+                onClick={exportToCsv}
+                style={{ marginBottom: '16px', backgroundColor: "#1B3156", float: "right" }}
+            >
+                Export CSV
+            </Button>
             {loading && <CircularProgress />}
             {error && <Typography color="error">{error}</Typography>}
             {!loading && !error && (
@@ -91,6 +129,8 @@ function ViewTravel({ EmpId }) {
                         <Table>
                             <TableHead style={{ backgroundColor: "#1B3156" }}>
                                 <TableRow>
+                                    <TableCell style={{ color: "white" }}>Employee Id</TableCell>
+
                                     <TableCell style={{ color: "white" }}>Date</TableCell>
                                     <TableCell style={{ color: "white" }}>Destination</TableCell>
                                     <TableCell style={{ color: "white" }}>From</TableCell>
@@ -104,6 +144,7 @@ function ViewTravel({ EmpId }) {
                             <TableBody>
                                 {travelExpenses.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((expense) => (
                                     <TableRow key={expense.id}>
+                                        <TableCell>{(expense.empId)}</TableCell>
                                         <TableCell>{(expense.travelDate)}</TableCell>
                                         <TableCell>{expense.travelDestination}</TableCell>
                                         <TableCell>{expense.travelFrom}</TableCell>

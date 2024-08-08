@@ -151,7 +151,7 @@ function ViewTravel({ EmpId }) {
                                         <TableCell>{expense.travelTo}</TableCell>
                                         <TableCell>{expense.travelType}</TableCell>
                                         <TableCell>{expense.status}</TableCell>
-                                        {user && user.role == "HR" ? <TableCell>
+                                        {user && user.role === "HR" ? <TableCell>
                                             {expense.status === 'Pending' && (
                                                 <>
                                                     <IconButton onClick={() => handleStatusChange(expense.id, 'Approved')} color="primary">

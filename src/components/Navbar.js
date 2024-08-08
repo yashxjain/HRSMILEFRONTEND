@@ -23,7 +23,12 @@ function Navbar() {
         setAnchorEl(event.currentTarget);
     };
 
-    const handleClose = () => {
+    const handleClose = (event) => {
+        setAnchorEl(null);
+       
+    };
+    const handlePro = (event) => {
+        setAnchorEl(null);
         navigate("/profile");
     };
 
@@ -111,7 +116,7 @@ function Navbar() {
                                 sx: { width: 200, mt: 2 },
                             }}
                         >
-                            <MenuItem onClick={handleClose}>Profile</MenuItem>
+                            <MenuItem onClick={handlePro}>Profile</MenuItem>
                             <MenuItem onClick={handleLogout}>Logout</MenuItem>
                         </Menu>
                         <IconButton color="inherit">

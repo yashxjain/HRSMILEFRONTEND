@@ -53,7 +53,7 @@ function Login() {
                 }, 1500); // Delay for 1.5 seconds
             } else {
                 setLoading(false);
-                setError('Invalid credentials. Please try again.');
+                setError(response.data.message);
             }
         } catch (error) {
             setLoading(false);
@@ -61,6 +61,7 @@ function Login() {
             console.error('Login error:', error);
         }
     };
+
     const handleClickShowPassword = () => setShowPassword(!showPassword);
 
     return (
@@ -132,7 +133,6 @@ function Login() {
                                 style={{
                                     width: '100px',
                                     marginBottom: '20px',
-
                                 }}
                             />
 

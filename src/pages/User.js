@@ -2,7 +2,7 @@ import React from 'react';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import { Box, useMediaQuery, Container, Grid } from '@mui/material';
-import EmployeeProfile from '../components/employee/EmployeeProfile';
+import EmployeeProfile from '../components/employee/UserProfile';
 
 function EmpProfile() {
     const isMobile = useMediaQuery('(max-width:600px)');

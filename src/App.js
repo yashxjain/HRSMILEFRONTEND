@@ -13,10 +13,11 @@ import Attendance from './pages/Attendance';
 import Notification from './pages/Notification';
 import Leave from './pages/Leave';
 import Expense from './pages/Expense';
-import EmpProfile from './pages/EmpProfile';
+import EmpProfile from './pages/User';
 import PrivateRoute from './components/auth/PrivateRoute';
 import Travel from './pages/Travel';
 import Ticket from './pages/Ticket';
+import EmployeeProfile from './pages/EmployeeProfile';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
             <Route path="/" element={<Login />} />
             <Route path="/dashboard" element={<PrivateRoute element={Dashboard} />} />
             <Route path="/employees" element={<PrivateRoute element={Employee} requiredRole="HR" />} />
+            <Route path="/employees/:empId" element={<PrivateRoute element={EmployeeProfile} requiredRole="HR" />} />
             <Route path="/holiday" element={<PrivateRoute element={Holiday} />} />
             <Route path="/policy" element={<PrivateRoute element={Policy} />} />
             <Route path="/attendance" element={<PrivateRoute element={Attendance} />} />

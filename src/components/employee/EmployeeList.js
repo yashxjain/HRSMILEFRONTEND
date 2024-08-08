@@ -1,17 +1,38 @@
 import React, { useState, useEffect } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Button, Typography, IconButton, Grid, TablePagination, Box, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
+import { Link } from 'react-router-dom';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper,
+    TextField,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Button,
+    Typography,
+    IconButton,
+    Grid,
+    TablePagination,
+    Box,
+    MenuItem,
+    Select,
+    InputLabel,
+    FormControl
+} from '@mui/material';
 import axios from 'axios';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
-import CheckIcon from '@mui/icons-material/Check';
-import CancelIcon from '@mui/icons-material/Cancel';
 
 function EmployeeList() {
     const [employees, setEmployees] = useState([]);
     const [offices, setOffices] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedEmployee, setSelectedEmployee] = useState(null);
     const [openDetail, setOpenDetail] = useState(false);
     const [openForm, setOpenForm] = useState(false);
     const [formMode, setFormMode] = useState('add'); // 'add' or 'edit'
@@ -27,10 +48,13 @@ function EmployeeList() {
         IsGeofence: 0,
         Tenent_Id: null,
         IsActive: 1,
+        OfficeId: null,
         OfficeName: '',
         LatLong: '',
         Distance: '',
-        OfficeIsActive: 1
+        OfficeIsActive: 1,
+        RM: '',
+        Shift: ''
     });
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -66,11 +90,6 @@ function EmployeeList() {
         }
     };
 
-    const handleRowClick = (employee) => {
-        setSelectedEmployee(employee);
-        setOpenDetail(true);
-    };
-
     const handleCloseDetail = () => {
         setOpenDetail(false);
     };
@@ -90,14 +109,22 @@ function EmployeeList() {
             setFormData({
                 EmpId: employee.EmpId,
                 Name: employee.Name,
+                Password: '',
                 Mobile: employee.Mobile,
                 EmailId: employee.EmailId,
                 Role: employee.Role,
-                IsActive: employee.IsActive,
+                OTP: employee.OTP,
+                IsOTPExpired: employee.IsOTPExpired || 1,
+                IsGeofence: employee.IsGeofence || 0,
+                Tenent_Id: employee.Tenent_Id || null,
+                IsActive: employee.IsActive || 1,
+                OfficeId: employee.OfficeId || null,
                 OfficeName: employee.OfficeName || '',
                 LatLong: employee.LatLong || '',
                 Distance: employee.Distance || '',
-                OfficeIsActive: employee.OfficeIsActive || 1
+                OfficeIsActive: employee.OfficeIsActive || 1,
+                RM: employee.RM,
+                Shift: employee.Shift
             });
         } else {
             setFormData({
@@ -112,10 +139,13 @@ function EmployeeList() {
                 IsGeofence: 0,
                 Tenent_Id: null,
                 IsActive: 1,
+                OfficeId: null,
                 OfficeName: '',
                 LatLong: '',
                 Distance: '',
-                OfficeIsActive: 1
+                OfficeIsActive: 1,
+                RM: '',
+                Shift: ''
             });
         }
         setOpenForm(true);
@@ -123,52 +153,24 @@ function EmployeeList() {
 
     const handleCloseForm = () => {
         setOpenForm(false);
-        setFormData({
-            EmpId: '',
-            Name: '',
-            Password: '',
-            Mobile: '',
-            EmailId: '',
-            Role: '',
-            OTP: '',
-            IsOTPExpired: 1,
-            IsGeofence: 0,
-            Tenent_Id: null,
-            IsActive: 1,
-            OfficeName: '',
-            LatLong: '',
-            Distance: '',
-            OfficeIsActive: 1
-        });
     };
 
     const handleFormSubmit = async (e) => {
         e.preventDefault();
 
-        const defaultValues = {
-            EmpId: 'ss03',
-            Name: 'John Doe',
-            Password: 'password123',
-            Mobile: '9876543210',
-            EmailId: 'john.doe@example.com',
-            Role: 'Employee',
-            OTP: '123456',
-            IsOTPExpired: 0,
-            IsGeofence: 1,
-            Tenent_Id: 123,
-            IsActive: 1,
-            OfficeName: 'Main Office',
-            LatLong: '28.6562,77.2415',
-            Distance: 500,
-            OfficeIsActive: 1
-        };
+        // Ensure all required fields are populated
+        const requiredFields = ['EmpId', 'Name', 'Password', 'Mobile', 'EmailId', 'Role', 'OfficeName', 'LatLong', 'Distance'];
+        for (let field of requiredFields) {
+            if (!formData[field]) {
+                alert(`Please fill in all required fields. Missing: ${field}`);
+                return;
+            }
+        }
 
         const formattedFormData = {
-            ...defaultValues,
             ...formData,
-            OTP: formData.OTP || defaultValues.OTP,
-            Distance: formData.Distance || defaultValues.Distance,
-            Tenent_Id: formData.Tenent_Id || defaultValues.Tenent_Id
+            OTP: formData.OTP || '123456', // Provide a default OTP if not provided
+            Tenent_Id: formData.Tenent_Id || 123 // Provide a default Tenant ID if not provided
         };
 
         const url = formMode === 'add'
@@ -208,29 +210,13 @@ function EmployeeList() {
         }
     };
 
-    const handleEnableEmployee = async (employee) => {
-        if (!employee || !employee.EmpId) {
-            console.error('Please provide both Employee ID and action');
-            return;
-        }
-        try {
-            const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/employee/disable_employee.php', {
-                EmpId: employee.EmpId,
-                action: 'enable'
-            });
-            if (response.data.success) {
-                fetchEmployees();
-            } else {
-                console.error('Error:', response.data.message);
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
+    const filteredEmployees = employees.filter(employee => {
+        const lowerCaseSearchTerm = searchTerm.toLowerCase();
+        return Object.keys(employee).some(key =>
+            employee[key].toString().toLowerCase().includes(lowerCaseSearchTerm)
+        );
+    });
 
-    const filteredEmployees = employees.filter(employee =>
-        employee.Name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
 
     return (
         <div>
@@ -266,18 +252,26 @@ function EmployeeList() {
                                 <TableCell style={{ color: "white" }}>Mobile</TableCell>
                                 <TableCell style={{ color: "white" }}>Email</TableCell>
                                 <TableCell style={{ color: "white" }}>Role</TableCell>
+                                <TableCell style={{ color: "white" }}>RM</TableCell>
+                                <TableCell style={{ color: "white" }}>Shift</TableCell>
                                 <TableCell style={{ color: "white" }}>Status</TableCell>
                                 <TableCell style={{ color: "white" }}>Actions</TableCell>
+
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {filteredEmployees.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(employee => (
+
                                 <TableRow key={employee.EmpId}>
-                                    <TableCell>{employee.EmpId}</TableCell>
-                                    <TableCell>{employee.Name}</TableCell>
-                                    <TableCell>{employee.Mobile}</TableCell>
-                                    <TableCell>{employee.EmailId}</TableCell>
-                                    <TableCell>{employee.Role}</TableCell>
+
+                                    <TableCell component={Link} to={employee.EmpId} style={{ textDecoration: 'none' }}>{employee.EmpId}</TableCell>
+
+                                    <TableCell component={Link} to={employee.EmpId} style={{ textDecoration: 'none' }}>{employee.Name}</TableCell>
+                                    <TableCell component={Link} to={employee.EmpId} style={{ textDecoration: 'none' }}>{employee.Mobile}</TableCell>
+                                    <TableCell component={Link} to={employee.EmpId} style={{ textDecoration: 'none' }}>{employee.EmailId}</TableCell>
+                                    <TableCell component={Link} to={employee.EmpId} style={{ textDecoration: 'none' }}>{employee.Role}</TableCell>
+                                    <TableCell>{employee.RM}</TableCell>
+                                    <TableCell>{employee.Shift}</TableCell>
                                     <TableCell>
                                         <Typography
                                             variant="body2"
@@ -287,157 +281,181 @@ function EmployeeList() {
                                         </Typography>
                                     </TableCell>
                                     <TableCell>
-                                        <IconButton onClick={() => handleOpenForm('edit', employee)}>
+                                        <IconButton
+                                            color="primary"
+                                            onClick={() => handleOpenForm('edit', employee)}
+                                        >
                                             <EditIcon />
                                         </IconButton>
-                                        <IconButton onClick={() => handleDisableEmployee(employee)}>
+                                        <IconButton
+                                            color="error"
+                                            onClick={() => handleDisableEmployee(employee)}
+                                        >
                                             <DeleteIcon />
                                         </IconButton>
                                     </TableCell>
+
                                 </TableRow>
+
                             ))}
                         </TableBody>
                     </Table>
                 </TableContainer>
+                <TablePagination
+                    rowsPerPageOptions={[10, 25, 50]}
+                    component="div"
+                    count={filteredEmployees.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                />
             </Box>
-            <TablePagination
-                rowsPerPageOptions={[10, 25, 50]}
-                component="div"
-                count={filteredEmployees.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-
-            {/* Employee Detail Dialog */}
-            {selectedEmployee && (
-                <Dialog open={openDetail} onClose={handleCloseDetail}>
-                    <DialogTitle>Employee Details</DialogTitle>
-                    <DialogContent>
-                        <Typography variant="body1"><strong>Employee ID:</strong> {selectedEmployee.EmpId}</Typography>
-                        <Typography variant="body1"><strong>Name:</strong> {selectedEmployee.Name}</Typography>
-                        <Typography variant="body1"><strong>Mobile:</strong> {selectedEmployee.Mobile}</Typography>
-                        <Typography variant="body1"><strong>Email:</strong> {selectedEmployee.EmailId}</Typography>
-                        <Typography variant="body1"><strong>Role:</strong> {selectedEmployee.Role}</Typography>
-                        <Typography variant="body1"><strong>Status:</strong> {selectedEmployee.IsActive ? 'Active' : 'Inactive'}</Typography>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleCloseDetail} color="primary">
-                            Close
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-            )}
-
-            {/* Employee Form Dialog */}
-            <Dialog open={openForm} onClose={handleCloseForm} fullWidth maxWidth="sm">
+            <Dialog open={openForm} onClose={handleCloseForm}>
                 <DialogTitle>{formMode === 'add' ? 'Add Employee' : 'Edit Employee'}</DialogTitle>
                 <DialogContent>
                     <form onSubmit={handleFormSubmit}>
-                        <TextField
-                            fullWidth
-                            margin="normal"
-                            label="Employee ID"
-                            variant="outlined"
-                            value={formData.EmpId}
-                            onChange={(e) => setFormData({ ...formData, EmpId: e.target.value })}
-                            disabled={formMode === 'edit'}
-                        />
-                        <TextField
-                            fullWidth
-                            margin="normal"
-                            label="Name"
-                            variant="outlined"
-                            value={formData.Name}
-                            onChange={(e) => setFormData({ ...formData, Name: e.target.value })}
-                        />
-                        <TextField
-                            fullWidth
-                            margin="normal"
-                            label="Password"
-                            variant="outlined"
-                            type="password"
-                            value={formData.Password}
-                            onChange={(e) => setFormData({ ...formData, Password: e.target.value })}
-                        />
-                        <TextField
-                            fullWidth
-                            margin="normal"
-                            label="Mobile"
-                            variant="outlined"
-                            value={formData.Mobile}
-                            onChange={(e) => setFormData({ ...formData, Mobile: e.target.value })}
-                        />
-                        <TextField
-                            fullWidth
-                            margin="normal"
-                            label="Email"
-                            variant="outlined"
-                            value={formData.EmailId}
-                            onChange={(e) => setFormData({ ...formData, EmailId: e.target.value })}
-                        />
-                        <TextField
-                            fullWidth
-                            margin="normal"
-                            label="Role"
-                            variant="outlined"
-                            value={formData.Role}
-                            onChange={(e) => setFormData({ ...formData, Role: e.target.value })}
-                        />
-                        <FormControl fullWidth margin="normal">
-                            <InputLabel>Office</InputLabel>
-                            <Select
-                                value={formData.OfficeName}
-                                onChange={(e) => setFormData({ ...formData, OfficeName: e.target.value })}
-                            >
-                                {offices.map(office => (
-                                    <MenuItem key={office.Id} value={office.OfficeName}>
-                                        {office.OfficeName}
-                                        {/* {office.LatLong} */}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                        {/* <TextField
-                            fullWidth
-                            margin="normal"
-                            label="Latitude & Longitude"
-                            variant="outlined"
-                            value={formData.LatLong}
-                            onChange={(e) => setFormData({ ...formData, LatLong: e.target.value })}
-                        />
-                        <TextField
-                            fullWidth
-                            margin="normal"
-                            label="Distance"
-                            variant="outlined"
-                            type="number"
-                            value={formData.Distance}
-                            onChange={(e) => setFormData({ ...formData, Distance: e.target.value })}
-                        /> */}
-                        {/* <FormControl fullWidth margin="normal">
-                            <InputLabel>Office Status</InputLabel>
-                            <Select
-                                value={formData.OfficeIsActive}
-                                onChange={(e) => setFormData({ ...formData, OfficeIsActive: e.target.value })}
-                            >
-                                <MenuItem value={1}>Active</MenuItem>
-                                <MenuItem value={0}>Inactive</MenuItem>
-                            </Select>
-                        </FormControl> */}
+                        <Grid container spacing={2}>
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Employee ID"
+                                    value={formData.EmpId}
+                                    onChange={(e) => setFormData({ ...formData, EmpId: e.target.value })}
+                                    required
+                                    disabled={formMode === 'edit'}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Name"
+                                    value={formData.Name}
+                                    onChange={(e) => setFormData({ ...formData, Name: e.target.value })}
+                                    required
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Password"
+                                    type="password"
+                                    value={formData.Password}
+                                    onChange={(e) => setFormData({ ...formData, Password: e.target.value })}
+                                    required
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Mobile"
+                                    value={formData.Mobile}
+                                    onChange={(e) => setFormData({ ...formData, Mobile: e.target.value })}
+                                    required
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Email"
+                                    type="email"
+                                    value={formData.EmailId}
+                                    onChange={(e) => setFormData({ ...formData, EmailId: e.target.value })}
+                                    required
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Role"
+                                    value={formData.Role}
+                                    onChange={(e) => setFormData({ ...formData, Role: e.target.value })}
+                                    required
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
+                                    label="RM"
+                                    value={formData.RM}
+                                    onChange={(e) => setFormData({ ...formData, RM: e.target.value })}
+                                    required
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <FormControl fullWidth required>
+                                    <InputLabel>Shift</InputLabel>
+                                    <Select
+                                        value={formData.Shift}
+                                        onChange={(e) => setFormData({ ...formData, Shift: e.target.value })}
+                                        label="Shift"
+                                    >
+                                        <MenuItem value="9 AM - 6 PM">9 AM - 6 PM</MenuItem>
+                                        <MenuItem value="9:30 AM - 6:30 PM">9:30 AM - 6:30 PM</MenuItem>
+                                        <MenuItem value="10 AM - 7 PM">10 AM - 7 PM</MenuItem>
+                                        <MenuItem value="11 AM - 8 PM">11 AM - 8 PM</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+
+                            <Grid item xs={12} md={6}>
+                                <FormControl fullWidth>
+                                    <InputLabel>Office</InputLabel>
+                                    <Select
+                                        value={formData.OfficeId || ''}
+                                        onChange={(e) => setFormData({
+                                            ...formData,
+                                            OfficeId: e.target.value,
+                                            OfficeName: offices.find(o => o.Id === e.target.value)?.OfficeName || '',
+                                            LatLong: offices.find(o => o.Id === e.target.value)?.LatLong || '',
+                                            Distance: offices.find(o => o.Id === e.target.value)?.Distance || ''
+                                        })}
+                                        required
+                                    >
+                                        {offices.map(office => (
+                                            <MenuItem key={office.Id} value={office.Id}>
+                                                {office.OfficeName}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Latitude/Longitude"
+                                    value={formData.LatLong}
+                                    onChange={(e) => setFormData({ ...formData, LatLong: e.target.value })}
+                                    required
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Distance"
+                                    value={formData.Distance}
+                                    onChange={(e) => setFormData({ ...formData, Distance: e.target.value })}
+                                    required
+                                />
+                            </Grid>
+                        </Grid>
                         <DialogActions>
-                            <Button onClick={handleCloseForm} color="secondary">
-                                Cancel
-                            </Button>
-                            <Button type="submit" color="primary" variant="contained">
-                                {formMode === 'add' ? 'Add' : 'Save'}
-                            </Button>
+                            <Button onClick={handleCloseForm} color="primary">Cancel</Button>
+                            <Button type="submit" color="primary">Submit</Button>
                         </DialogActions>
                     </form>
                 </DialogContent>
             </Dialog>
-        </div>
+            <Dialog open={openDetail} onClose={handleCloseDetail}>
+                <DialogTitle>Employee Details</DialogTitle>
+                <DialogContent>
+                    {/* You can add employee details here */}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDetail} color="primary">Close</Button>
+                </DialogActions>
+            </Dialog>
+        </div >
     );
 }
 

@@ -17,10 +17,8 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import { useAuth } from '../auth/AuthContext';
-import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
 import CancelIcon from '@mui/icons-material/Cancel';
-import Papa from 'papaparse';
 
 function ViewLeave() {
     const { user } = useAuth();
@@ -134,7 +132,7 @@ function ViewLeave() {
                 variant="contained"
                 color="primary"
                 onClick={exportToCsv}
-                style={{ marginBottom: '16px', backgroundColor: "#1B3156", float:"right" }}
+                style={{ marginBottom: '16px', backgroundColor: "#1B3156", float: "right" }}
             >
                 Export CSV
             </Button>

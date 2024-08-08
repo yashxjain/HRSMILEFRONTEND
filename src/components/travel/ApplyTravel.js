@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dialog, DialogActions, DialogContent, DialogTitle, Button, TextField, CircularProgress, Snackbar } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogTitle, Button, TextField, CircularProgress } from '@mui/material';
 import axios from 'axios';
 import { useAuth } from '../auth/AuthContext';
 import Alert from '@mui/material/Alert';
@@ -16,7 +16,6 @@ function ApplyTravel({ open, onClose, onTravelApplied }) {
         status: 'Pending'
     });
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
     const handleChange = (field, value) => {
@@ -25,19 +24,16 @@ function ApplyTravel({ open, onClose, onTravelApplied }) {
 
     const handleSubmit = async () => {
         if (!user || !user.emp_id) {
-            setError('User is not authenticated');
             return;
         }
 
         const isValid = Object.values(travelEntry).every(value => value.trim() !== '');
 
         if (!isValid) {
-            setError('Please fill in all required fields.');
             return;
         }
 
         setLoading(true);
-        setError('');
         setSuccess('');
 
         try {
@@ -50,10 +46,8 @@ function ApplyTravel({ open, onClose, onTravelApplied }) {
                 onTravelApplied();
                 onClose();
             } else {
-                setError(response.data.message || 'Failed to submit travel application.');
             }
         } catch (err) {
-            setError('Error submitting travel application.');
             console.error('Error:', err);
         } finally {
             setLoading(false);

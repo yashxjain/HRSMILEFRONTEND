@@ -18,6 +18,7 @@ import PrivateRoute from './components/auth/PrivateRoute';
 import Travel from './pages/Travel';
 import Ticket from './pages/Ticket';
 import EmployeeProfile from './pages/EmployeeProfile';
+import Assets from './pages/Assets';
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
             <Route path="/profile" element={<PrivateRoute element={EmpProfile} />} />
             <Route path="/travel" element={<PrivateRoute element={Travel} />} />
             <Route path="/ticket" element={<PrivateRoute element={Ticket} />} />
+            <Route path="/assets" element={<PrivateRoute element={Assets} />} />
           </Routes>
         </Router>
       </AuthProvider>

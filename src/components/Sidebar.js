@@ -4,7 +4,7 @@ import { Drawer, List, ListItem, ListItemText, Box, Slide } from '@mui/material'
 import HRSmileLogo from '../assets/HRSmileLogo.jpeg';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import { useAuth } from './auth/AuthContext'; 
+import { useAuth } from './auth/AuthContext';
 
 function Sidebar({ mobileOpen, onDrawerToggle }) {
     const location = useLocation();
@@ -22,6 +22,7 @@ function Sidebar({ mobileOpen, onDrawerToggle }) {
         { path: '/expense', name: 'Expense' },
         { path: '/travel', name: 'Travel' },
         { path: '/ticket', name: 'Tickets' },
+        { path: '/assets', name: 'Assets' },
     ];
 
     // Conditionally include the "Employees" tab based on the user's role

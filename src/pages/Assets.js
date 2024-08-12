@@ -2,6 +2,7 @@ import React from 'react';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import { Box, useMediaQuery } from '@mui/material';
+import AssetList from '../components/assets/AssetList';
 
 function Assets() {
     const isMobile = useMediaQuery('(max-width:600px)');
@@ -16,7 +17,7 @@ function Assets() {
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <Navbar />
                 <Box sx={{ mt: 4 }}>
-
+                    <AssetList />
                 </Box>
             </Box>
         </Box>

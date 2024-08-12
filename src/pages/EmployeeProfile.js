@@ -3,14 +3,11 @@ import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import { Box, useMediaQuery } from '@mui/material';
 import EmployeeData from '../components/employee/EmployeeData';
-import { useParams } from 'react-router-dom';
 
 function EmployeeProfile() {
     const isMobile = useMediaQuery('(max-width:600px)');
     const drawerWidth = isMobile ? 0 : 240;
     
-
-
     return (
         <Box sx={{ display: 'flex', height: '100vh' }}>
             {/* Sidebar with fixed width */}

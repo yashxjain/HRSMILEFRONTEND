@@ -53,6 +53,8 @@ function AttendanceList() {
                     { params }
                 );
 
+                console.log('API Response:', response.data); // Log the raw data from the API
+
                 if (response.data.success) {
                     const data = response.data.data;
 
@@ -67,6 +69,8 @@ function AttendanceList() {
                         empWiseActivities[empId].push(activity);
                     });
 
+                    console.log('Grouped Activities:', empWiseActivities); // Log grouped activities by employee
+
                     Object.keys(empWiseActivities).forEach((empId) => {
                         const activities = empWiseActivities[empId];
                         const dateWiseActivities = {};
@@ -78,10 +82,30 @@ function AttendanceList() {
                             dateWiseActivities[date].push(activity);
                         });
 
+                        console.log('Date Wise Activities:', dateWiseActivities); // Log activities grouped by date
+
                         Object.keys(dateWiseActivities).forEach((date) => {
                             const activitiesOnDate = dateWiseActivities[date];
-                            const firstIn = activitiesOnDate.find((act) => act.Event === 'In');
-                            const lastOut = activitiesOnDate.reverse().find((act) => act.Event === 'Out');
+                            console.log('Activities on Date:', activitiesOnDate); // Log activities for a specific date
+
+                            // Ensure you are not reversing the array more than necessary
+                            const activitiesForProcessing = [...activitiesOnDate];
+
+                            const firstIn = activitiesForProcessing.find((act) => {
+                                const cleanedEvent = cleanEvent(act.Event);
+                                console.log('Cleaned Event (First In):', cleanedEvent); // Log cleaned event for debugging
+                                return cleanedEvent === 'In';
+                            });
+                            const lastOut = activitiesForProcessing.reverse().find((act) => {
+                                const cleanedEvent = cleanEvent(act.Event);
+                                console.log('Cleaned Event (Last Out):', cleanedEvent); // Log cleaned event for debugging
+                                return cleanedEvent === 'Out';
+                            });
+
+                            // Reset array order if necessary
+                            activitiesForProcessing.reverse();
+
+                            const lastEvent = activitiesForProcessing[0]?.Event || 'N/A';
 
                             const workingHours =
                                 firstIn && lastOut
@@ -95,7 +119,8 @@ function AttendanceList() {
                                 firstInLocation: firstIn ? generateMapUrl(firstIn.GeoLocation) : 'N/A',
                                 lastOut: lastOut ? formatTime(lastOut.MobileDateTime) : 'N/A',
                                 lastOutLocation: lastOut ? generateMapUrl(lastOut.GeoLocation) : 'N/A',
-                                workingHours
+                                workingHours,
+                                lastEvent
                             });
                         });
                     });
@@ -103,6 +128,8 @@ function AttendanceList() {
                     const sortedData = flattenedData.sort(
                         (a, b) => new Date(b.date.split('/').reverse().join('-')) - new Date(a.date.split('/').reverse().join('-'))
                     );
+
+                    console.log('Flattened and Sorted Data:', sortedData); // Log final sorted data
 
                     setActivities(sortedData);
                 } else {
@@ -115,6 +142,16 @@ function AttendanceList() {
 
         fetchAttendance();
     }, [user.emp_id, user.role]);
+
+    const cleanEvent = (event) => {
+        const match = event.match(/^(In|Out):\s*(.*)$/);
+        const cleanedEvent = match ? match[1].trim() : event.trim(); // Extract only "In" or "Out"
+        console.log('Raw Event:', event); // Log raw event for debugging
+        console.log('Cleaned Event:', cleanedEvent); // Log cleaned event for debugging
+        return cleanedEvent;
+    };
+
+
 
     const calculateWorkingHours = (startTime, endTime) => {
         const start = new Date(startTime);
@@ -148,13 +185,14 @@ function AttendanceList() {
         date,
         activities: groupedByDate[date]
     }));
+
     const exportToCsv = () => {
         const csvRows = [
-            ['Emp ID', 'Date', 'In', 'In Location', 'Out', 'Out Location', 'Working Hours'],
+            ['Emp ID', 'Date', 'In', 'In Location', 'Out', 'Out Location', 'Working Hours', 'Last Event'],
         ];
 
-        activities.forEach(({ empId, date, firstIn, firstInLocation, lastOut, lastOutLocation, workingHours }) => {
-            csvRows.push([empId, date, firstIn, firstInLocation, lastOut, lastOutLocation, workingHours]);
+        activities.forEach(({ empId, date, firstIn, firstInLocation, lastOut, lastOutLocation, workingHours, lastEvent }) => {
+            csvRows.push([empId, date, firstIn, firstInLocation, lastOut, lastOutLocation, workingHours, lastEvent]);
         });
 
         const csvContent = csvRows.map(row => row.join(',')).join('\n');
@@ -168,9 +206,10 @@ function AttendanceList() {
     };
 
     return (
-        <> <Button variant="contained" style={{ backgroundColor: "#1B3156", color: "white" }} onClick={exportToCsv} sx={{ m: 2 }}>
-            Export to CSV
-        </Button>
+        <>
+            <Button variant="contained" style={{ backgroundColor: "#1B3156", color: "white" }} onClick={exportToCsv} sx={{ m: 2 }}>
+                Export to CSV
+            </Button>
             <Paper sx={{ width: '100%', overflow: 'hidden' }} style={{ backgroundColor: "#1B3156" }}>
                 {error && <Alert severity="error">{error}</Alert>}
 
@@ -180,6 +219,7 @@ function AttendanceList() {
                             <TableRow>
                                 <TableCell style={{ color: "white" }}>Emp ID</TableCell>
                                 <TableCell style={{ color: "white" }}>Date</TableCell>
+                                {!isMobile && <TableCell style={{ color: "white" }}>Event</TableCell>}
                                 {!isMobile && <TableCell style={{ color: "white" }}>In</TableCell>}
                                 {!isMobile && <TableCell style={{ color: "white" }}>In Location</TableCell>}
                                 {!isMobile && <TableCell style={{ color: "white" }}>Out</TableCell>}
@@ -191,16 +231,17 @@ function AttendanceList() {
                             {groupedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(({ date, activities }) => (
                                 <React.Fragment key={date}>
                                     <TableRow>
-                                        <TableCell colSpan={isMobile ? 3 : 7}>
+                                        <TableCell colSpan={isMobile ? 3 : 8}>
                                             <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
                                                 {date}
                                             </Typography>
                                         </TableCell>
                                     </TableRow>
-                                    {activities.map(({ empId, firstIn, firstInLocation, lastOut, lastOutLocation, workingHours }) => (
+                                    {activities.map(({ empId, firstIn, firstInLocation, lastOut, lastOutLocation, workingHours, lastEvent }) => (
                                         <TableRow key={`${empId}-${date}`}>
                                             <TableCell>{empId}</TableCell>
                                             <TableCell>{date}</TableCell>
+                                            {!isMobile && <TableCell>{lastEvent}</TableCell>}
                                             {!isMobile && <TableCell>{firstIn}</TableCell>}
                                             {!isMobile && (
                                                 <TableCell>
@@ -234,16 +275,17 @@ function AttendanceList() {
                     </Table>
                 </TableContainer>
                 <TablePagination
+                    rowsPerPageOptions={[5, 10, 25]}
                     component="div"
                     count={activities.length}
+                    rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={handleChangePage}
-                    rowsPerPage={rowsPerPage}
                     onRowsPerPageChange={handleChangeRowsPerPage}
-                    rowsPerPageOptions={[5, 10, 25]}
-                    style={{ color: "white" }}
+                    style={{ backgroundColor: "white" }}
                 />
-            </Paper></>
+            </Paper>
+        </>
     );
 }
 

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, TablePagination, IconButton } from '@mui/material';
+import { motion } from 'framer-motion';
 import AddHoliday from './AddHoliday';
-import EditHoliday from './EditHoliday'; // Import the EditHoliday component
+import EditHoliday from './EditHoliday';
 import { useAuth } from '../auth/AuthContext';
 import EditIcon from '@mui/icons-material/Edit';
 
@@ -10,8 +11,8 @@ function ViewHoliday() {
     const { user } = useAuth();
     const [holidays, setHolidays] = useState([]);
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [editDialogOpen, setEditDialogOpen] = useState(false); // State for edit dialog
-    const [selectedHoliday, setSelectedHoliday] = useState(null); // State for selected holiday
+    const [editDialogOpen, setEditDialogOpen] = useState(false);
+    const [selectedHoliday, setSelectedHoliday] = useState(null);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -46,7 +47,7 @@ function ViewHoliday() {
     };
     const handleCloseEditDialog = () => setEditDialogOpen(false);
 
-    const handleHolidayAdded = () => fetchHolidays(); // Refresh the list
+    const handleHolidayAdded = () => fetchHolidays();
 
     const getDayOfWeek = (dateString) => {
         const date = new Date(dateString);
@@ -67,7 +68,7 @@ function ViewHoliday() {
     };
 
     return (
-        <div>
+        <div style={{ overflow: 'hidden' }}>
             {user && user.role === 'HR' && (
                 <Button
                     variant="contained"
@@ -75,12 +76,15 @@ function ViewHoliday() {
                     onClick={handleOpenDialog}
                     sx={{ mb: 2 }}
                     style={{ backgroundColor: "#1B3156" }}
+                    component={motion.div}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
                 >
                     Add Holiday
                 </Button>
             )}
 
-            <TableContainer component={Paper}>
+            <TableContainer component={Paper} style={{ maxWidth: '100%', overflow: 'hidden' }}  initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
                 <Table>
                     <TableHead style={{ backgroundColor: "#1B3156" }}>
                         <TableRow>
@@ -92,13 +96,13 @@ function ViewHoliday() {
                     </TableHead>
                     <TableBody>
                         {holidays.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((holiday) => (
-                            <TableRow key={holiday.date}>
+                            <TableRow key={holiday.date} component={motion.tr} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                                 <TableCell>{formatDate(holiday.date)}</TableCell>
                                 <TableCell>{getDayOfWeek(holiday.date)}</TableCell>
                                 <TableCell>{holiday.title}</TableCell>
                                 {user && user.role === 'HR' && (
                                     <TableCell>
-                                        <IconButton onClick={() => handleOpenEditDialog(holiday)} aria-label="edit">
+                                        <IconButton onClick={() => handleOpenEditDialog(holiday)} aria-label="edit" component={motion.div} whileHover={{ scale: 1.2 }}>
                                             <EditIcon />
                                         </IconButton>
                                     </TableCell>

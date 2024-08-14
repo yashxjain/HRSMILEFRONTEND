@@ -321,7 +321,7 @@ function EmployeeList() {
                                     fullWidth
                                     label="Employee ID"
                                     value={formData.EmpId}
-                                    onChange={(e) => setFormData({ ...formData, EmpId: e.target.value })}
+                                      onChange={(e) => setFormData({ ...formData, EmpId: e.target.value })}
                                     required
                                     disabled={formMode === 'edit'}
                                 />

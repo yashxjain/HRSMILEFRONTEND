@@ -1,32 +1,56 @@
-import React, { useState } from 'react';
-import { Dialog, DialogActions, DialogContent, DialogTitle, Button, TextField } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Dialog, DialogActions, DialogContent, DialogTitle, Button, TextField, MenuItem } from '@mui/material';
 import axios from 'axios';
 import { useAuth } from '../auth/AuthContext';
 
 function ApplyLeave({ open, onClose, onLeaveApplied }) {
     const { user } = useAuth();
     const [leaveDetails, setLeaveDetails] = useState({
-        EmpId: user?.emp_id || '', // Set default to an empty string if user is null
+        empid: user?.emp_id || '', // Use 'empid' instead of 'EmpId'
         startDate: '',
         endDate: '',
         reason: '',
-        Status: 'Pending', // Default status
+        status: 'Pending', // Use 'status' instead of 'Status'
+        category: ''
     });
 
-    // Function to format the date to 'yyyy-mm-dd' for the date input fields
+    const [categories, setCategories] = useState([]);
+    const [loadingCategories, setLoadingCategories] = useState(true);
+
     const formatDate = (date) => {
         return date.toISOString().split('T')[0];
     };
 
-    // Get the current date
     const today = new Date();
 
-    // Handle field changes
+    useEffect(() => {
+        const fetchLeaveBalances = async () => {
+            try {
+                const response = await axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/leave/balance_leave.php?empid=${user.emp_id}`);
+                if (response.data.success) {
+                    const data = response.data.data;
+                    const availableCategories = Object.keys(data)
+                        .filter(key => key !== 'id' && key !== 'empid' && data[key] > 0)
+                        .map(key => ({ label: key, value: key }));
+
+                    setCategories(availableCategories);
+                }
+            } catch (err) {
+                console.error('Error fetching leave balances:', err);
+            } finally {
+                setLoadingCategories(false);
+            }
+        };
+
+        if (user?.emp_id) {
+            fetchLeaveBalances();
+        }
+    }, [user]);
+
     const handleChange = (field, value) => {
         setLeaveDetails({ ...leaveDetails, [field]: value });
     };
 
-    // Handle form submission
     const handleSubmit = async () => {
         if (!user || !user.emp_id) {
             console.error('User is not authenticated');
@@ -52,12 +76,11 @@ function ApplyLeave({ open, onClose, onLeaveApplied }) {
             <DialogContent>
                 <TextField
                     label="Employee ID"
-                    value={leaveDetails.EmpId}
-                    onChange={(e) => handleChange('EmpId', e.target.value)}
+                    value={leaveDetails.empid}
                     variant="outlined"
                     fullWidth
                     margin="normal"
-                    disabled // Disable input if empId is set by default
+                    disabled
                 />
                 <TextField
                     label="Start Date"
@@ -69,7 +92,7 @@ function ApplyLeave({ open, onClose, onLeaveApplied }) {
                     fullWidth
                     margin="normal"
                     inputProps={{
-                        min: formatDate(today) // Minimum date is today
+                        min: formatDate(today)
                     }}
                 />
                 <TextField
@@ -82,9 +105,25 @@ function ApplyLeave({ open, onClose, onLeaveApplied }) {
                     fullWidth
                     margin="normal"
                     inputProps={{
-                        min: leaveDetails.startDate || formatDate(today) // Minimum date is the start date or today
+                        min: leaveDetails.startDate || formatDate(today)
                     }}
                 />
+                <TextField
+                    select
+                    label="Category"
+                    value={leaveDetails.category}
+                    onChange={(e) => handleChange('category', e.target.value)}
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                    disabled={loadingCategories || categories.length === 0}
+                >
+                    {categories.map(option => (
+                        <MenuItem key={option.value} value={option.value}>
+                            {option.label}
+                        </MenuItem>
+                    ))}
+                </TextField>
                 <TextField
                     label="Reason"
                     value={leaveDetails.reason}

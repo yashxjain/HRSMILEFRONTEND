@@ -38,7 +38,6 @@ function ViewLeave() {
 
     useEffect(() => {
         const fetchLeaves = async () => {
-            // Early exit if user is not authenticated
             if (!user || !user.emp_id) {
                 setError('User is not authenticated');
                 setLoading(false);
@@ -95,26 +94,22 @@ function ViewLeave() {
     };
 
     const exportToCsv = () => {
-        // Define the CSV header
         const csvRows = [
             ['Employee Id', 'Start Date', 'End Date', 'Reason', 'Status']
         ];
 
-        // Populate the CSV rows with leave data
         leaves.forEach(({ EmpId, StartDate, EndDate, Reason, Status }) => {
             csvRows.push([
                 EmpId,
-                formatDate(StartDate), // Assuming formatDate is a function to format the date
-                formatDate(EndDate),   // Assuming formatDate is a function to format the date
+                formatDate(StartDate),
+                formatDate(EndDate),
                 Reason,
                 Status
             ]);
         });
 
-        // Convert the array of rows to CSV format
         const csvContent = csvRows.map(row => row.join(',')).join('\n');
 
-        // Create a Blob and link to download the CSV file
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement('a');
         const url = URL.createObjectURL(blob);
@@ -123,11 +118,12 @@ function ViewLeave() {
         link.click();
         URL.revokeObjectURL(url);
     };
+
     if (loading) return <CircularProgress />;
     if (error) return <Typography color="error">{error}</Typography>;
 
     return (
-        <Box  >
+        <Box>
             <Button
                 variant="contained"
                 color="primary"
@@ -142,6 +138,7 @@ function ViewLeave() {
                         <TableRow>
                             <TableCell style={{ color: "white" }}>Employee Id</TableCell>
                             <TableCell style={{ color: "white" }}>Date</TableCell>
+                            <TableCell style={{ color: "white" }}>Category</TableCell>
                             <TableCell style={{ color: "white" }}>Reason</TableCell>
                             <TableCell style={{ color: "white" }}>Status</TableCell>
                             {user.role === 'HR' && <TableCell style={{ color: "white" }}>Actions</TableCell>}
@@ -154,6 +151,7 @@ function ViewLeave() {
                                 <TableRow key={leave.Id}>
                                     <TableCell>{leave.EmpId}</TableCell>
                                     <TableCell>{formatDate(leave.StartDate)} - {formatDate(leave.EndDate)}</TableCell>
+                                    <TableCell>{leave.Category}</TableCell>
                                     <TableCell>{leave.Reason}</TableCell>
                                     <TableCell>{leave.Status}</TableCell>
                                     {user.role === 'HR' && (
@@ -161,14 +159,14 @@ function ViewLeave() {
                                             <IconButton
                                                 color="primary"
                                                 onClick={() => handleStatusChange(leave.Id, 'Approved')}
-                                                disabled={leave.Status === 'Approved'}
+                                                disabled={leave.Status === 'Approved' || leave.Status === 'Rejected'}
                                             >
                                                 <CheckIcon />
                                             </IconButton>
                                             <IconButton
                                                 color="secondary"
                                                 onClick={() => handleStatusChange(leave.Id, 'Rejected')}
-                                                disabled={leave.Status === 'Rejected'}
+                                                disabled={leave.Status === 'Approved' || leave.Status === 'Rejected'}
                                             >
                                                 <CancelIcon />
                                             </IconButton>

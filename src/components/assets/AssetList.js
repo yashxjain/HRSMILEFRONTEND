@@ -20,9 +20,11 @@ import {
     InputLabel,
     FormControl,
     TablePagination,
-    TableFooter
+    TableFooter, IconButton, Menu
 } from '@mui/material';
 import axios from 'axios';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+
 import { useAuth } from '../auth/AuthContext'; // Adjust import according to your project structure
 
 const AssetList = () => {
@@ -35,13 +37,6 @@ const AssetList = () => {
     const [issueDialogOpen, setIssueDialogOpen] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const [statusDialogOpen, setStatusDialogOpen] = useState(false);
-    const [statusData, setStatusData] = useState({
-        issueId: '', // Use issueId instead of assetId for clarity
-        status: ''
-    });
-
-
     // New state for manual EmpId entry
     const [manualEmpId, setManualEmpId] = useState('');
     const [assetDetails, setAssetDetails] = useState({
@@ -49,6 +44,11 @@ const AssetList = () => {
         makeName: '',
         modelName: ''
     });
+    const [statusData, setStatusData] = useState({
+        issueId: '', // Use issueId instead of assetId for clarity
+        status: ''
+    });
+
     const [newAssetData, setNewAssetData] = useState({
         productName: '',
         addedDate: new Date().toISOString().split('T')[0] // Initialize with today's date
@@ -56,6 +56,18 @@ const AssetList = () => {
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [menuIssueId, setMenuIssueId] = useState(null); // Store the issue ID related to the clicked menu
+
+    const handleMenuClick = (event, issueId) => {
+        setAnchorEl(event.currentTarget);
+        setMenuIssueId(issueId); // Set the issueId for the clicked menu
+    };
+
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+    };
+  
 
     useEffect(() => {
         fetchAssets();
@@ -141,33 +153,6 @@ const AssetList = () => {
         }
     };
 
-
-
-
-    const handleStatusChangeClick = (issueId) => {
-        setStatusData({ ...statusData, issueId });
-        setStatusDialogOpen(true);
-    };
-
-
-    const handleStatusChangeSubmit = async () => {
-        setLoading(true);
-        try {
-            const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/assets/update_asset_status.php', statusData);
-            if (response.data.success) {
-                setSnackbarMessage('Asset status updated successfully.');
-                fetchAssets(); // Refresh the assets list
-            } else {
-                setSnackbarMessage(response.data.message);
-            }
-        } catch (error) {
-            setSnackbarMessage('Error updating asset status.');
-        } finally {
-            setLoading(false);
-            setStatusDialogOpen(false);
-        }
-    };
-
     const handleAddNewAsset = async () => {
         try {
             const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/assets/add_asset.php', {
@@ -192,12 +177,8 @@ const AssetList = () => {
         }
     };
 
-
-
-
     const handleDialogClose = () => {
         setIssueDialogOpen(false);
-        setStatusDialogOpen(false);
         // Clear the fields
         setManualEmpId('');
         setSelectedAsset('');
@@ -211,8 +192,31 @@ const AssetList = () => {
             addedDate: new Date().toISOString().split('T')[0] // Reset to today's date
         });
     };
+    const handleStatusChangeSubmit = async () => {
+        setLoading(true);
+        try {
+            const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/assets/update_asset_status.php', {
+                issue_id: menuIssueId,
+                status: statusData.status
+            });
+            if (response.data.success) {
+                setSnackbarMessage('Asset status updated successfully.');
+                fetchAssets(); // Refresh the assets list
+            } else {
+                setSnackbarMessage(response.data.message);
+            }
+        } catch (error) {
+            setSnackbarMessage('Error updating asset status.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
-
+    const handleStatusChange = (status) => {
+        setStatusData({ ...statusData, status }); // Set the status before submission
+        handleStatusChangeSubmit();
+    };
+    
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -221,7 +225,6 @@ const AssetList = () => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     };
-
 
     return (
         <div>
@@ -257,29 +260,32 @@ const AssetList = () => {
                                 <TableCell>{asset.status}</TableCell>
                                 <TableCell>{asset.remark}</TableCell>
                                 <TableCell>{new Date(asset.issue_date).toLocaleDateString()}</TableCell>
-                                {user.role === 'HR' ? (
-                                    <TableCell>
-                                        <Button
-                                            variant="contained"
-                                            color="secondary"
-                                            onClick={() => handleStatusChangeClick(asset.id, asset.status)}
-                                        >
-                                            Update Status
-                                        </Button>
-                                    </TableCell>
-                                ) : (
-                                    <TableCell>
-                                        <Button
-                                            variant="contained"
-                                            color="secondary"
-                                            onClick={() => handleStatusChangeClick(asset.id, asset.status)}
-                                        >
-                                            Update Status
-                                        </Button>
-                                    </TableCell>
-                                )}
+                                <TableCell>
+                                    <IconButton onClick={(e) => handleMenuClick(e, asset.id)}>
+                                        <MoreVertIcon />
+                                    </IconButton>
+                                    <Menu
+                                        anchorEl={anchorEl}
+                                        open={Boolean(anchorEl)}
+                                        onClose={handleMenuClose}
+                                    >
+                                        {user.role === 'HR' ? (
+                                            <>
+                                                <MenuItem onClick={() => handleStatusChange('Issued')}>Issued</MenuItem>
+                                                <MenuItem onClick={() => handleStatusChange('Returned')}>Returned</MenuItem>
+                                                <MenuItem onClick={() => handleStatusChange('Received by HR')}>Received by HR</MenuItem>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <MenuItem onClick={() => handleStatusChange('Received')}>Received</MenuItem>
+                                                <MenuItem onClick={() => handleStatusChange('Not Received')}>Not Received</MenuItem>
+                                                <MenuItem onClick={() => handleStatusChange('Return')}>Return</MenuItem>
+                                                <MenuItem onClick={() => handleStatusChange('Replace')}>Replace</MenuItem>
+                                            </>
+                                        )}
+                                    </Menu>
+                                </TableCell>
                             </TableRow>
-
                         ))}
                     </TableBody>
                     <TableFooter>
@@ -296,7 +302,6 @@ const AssetList = () => {
                     </TableFooter>
                 </Table>
             </TableContainer>
-
 
             {/* Issue Asset Dialog */}
             <Dialog open={issueDialogOpen} onClose={handleDialogClose}>
@@ -383,52 +388,6 @@ const AssetList = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
-
-
-            {/* Status Update Dialog */}
-            <Dialog open={statusDialogOpen} onClose={handleDialogClose}>
-                <DialogTitle>Update Asset Status</DialogTitle>
-                <DialogContent>
-                    <FormControl fullWidth style={{ marginBottom: '20px' }}>
-                        <InputLabel>Status</InputLabel>
-                        <Select
-                            value={statusData.status}
-                            onChange={(e) => setStatusData({ ...statusData, status: e.target.value })}
-                            label="Status"
-                        >
-                            {user.role === 'HR' ? (
-                                <>
-                                    <MenuItem value="Issued">Issued</MenuItem>
-                                    <MenuItem value="Returned">Returned</MenuItem>
-                                    <MenuItem value="Received by HR">Received by HR</MenuItem>
-                                </>
-                            ) : (
-                                <>
-                                    <MenuItem value="Received/Not Received">Received/Not Received</MenuItem>
-                                    <MenuItem value="Return">Return</MenuItem>
-                                    <MenuItem value="Replace">Replace</MenuItem>
-                                </>
-                            )}
-                        </Select>
-                    </FormControl>
-                    <TextField
-                        label="Remark"
-                        fullWidth
-                        value={statusData.remark}
-                        onChange={(e) => setStatusData({ ...statusData, remark: e.target.value })}
-                        style={{ marginBottom: '20px' }}
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleDialogClose} color="primary">
-                        Cancel
-                    </Button>
-                    <Button onClick={handleStatusChangeSubmit} color="primary" disabled={loading}>
-                        {loading ? <CircularProgress size={24} /> : 'Update'}
-                    </Button>
-                </DialogActions>
-            </Dialog>
-
 
             <Snackbar
                 open={openSnackbar}

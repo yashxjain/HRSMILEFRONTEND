@@ -34,7 +34,11 @@ const formatTime = (dateString) => {
     return `${formattedHours}:${formattedMinutes} ${ampm}`;
 };
 
-const generateMapUrl = (geoLocation) => `https://www.google.com/maps/@${geoLocation},15z?entry=ttu`;
+const generateMapUrl = (geoLocation) => {
+    const [latitude, longitude] = geoLocation.split(',');
+    return `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}&zoom=15&basemap=satellite&markercolor=red`;
+};
+
 
 function AttendanceList() {
     const { user } = useAuth();
@@ -96,6 +100,7 @@ function AttendanceList() {
                                 console.log('Cleaned Event (First In):', cleanedEvent); // Log cleaned event for debugging
                                 return cleanedEvent === 'In';
                             });
+
                             const lastOut = activitiesForProcessing.reverse().find((act) => {
                                 const cleanedEvent = cleanEvent(act.Event);
                                 console.log('Cleaned Event (Last Out):', cleanedEvent); // Log cleaned event for debugging
@@ -145,9 +150,9 @@ function AttendanceList() {
 
     const cleanEvent = (event) => {
         const match = event.match(/^(In|Out):\s*(.*)$/);
-        const cleanedEvent = match ? match[1].trim() : event.trim(); // Extract only "In" or "Out"
-        console.log('Raw Event:', event); // Log raw event for debugging
-        console.log('Cleaned Event:', cleanedEvent); // Log cleaned event for debugging
+        const cleanedEvent = match ? match[1].trim() : event.trim();
+        console.log('Raw Event:', event);
+        console.log('Cleaned Event:', cleanedEvent);
         return cleanedEvent;
     };
 

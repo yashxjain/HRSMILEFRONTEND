@@ -3,11 +3,13 @@ import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import { Box, useMediaQuery } from '@mui/material';
 import EmployeeData from '../components/employee/EmployeeData';
+import { useParams } from 'react-router-dom';
 
 function EmployeeProfile() {
     const isMobile = useMediaQuery('(max-width:600px)');
     const drawerWidth = isMobile ? 0 : 240;
-    
+    const { empId } = useParams();
+
     return (
         <Box sx={{ display: 'flex', height: '100vh' }}>
             {/* Sidebar with fixed width */}
@@ -17,7 +19,7 @@ function EmployeeProfile() {
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <Navbar />
                 <Box sx={{ mt: 4 }}>
-                    <EmployeeData />
+                    <EmployeeData EmpId={empId} />
                 </Box>
             </Box>
         </Box>

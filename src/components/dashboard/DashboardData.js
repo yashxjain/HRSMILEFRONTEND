@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import {
     Box,
     Typography,
-    Paper,
     Avatar,
     Grid,
     Divider,
@@ -10,7 +9,6 @@ import {
     LinearProgress,
     Tabs,
     Tab,
-    useTheme,
     List,
     ListItem,
     ListItemText,
@@ -23,7 +21,6 @@ import {
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import axios from 'axios';
-import dayjs from 'dayjs';
 import { useAuth } from '../auth/AuthContext';
 
 
@@ -38,13 +35,8 @@ const DashboardData = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [activeTab, setActiveTab] = useState(0);
-    const theme = useTheme();
     const EmpId = user.emp_id
 
-    const generateMapUrl = (geoLocation) => {
-        const [latitude, longitude] = geoLocation.split(',');
-        return `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}&zoom=15&basemap=satellite&markercolor=red`;
-    };
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
@@ -90,7 +82,7 @@ const DashboardData = () => {
         : 0;
 
     const totalRejected = expenseDetails
-        ? expenseDetails.reduce((total, expense) => expense.Status == 'Rejected' ? total + parseFloat(expense.expenseAmount) : total, 0)
+        ? expenseDetails.reduce((total, expense) => expense.Status === 'Rejected' ? total + parseFloat(expense.expenseAmount) : total, 0)
         : 0;
 
 
@@ -287,12 +279,12 @@ const DashboardData = () => {
                     transition={{ duration: 0.5, delay: 0.3 }}
                 >
                     <Table>
-                        <TableHead>
+                        <TableHead style={{ backgroundColor: "#1B3156" }}>
                             <TableRow>
-                                <TableCell>Asset</TableCell>
-                                <TableCell> Make</TableCell>
-                                <TableCell> Model</TableCell>
-                                <TableCell>Serial Number</TableCell>
+                                <TableCell style={{ color: "white" }}>Asset</TableCell>
+                                <TableCell style={{ color: "white" }}> Make</TableCell>
+                                <TableCell style={{ color: "white" }}> Model</TableCell>
+                                <TableCell style={{ color: "white" }}>Serial Number</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>

@@ -58,7 +58,6 @@ const AssetList = () => {
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [anchorEl, setAnchorEl] = useState(null);
     const [menuIssueId, setMenuIssueId] = useState(null); // Store the issue ID related to the clicked menu
-    const apiBaseUrl = process.env.BASE_URL;
 
     const handleMenuClick = (event, issueId) => {
         setAnchorEl(event.currentTarget);

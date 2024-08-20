@@ -402,8 +402,6 @@ function EmployeeList() {
                                             </MenuItem>
                                         </Menu>
                                     </TableCell>
-                                   
-
                                 </TableRow>
 
                             ))}
@@ -560,7 +558,7 @@ function EmployeeList() {
                         </Grid>
                         <DialogActions>
                             <Button onClick={handleCloseForm} color="primary">Cancel</Button>
-                            <Button type="submit" color="primary">Submit</Button>
+                            <Button onClick={handleCloseForm} type="submit" color="primary">Submit</Button>
                         </DialogActions>
                     </form>
                 </DialogContent>

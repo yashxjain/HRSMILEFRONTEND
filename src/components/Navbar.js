@@ -29,16 +29,16 @@ function Navbar() {
     };
     const handlePro = (event) => {
         setAnchorEl(null);
-        navigate("/computer-company/profile");
+        navigate("/computer-factory/profile");
     };
 
     const handleNotification = () => {
-        navigate("/computer-company/notification");
+        navigate("/computer-factory/notification");
     };
 
     const handleLogout = () => {
         logout();
-        navigate('/computer-company/');
+        navigate('/computer-factory/');
     };
 
     const handleDrawerToggle = () => {
@@ -46,17 +46,17 @@ function Navbar() {
     };
 
     const routes = [
-        { path: '/computer-company/dashboard', name: 'Dashboard' },
-        { path: '/computer-company/employees', name: 'Employees' },
-        { path: '/computer-company/holiday', name: 'Holiday' },
-        { path: '/computer-company/policy', name: 'Policy' },
-        { path: '/computer-company/attendance', name: 'Attendance' },
-        { path: '/computer-company/notification', name: 'Notification' },
-        { path: '/computer-company/leave', name: 'Leave' },
-        { path: '/computer-company/expense', name: 'Expense' },
-        { path: '/computer-company/travel', name: 'Travel' },
-        { path: '/computer-company/ticket', name: 'Tickets' },
-        { path: '/computer-company/assets', name: 'Assets' },
+        { path: '/computer-factory/dashboard', name: 'Dashboard' },
+        { path: '/computer-factory/employees', name: 'Employees' },
+        { path: '/computer-factory/holiday', name: 'Holiday' },
+        { path: '/computer-factory/policy', name: 'Policy' },
+        { path: '/computer-factory/attendance', name: 'Attendance' },
+        { path: '/computer-factory/notification', name: 'Notification' },
+        { path: '/computer-factory/leave', name: 'Leave' },
+        { path: '/computer-factory/expense', name: 'Expense' },
+        { path: '/computer-factory/travel', name: 'Travel' },
+        { path: '/computer-factory/ticket', name: 'Tickets' },
+        { path: '/computer-factory/assets', name: 'Assets' },
     ];
 
     const drawer = (

@@ -40,30 +40,40 @@ const DashboardData = () => {
     const [activeTab, setActiveTab] = useState(0);
     const theme = useTheme();
     const EmpId = user.emp_id
-    useEffect(() => {
-        const fetchEmployeeData = async () => {
-            try {
-                const response = await axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/employee/view_employee.php?EmpId=${EmpId}`);
-                const leaveResponse = await axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/leave/balance_leave.php?empid=${EmpId}`);
-                const expenseResponse = await axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/expense/get_expense.php?EmpId=${EmpId}`);
-                const attendanceResponse = await axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/attendance/view_attendance.php?EmpId=${EmpId}`);
-                const assetResponse = await axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/assets/get_issue_asset.php?EmpId=${EmpId}`);
 
-                setEmployeeData(response.data.data);
+    const generateMapUrl = (geoLocation) => {
+        const [latitude, longitude] = geoLocation.split(',');
+        return `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}&zoom=15&basemap=satellite&markercolor=red`;
+    };
+    useEffect(() => {
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                const [employeeResponse, leaveResponse, expenseResponse, attendanceResponse, assetResponse] = await Promise.all([
+                    axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/employee/view_employee.php?EmpId=${EmpId}`),
+                    axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/leave/balance_leave.php?empid=${EmpId}`),
+                    axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/expense/get_expense.php?EmpId=${EmpId}`),
+                    axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/attendance/view_attendance.php?EmpId=${EmpId}`),
+                    axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/assets/get_issue_asset.php?EmpId=${EmpId}`)
+                ]);
+
+                setEmployeeData(employeeResponse.data.data);
                 setLeaveDetails(leaveResponse.data.data);
                 setExpenseDetails(expenseResponse.data.data);
                 setAttendanceDetails(attendanceResponse.data.data);
-                setAssetDetails(assetResponse.data.data)
+                // console.log(attendanceResponse.data.data)
+                setAssetDetails(assetResponse.data.data);
             } catch (err) {
-                setError('Failed to fetch employee data');
+                setError('Failed to fetch data');
                 console.error(err);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchEmployeeData();
+        fetchData();
     }, [EmpId]);
+
 
     const handleTabChange = (event, newValue) => {
         setActiveTab(newValue);
@@ -83,25 +93,16 @@ const DashboardData = () => {
         ? expenseDetails.reduce((total, expense) => expense.Status == 'Rejected' ? total + parseFloat(expense.expenseAmount) : total, 0)
         : 0;
 
-    const today = dayjs();
-    const pastSevenDays = [...Array(7).keys()].map(i => today.subtract(i, 'day').format('YYYY-MM-DD'));
-    const filteredAttendance = pastSevenDays.map(date => {
-        const dayEvents = attendanceDetails.filter(att => dayjs(att.MobileDateTime).format('YYYY-MM-DD') === date);
-        const firstIn = dayEvents.find(event => event.Event === 'In');
-        const lastOut = dayEvents.reverse().find(event => event.Event === 'Out');
-        const workingHours = firstIn && lastOut
-            ? dayjs(lastOut.MobileDateTime).diff(dayjs(firstIn.MobileDateTime), 'hour', true)
-            : 0;
 
-        return {
-            date,
-            firstInTime: firstIn ? dayjs(firstIn.MobileDateTime).format('HH:mm') : 'N/A',
-            lastOutTime: lastOut ? dayjs(lastOut.MobileDateTime).format('HH:mm') : 'N/A',
-            workingHours: workingHours.toFixed(2),
-        };
-    });
 
-    const totalWorkingHours = filteredAttendance.reduce((total, day) => total + parseFloat(day.workingHours), 0);
+    const totalWorkingHours = attendanceDetails
+        .sort((a, b) => new Date(b.date) - new Date(a.date)) // Sort in descending order if necessary
+        .slice(0, 7) // Get the most recent 7 entries
+        .reduce((total, day) => {
+            const hours = parseFloat(day.workingHours);
+            return !isNaN(hours) ? total + hours : total; // Only add valid numbers
+        }, 0);
+    console.log(totalWorkingHours)
     return (
         <Box sx={{ padding: 1 }}>
             <Grid container spacing={3} alignItems="center">
@@ -234,8 +235,9 @@ const DashboardData = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.3 }}
                 >
-
-                    <Typography variant="body1">Total Working Hours This Week: {totalWorkingHours.toFixed(2)} hours</Typography>
+                    <Typography variant="body1" gutterBottom>
+                        Total Working Hours in Last 7 days: {totalWorkingHours.toFixed(2)} hours
+                    </Typography>
 
                     <Divider sx={{ marginY: 2 }} />
 
@@ -243,24 +245,31 @@ const DashboardData = () => {
                         <TableHead>
                             <TableRow>
                                 <TableCell>Date</TableCell>
-                                <TableCell> In</TableCell>
-                                <TableCell> Out</TableCell>
+                                <TableCell>In</TableCell>
+                                <TableCell>Out</TableCell>
                                 <TableCell>Working Hours</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {filteredAttendance.map((day, index) => (
-                                <TableRow key={index}>
-                                    <TableCell>{day.date}</TableCell>
-                                    <TableCell>{day.firstInTime}</TableCell>
-                                    <TableCell>{day.lastOutTime}</TableCell>
-                                    <TableCell>{day.workingHours} hrs</TableCell>
-                                </TableRow>
-                            ))}
+                            {attendanceDetails
+                                ?.sort((a, b) => new Date(b.date) - new Date(a.date)) // Sort in descending order if necessary
+                                .slice(0, 7) // Get the most recent 7 entries
+                                .map((day, index) => (
+                                    <TableRow key={index}>
+                                        <TableCell>{day.date}</TableCell>
+                                        <TableCell>{day.firstIn}</TableCell>
+                                        <TableCell>{day.lastOut}</TableCell>
+                                        <TableCell>{day.workingHours} hrs</TableCell>
+                                    </TableRow>
+                                ))}
+
+
                         </TableBody>
                     </Table>
                 </motion.div>
             )}
+
+
             {activeTab === 3 && (
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}

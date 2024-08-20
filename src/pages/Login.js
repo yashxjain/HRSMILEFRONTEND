@@ -55,7 +55,7 @@ function Login() {
                 login(response.data.data);
                 setTimeout(() => {
                     setLoading(false);
-                    navigate('/computer-company/dashboard');
+                    navigate('/computer-factory/dashboard');
                 }, 1500);
             } else {
                 setLoading(false);

@@ -68,7 +68,7 @@ const AssetList = () => {
     const handleMenuClose = () => {
         setAnchorEl(null);
     };
-  
+
 
     useEffect(() => {
         fetchAssets();
@@ -83,7 +83,7 @@ const AssetList = () => {
                 page,
                 limit: rowsPerPage
             };
-            const response = await axios.get(`${apiBaseUrl}/assets/get_issue_asset.php`, { params });
+            const response = await axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/assets/get_issue_asset.php`, { params });
             if (response.data.success) {
                 setAssets(response.data.data);
             } else {
@@ -217,7 +217,7 @@ const AssetList = () => {
         setStatusData({ ...statusData, status }); // Set the status before submission
         handleStatusChangeSubmit();
     };
-    
+
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };

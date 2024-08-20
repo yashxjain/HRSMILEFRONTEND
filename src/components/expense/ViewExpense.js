@@ -193,7 +193,7 @@ function ViewExpense() {
                                                 variant="contained"
                                                 color="success"
                                                 onClick={() => handleStatusChange(expense.detailId, 'Approved')}
-                                                disabled={expense.Status === 'Approved'}
+                                                disabled={expense.Status === 'Approved' || expense.Status === 'Rejected'}
                                                 sx={{ marginRight: 1 }} // Add right margin for spacing
                                             >
                                                 <CheckIcon />
@@ -202,7 +202,7 @@ function ViewExpense() {
                                                 variant="contained"
                                                 color="error"
                                                 onClick={() => handleStatusChange(expense.detailId, 'Rejected')}
-                                                disabled={expense.Status === 'Rejected'}
+                                                disabled={expense.Status === 'Rejected' || expense.Status === 'Approved'}
                                             >
                                                 <CancelIcon />
                                             </IconButton>

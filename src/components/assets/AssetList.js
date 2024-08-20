@@ -58,6 +58,7 @@ const AssetList = () => {
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [anchorEl, setAnchorEl] = useState(null);
     const [menuIssueId, setMenuIssueId] = useState(null); // Store the issue ID related to the clicked menu
+    const apiBaseUrl = process.env.BASE_URL;
 
     const handleMenuClick = (event, issueId) => {
         setAnchorEl(event.currentTarget);
@@ -82,7 +83,7 @@ const AssetList = () => {
                 page,
                 limit: rowsPerPage
             };
-            const response = await axios.get('https://namami-infotech.com/HR-SMILE-BACKEND/src/assets/get_issue_asset.php', { params });
+            const response = await axios.get(`${apiBaseUrl}/assets/get_issue_asset.php`, { params });
             if (response.data.success) {
                 setAssets(response.data.data);
             } else {

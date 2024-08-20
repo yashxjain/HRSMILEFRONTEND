@@ -100,6 +100,9 @@ const EmployeeData = ({ EmpId }) => {
     });
 
     const totalWorkingHours = filteredAttendance.reduce((total, day) => total + parseFloat(day.workingHours), 0);
+   
+   
+   
     return (
         <Box sx={{ padding: 1 }}>
             <Paper elevation={3} sx={{ padding: 3, background: "#efeff1", color: "#1B3156" }}>

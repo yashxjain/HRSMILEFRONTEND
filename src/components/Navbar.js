@@ -25,20 +25,20 @@ function Navbar() {
 
     const handleClose = (event) => {
         setAnchorEl(null);
-       
+
     };
     const handlePro = (event) => {
         setAnchorEl(null);
-        navigate("/profile");
+        navigate("/computer-company/profile");
     };
 
     const handleNotification = () => {
-        navigate("/notification");
+        navigate("/computer-company/notification");
     };
 
     const handleLogout = () => {
         logout();
-        navigate('/');
+        navigate('/computer-company/');
     };
 
     const handleDrawerToggle = () => {
@@ -46,14 +46,17 @@ function Navbar() {
     };
 
     const routes = [
-        { path: '/dashboard', name: 'Dashboard' },
-        { path: '/employees', name: 'Employees' },
-        { path: '/holiday', name: 'Holiday' },
-        { path: '/policy', name: 'Policy' },
-        { path: '/attendance', name: 'Attendance' },
-        { path: '/notification', name: 'Notification' },
-        { path: '/leave', name: 'Leave' },
-        { path: '/expense', name: 'Expense' },
+        { path: '/computer-company/dashboard', name: 'Dashboard' },
+        { path: '/computer-company/employees', name: 'Employees' },
+        { path: '/computer-company/holiday', name: 'Holiday' },
+        { path: '/computer-company/policy', name: 'Policy' },
+        { path: '/computer-company/attendance', name: 'Attendance' },
+        { path: '/computer-company/notification', name: 'Notification' },
+        { path: '/computer-company/leave', name: 'Leave' },
+        { path: '/computer-company/expense', name: 'Expense' },
+        { path: '/computer-company/travel', name: 'Travel' },
+        { path: '/computer-company/ticket', name: 'Tickets' },
+        { path: '/computer-company/assets', name: 'Assets' },
     ];
 
     const drawer = (

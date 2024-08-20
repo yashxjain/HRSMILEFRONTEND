@@ -47,13 +47,14 @@ function AttendanceList() {
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [error, setError] = useState(null);
     const isMobile = useMediaQuery('(max-width:600px)');
+    const apiBaseUrl = process.env.BASE_URL;
 
     useEffect(() => {
         const fetchAttendance = async () => {
             try {
                 const params = user.role === 'HR' ? { role: "HR" } : { EmpId: user.emp_id };
                 const response = await axios.get(
-                    'https://namami-infotech.com/HR-SMILE-BACKEND/src/attendance/view_attendance.php',
+                    `${apiBaseUrl}/attendance/view_attendance.php`,
                     { params }
                 );
 
@@ -193,11 +194,11 @@ function AttendanceList() {
 
     const exportToCsv = () => {
         const csvRows = [
-            ['Emp ID', 'Date', 'In', 'In Location', 'Out', 'Out Location', 'Working Hours', 'Last Event'],
+            ['Emp ID', 'Date', 'In', 'Out', 'Working Hours', 'Last Event'],
         ];
 
-        activities.forEach(({ empId, date, firstIn, firstInLocation, lastOut, lastOutLocation, workingHours, lastEvent }) => {
-            csvRows.push([empId, date, firstIn, firstInLocation, lastOut, lastOutLocation, workingHours, lastEvent]);
+        activities.forEach(({ empId, date, firstIn, lastOut, lastOutLocation, workingHours, lastEvent }) => {
+            csvRows.push([empId, date, firstIn, lastOut, lastOutLocation, workingHours, lastEvent]);
         });
 
         const csvContent = csvRows.map(row => row.join(',')).join('\n');
@@ -226,9 +227,7 @@ function AttendanceList() {
                                 <TableCell style={{ color: "white" }}>Date</TableCell>
                                 {!isMobile && <TableCell style={{ color: "white" }}>Event</TableCell>}
                                 {!isMobile && <TableCell style={{ color: "white" }}>In</TableCell>}
-                                {!isMobile && <TableCell style={{ color: "white" }}>In Location</TableCell>}
                                 {!isMobile && <TableCell style={{ color: "white" }}>Out</TableCell>}
-                                {!isMobile && <TableCell style={{ color: "white" }}>Out Location</TableCell>}
                                 <TableCell style={{ color: "white" }}>Working Hours</TableCell>
                             </TableRow>
                         </TableHead>
@@ -247,30 +246,24 @@ function AttendanceList() {
                                             <TableCell>{empId}</TableCell>
                                             <TableCell>{date}</TableCell>
                                             {!isMobile && <TableCell>{lastEvent}</TableCell>}
-                                            {!isMobile && <TableCell>{firstIn}</TableCell>}
-                                            {!isMobile && (
-                                                <TableCell>
-                                                    {firstInLocation !== 'N/A' ? (
-                                                        <a href={firstInLocation} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
-                                                            View Location
-                                                        </a>
-                                                    ) : (
-                                                        'N/A'
-                                                    )}
-                                                </TableCell>
-                                            )}
-                                            {!isMobile && <TableCell>{lastOut}</TableCell>}
-                                            {!isMobile && (
-                                                <TableCell>
-                                                    {lastOutLocation !== 'N/A' ? (
-                                                        <a href={lastOutLocation} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
-                                                            View Location
-                                                        </a>
-                                                    ) : (
-                                                        'N/A'
-                                                    )}
-                                                </TableCell>
-                                            )}
+                                            {!isMobile && <TableCell>
+                                                {firstInLocation !== 'N/A' ? (
+                                                    <a href={firstInLocation} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+                                                        {firstIn}
+                                                    </a>
+                                                ) : (
+                                                    'N/A'
+                                                )}
+                                            </TableCell>}
+
+                                            {!isMobile && <TableCell> {lastOutLocation !== 'N/A' ? (
+                                                <a href={lastOutLocation} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+                                                    {lastOut}
+                                                </a>
+                                            ) : (
+                                                'N/A'
+                                            )}</TableCell>}
+
                                             <TableCell>{workingHours}</TableCell>
                                         </TableRow>
                                     ))}

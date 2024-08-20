@@ -22,12 +22,14 @@ import {
     MenuItem,
     Select,
     InputLabel,
-    FormControl
+    FormControl,
+    Menu
 } from '@mui/material';
 import axios from 'axios';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 function EmployeeList() {
     const [employees, setEmployees] = useState([]);
@@ -58,6 +60,18 @@ function EmployeeList() {
     });
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [selectedEmployee, setSelectedEmployee] = useState(null);
+
+    const handleClick = (event, employee) => {
+        setAnchorEl(event.currentTarget);
+        setSelectedEmployee(employee);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
 
     useEffect(() => {
         fetchEmployees();
@@ -67,6 +81,7 @@ function EmployeeList() {
     const fetchEmployees = async () => {
         try {
             const response = await axios.get('https://namami-infotech.com/HR-SMILE-BACKEND/src/employee/list_employee.php');
+            console.log('Employees response:', response.data); // Debugging line
             if (response.data.success) {
                 setEmployees(response.data.data);
             } else {
@@ -80,6 +95,7 @@ function EmployeeList() {
     const fetchOffices = async () => {
         try {
             const response = await axios.get('https://namami-infotech.com/HR-SMILE-BACKEND/src/employee/get_office.php');
+            console.log('Offices response:', response.data); // Debugging line
             if (response.data.success) {
                 setOffices(response.data.data);
             } else {
@@ -89,6 +105,7 @@ function EmployeeList() {
             console.error('Error fetching offices:', error);
         }
     };
+
 
     const handleCloseDetail = () => {
         setOpenDetail(false);
@@ -109,14 +126,14 @@ function EmployeeList() {
             setFormData({
                 EmpId: employee.EmpId,
                 Name: employee.Name,
-                Password: '',
+                Password: '', // Assuming Password is not updated on edit
                 Mobile: employee.Mobile,
                 EmailId: employee.EmailId,
                 Role: employee.Role,
                 OTP: employee.OTP,
                 IsOTPExpired: employee.IsOTPExpired || 1,
                 IsGeofence: employee.IsGeofence || 0,
-                Tenent_Id: employee.Tenent_Id || null,
+                Tenent_Id: employee.Tenent_Id || 123, // Default value if not present
                 IsActive: employee.IsActive || 1,
                 OfficeId: employee.OfficeId || null,
                 OfficeName: employee.OfficeName || '',
@@ -134,10 +151,10 @@ function EmployeeList() {
                 Mobile: '',
                 EmailId: '',
                 Role: '',
-                OTP: '',
+                OTP: '123456', // Default OTP
                 IsOTPExpired: 1,
                 IsGeofence: 0,
-                Tenent_Id: null,
+                Tenent_Id: 123, // Default Tenant ID
                 IsActive: 1,
                 OfficeId: null,
                 OfficeName: '',
@@ -149,10 +166,6 @@ function EmployeeList() {
             });
         }
         setOpenForm(true);
-    };
-
-    const handleCloseForm = () => {
-        setOpenForm(false);
     };
 
     const handleFormSubmit = async (e) => {
@@ -168,10 +181,30 @@ function EmployeeList() {
         }
 
         const formattedFormData = {
-            ...formData,
+            EmpId: formData.EmpId,
+            Name: formData.Name,
+            Password: formData.Password,
+            Mobile: formData.Mobile,
+            EmailId: formData.EmailId,
+            Role: formData.Role,
             OTP: formData.OTP || '123456', // Provide a default OTP if not provided
-            Tenent_Id: formData.Tenent_Id || 123 // Provide a default Tenant ID if not provided
+            IsOTPExpired: formData.IsOTPExpired || 1,
+            IsGeofence: formData.IsGeofence || 0,
+            Tenent_Id: formData.Tenent_Id || 123,
+            IsActive: formData.IsActive || 1,
+            RM: formData.RM,
+            Shift: formData.Shift,
+            DOB: formData.DOB || '', // Default value if DOB is not provided
+            JoinDate: formData.JoinDate || '', // Default value if JoinDate is not provided
+            Offices: [
+                {
+                    OfficeName: formData.OfficeName,
+                    LatLong: formData.LatLong
+                }
+            ]
         };
+
+        console.log('Formatted Form Data:', formattedFormData); // Log formatted data
 
         const url = formMode === 'add'
             ? 'https://namami-infotech.com/HR-SMILE-BACKEND/src/employee/add_employee.php'
@@ -179,6 +212,7 @@ function EmployeeList() {
 
         try {
             const response = await axios.post(url, formattedFormData);
+            console.log('Response:', response.data); // Log response data
             if (response.data.success) {
                 handleCloseForm();
                 fetchEmployees();
@@ -186,8 +220,28 @@ function EmployeeList() {
                 console.error('Error:', response.data.message);
             }
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Error:', error.response ? error.response.data : error.message);
         }
+    };
+
+    const handleOfficeChange = (event) => {
+        const selectedOfficeId = event.target.value;
+        console.log('Selected Office ID:', selectedOfficeId); // Debugging line
+
+        const selectedOffice = offices.find(o => o.Id === selectedOfficeId);
+        console.log('Selected Office:', selectedOffice); // Debugging line
+
+        setFormData(prevFormData => ({
+            ...prevFormData,
+            OfficeId: selectedOfficeId,
+            OfficeName: selectedOffice?.OfficeName || '',
+            LatLong: selectedOffice?.LatLong || '',
+            Distance: selectedOffice?.Distance || ''
+        }));
+    };
+
+    const handleCloseForm = () => {
+        setOpenForm(false);
     };
 
     const handleDisableEmployee = async (employee) => {
@@ -216,7 +270,38 @@ function EmployeeList() {
             employee[key].toString().toLowerCase().includes(lowerCaseSearchTerm)
         );
     });
+    const getCurrentDate = () => {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+        const day = String(today.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
 
+    const addCompOff = async (employee) => {
+        if (!employee || !employee.EmpId) {
+            console.error('No employee selected');
+            return;
+        }
+
+        const compOffData = {
+            empid: employee.EmpId,
+            compOffDays: 1,
+            compOffDate: getCurrentDate() // Update this as needed
+        };
+
+        try {
+            const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/leave/add_comp_off.php', compOffData);
+            if (response.data.success) {
+                alert('CompOff added successfully');
+                fetchEmployees(); // Refresh employee list to reflect changes
+            } else {
+                console.error('Error:', response.data.message);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
 
     return (
         <div>
@@ -293,7 +378,31 @@ function EmployeeList() {
                                         >
                                             <DeleteIcon />
                                         </IconButton>
+                                        <IconButton
+                                            color="primary"
+                                            onClick={(e) => handleClick(e, employee)}
+                                        >
+                                            <MoreVertIcon />
+                                        </IconButton>
+                                        <Menu
+                                            anchorEl={anchorEl}
+                                            open={Boolean(anchorEl)}
+                                            onClose={handleClose}
+                                        >
+                                            <MenuItem
+                                                onClick={() => {
+                                                    handleClose();
+                                                    if (selectedEmployee) {
+                                                        // Call your function to add CompOff
+                                                        addCompOff(selectedEmployee);
+                                                    }
+                                                }}
+                                            >
+                                                Add CompOff
+                                            </MenuItem>
+                                        </Menu>
                                     </TableCell>
+                                   
 
                                 </TableRow>
 
@@ -321,7 +430,7 @@ function EmployeeList() {
                                     fullWidth
                                     label="Employee ID"
                                     value={formData.EmpId}
-                                      onChange={(e) => setFormData({ ...formData, EmpId: e.target.value })}
+                                    onChange={(e) => setFormData({ ...formData, EmpId: e.target.value })}
                                     required
                                     disabled={formMode === 'edit'}
                                 />
@@ -383,6 +492,22 @@ function EmployeeList() {
                                 />
                             </Grid>
                             <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Date of Birth (YYYY-MM-DD)"
+                                    value={formData.DOB}
+                                    onChange={(e) => setFormData({ ...formData, DOB: e.target.value })}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Date of Joining"
+                                    value={formData.JoinDate}
+                                    onChange={(e) => setFormData({ ...formData, JoinDate: e.target.value })}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={6}>
                                 <FormControl fullWidth required>
                                     <InputLabel>Shift</InputLabel>
                                     <Select
@@ -399,18 +524,12 @@ function EmployeeList() {
                             </Grid>
 
                             <Grid item xs={12} md={6}>
-                                <FormControl fullWidth>
+                                <FormControl fullWidth required>
                                     <InputLabel>Office</InputLabel>
                                     <Select
                                         value={formData.OfficeId || ''}
-                                        onChange={(e) => setFormData({
-                                            ...formData,
-                                            OfficeId: e.target.value,
-                                            OfficeName: offices.find(o => o.Id === e.target.value)?.OfficeName || '',
-                                            LatLong: offices.find(o => o.Id === e.target.value)?.LatLong || '',
-                                            Distance: offices.find(o => o.Id === e.target.value)?.Distance || ''
-                                        })}
-                                        required
+                                        onChange={handleOfficeChange}
+                                        label="Office"
                                     >
                                         {offices.map(office => (
                                             <MenuItem key={office.Id} value={office.Id}>

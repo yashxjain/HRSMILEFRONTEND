@@ -166,7 +166,6 @@ const DashboardData = () => {
 
             </Tabs>
 
-            {/* Tab Panels */}
             {activeTab === 0 && (
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -229,7 +228,6 @@ const DashboardData = () => {
                     </List>
                 </motion.div>
             )}
-
             {activeTab === 2 && (
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -279,22 +277,27 @@ const DashboardData = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.3 }}
                 >
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Asset</TableCell>
+                                <TableCell> Make</TableCell>
+                                <TableCell> Model</TableCell>
+                                <TableCell>Serial Number</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {assetDetails.map((asset, index) => (
+                                <TableRow key={index}>
+                                    <TableCell>{asset.asset_name}</TableCell>
+                                    <TableCell>{asset.make_name}</TableCell>
+                                    <TableCell>{asset.model_name}</TableCell>
+                                    <TableCell>{asset.serial_number}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
 
-
-
-                    <List>
-                        {assetDetails && assetDetails.map((asset) => (
-                            <ListItem key={assetDetails.id} sx={{ marginY: 1 }}>
-                                <ListItemAvatar>
-                                    <Avatar alt="Asset Image" src={asset.image} />
-                                </ListItemAvatar>
-                                <ListItemText
-                                    primary={`${asset.asset_name} - ${asset.make_name}`}
-                                    secondary={`Model Name: ${asset.model_name} | Serial Number: ${asset.serial_number}`}
-                                />
-                            </ListItem>
-                        ))}
-                    </List>
                 </motion.div>
             )}
 

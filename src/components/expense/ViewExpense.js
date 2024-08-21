@@ -32,7 +32,7 @@ function ViewExpense() {
                     return;
                 }
 
-                const response = await axios.get('https://namami-infotech.com/HR-SMILE-BACKEND/src/expense/get_expense.php', {
+                const response = await axios.get('https://namami-infotech.com/CFBackend/src/expense/get_expense.php', {
                     params: { EmpId: user.emp_id, role: user.role }
                 });
 
@@ -87,7 +87,7 @@ function ViewExpense() {
 
     const handleStatusChange = async (detailId, status) => {
         try {
-            const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/expense/update_expense.php', {
+            const response = await axios.post('https://namami-infotech.com/CFBackend/src/expense/update_expense.php', {
                 detailId,
                 status,
                 role: user.role

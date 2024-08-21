@@ -24,7 +24,7 @@ function ViewHoliday() {
 
     const fetchHolidays = async () => {
         try {
-            const response = await axios.get('https://namami-infotech.com/HR-SMILE-BACKEND/src/holiday/view_holiday.php');
+            const response = await axios.get('https://namami-infotech.com/CFBackend/src/holiday/view_holiday.php');
             if (response.data.success) {
                 const holidayEvents = response.data.data.map(holiday => ({
                     title: holiday.title,

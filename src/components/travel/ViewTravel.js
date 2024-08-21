@@ -28,7 +28,7 @@ function ViewTravel({ EmpId }) {
                     return;
                 }
 
-                const response = await axios.get('https://namami-infotech.com/HR-SMILE-BACKEND/src/travel/get_travel.php', {
+                const response = await axios.get('https://namami-infotech.com/CFBackend/src/travel/get_travel.php', {
                     params: { empId: user.emp_id, role: user.role }
                 });
 
@@ -61,7 +61,7 @@ function ViewTravel({ EmpId }) {
     const handleStatusChange = async (id, status) => {
 
         try {
-            const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/travel/update_status.php', {
+            const response = await axios.post('https://namami-infotech.com/CFBackend/src/travel/update_status.php', {
                 id,
                 status
             });

@@ -11,7 +11,7 @@ function ViewNotifications() {
     const { user } = useAuth()
     const fetchNotifications = async () => {
         try {
-            const response = await axios.get('https://namami-infotech.com/HR-SMILE-BACKEND/src/notification/get_notification.php');
+            const response = await axios.get('https://namami-infotech.com/CFBackend/src/notification/get_notification.php');
             setNotifications(response.data.notifications);
         } catch (err) {
             setError('Failed to fetch notifications');

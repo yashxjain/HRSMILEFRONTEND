@@ -46,7 +46,7 @@ function ViewLeave() {
 
             try {
                 const params = user.role === 'HR' ? { role: user.role } : { empId: user.emp_id };
-                const response = await axios.get('https://namami-infotech.com/HR-SMILE-BACKEND/src/leave/get_leave.php', { params });
+                const response = await axios.get('https://namami-infotech.com/CFBackend/src/leave/get_leave.php', { params });
 
                 if (response.data.success) {
                     setLeaves(response.data.data);
@@ -75,7 +75,7 @@ function ViewLeave() {
 
     const handleStatusChange = async (id, newStatus) => {
         try {
-            const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/leave/approve_leave.php', {
+            const response = await axios.post('https://namami-infotech.com/CFBackend/src/leave/approve_leave.php', {
                 id,
                 status: newStatus
             });

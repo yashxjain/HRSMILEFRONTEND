@@ -15,7 +15,7 @@ function EditHoliday({ open, onClose, holiday, onHolidayUpdated }) {
 
     const handleSubmit = async () => {
         try {
-            const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/holiday/edit_holiday.php', {
+            const response = await axios.post('https://namami-infotech.com/CFBackend/src/holiday/edit_holiday.php', {
                 id: holiday.id,
                 title,
                 date

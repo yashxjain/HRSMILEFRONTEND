@@ -42,18 +42,17 @@ const DashboardData = () => {
             setLoading(true);
             try {
                 const [employeeResponse, leaveResponse, expenseResponse, attendanceResponse, assetResponse] = await Promise.all([
-                    axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/employee/view_employee.php?EmpId=${EmpId}`),
-                    axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/leave/balance_leave.php?empid=${EmpId}`),
-                    axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/expense/get_expense.php?EmpId=${EmpId}`),
-                    axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/attendance/view_attendance.php?EmpId=${EmpId}`),
-                    axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/assets/get_issue_asset.php?EmpId=${EmpId}`)
+                    axios.get(`https://namami-infotech.com/CFBackend/src/employee/view_employee.php?EmpId=${EmpId}`),
+                    axios.get(`https://namami-infotech.com/CFBackend/src/leave/balance_leave.php?empid=${EmpId}`),
+                    axios.get(`https://namami-infotech.com/CFBackend/src/expense/get_expense.php?EmpId=${EmpId}`),
+                    axios.get(`https://namami-infotech.com/CFBackend/src/attendance/view_attendance.php?EmpId=${EmpId}`),
+                    axios.get(`https://namami-infotech.com/CFBackend/src/assets/get_issue_asset.php?EmpId=${EmpId}`)
                 ]);
 
                 setEmployeeData(employeeResponse.data.data);
                 setLeaveDetails(leaveResponse.data.data);
                 setExpenseDetails(expenseResponse.data.data);
                 setAttendanceDetails(attendanceResponse.data.data);
-                // console.log(attendanceResponse.data.data)
                 setAssetDetails(assetResponse.data.data);
             } catch (err) {
                 setError('Failed to fetch data');

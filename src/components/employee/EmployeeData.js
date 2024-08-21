@@ -40,11 +40,11 @@ const EmployeeData = ({ EmpId }) => {
     useEffect(() => {
         const fetchEmployeeData = async () => {
             try {
-                const response = await axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/employee/view_employee.php?EmpId=${EmpId}`);
-                const leaveResponse = await axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/leave/balance_leave.php?empid=${EmpId}`);
-                const expenseResponse = await axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/expense/get_expense.php?EmpId=${EmpId}`);
-                const attendanceResponse = await axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/attendance/view_attendance.php?EmpId=${EmpId}`);
-                const assetResponse = await axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/assets/get_issue_asset.php?EmpId=${EmpId}`);
+                const response = await axios.get(`https://namami-infotech.com/CFBackend/src/employee/view_employee.php?EmpId=${EmpId}`);
+                const leaveResponse = await axios.get(`https://namami-infotech.com/CFBackend/src/leave/balance_leave.php?empid=${EmpId}`);
+                const expenseResponse = await axios.get(`https://namami-infotech.com/CFBackend/src/expense/get_expense.php?EmpId=${EmpId}`);
+                const attendanceResponse = await axios.get(`https://namami-infotech.com/CFBackend/src/attendance/view_attendance.php?EmpId=${EmpId}`);
+                const assetResponse = await axios.get(`https://namami-infotech.com/CFBackend/src/assets/get_issue_asset.php?EmpId=${EmpId}`);
 
                 setEmployeeData(response.data.data);
                 setLeaveDetails(leaveResponse.data.data);
@@ -100,9 +100,9 @@ const EmployeeData = ({ EmpId }) => {
     });
 
     const totalWorkingHours = filteredAttendance.reduce((total, day) => total + parseFloat(day.workingHours), 0);
-   
-   
-   
+
+
+
     return (
         <Box sx={{ padding: 1 }}>
             <Paper elevation={3} sx={{ padding: 3, background: "#efeff1", color: "#1B3156" }}>

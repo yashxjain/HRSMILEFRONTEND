@@ -40,7 +40,7 @@ function ApplyTravel({ open, onClose, onTravelApplied }) {
             const payload = {
                 application: travelEntry
             };
-            const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/travel/apply_travel.php', payload);
+            const response = await axios.post('https://namami-infotech.com/CFBackend/src/travel/apply_travel.php', payload);
             if (response.data.success) {
                 setSuccess('Travel application submitted successfully.');
                 onTravelApplied();

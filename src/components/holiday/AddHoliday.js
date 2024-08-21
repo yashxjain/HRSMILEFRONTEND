@@ -23,7 +23,7 @@ function AddHoliday({ open, onClose, onHolidayAdded }) {
 
     const handleSubmit = async () => {
         try {
-            const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/holiday/add_holiday.php', { holidays });
+            const response = await axios.post('https://namami-infotech.com/CFBackend/src/holiday/add_holiday.php', { holidays });
             if (response.data.success) {
                 onHolidayAdded();
                 onClose();

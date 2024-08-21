@@ -14,7 +14,7 @@ function PolicyList() {
 
     const fetchPolicies = async () => {
         try {
-            const response = await axios.get('https://namami-infotech.com/HR-SMILE-BACKEND/src/policy/view_policy.php');
+            const response = await axios.get('https://namami-infotech.com/CFBackend/src/policy/view_policy.php');
             if (response.data.success) {
                 setPolicies(response.data.data);
             } else {
@@ -27,7 +27,7 @@ function PolicyList() {
 
     const handleTogglePolicyStatus = async (policyId, action) => {
         try {
-            const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/policy/disable_policy.php', { PolicyId: policyId, action });
+            const response = await axios.post('https://namami-infotech.com/CFBackend/src/policy/disable_policy.php', { PolicyId: policyId, action });
             if (response.data.success) {
                 fetchPolicies(); // Refresh the list
             } else {

@@ -80,7 +80,7 @@ function EmployeeList() {
 
     const fetchEmployees = async () => {
         try {
-            const response = await axios.get('https://namami-infotech.com/HR-SMILE-BACKEND/src/employee/list_employee.php');
+            const response = await axios.get('https://namami-infotech.com/CFBackend/src/employee/list_employee.php');
             console.log('Employees response:', response.data); // Debugging line
             if (response.data.success) {
                 setEmployees(response.data.data);
@@ -94,7 +94,7 @@ function EmployeeList() {
 
     const fetchOffices = async () => {
         try {
-            const response = await axios.get('https://namami-infotech.com/HR-SMILE-BACKEND/src/employee/get_office.php');
+            const response = await axios.get('https://namami-infotech.com/CFBackend/src/employee/get_office.php');
             console.log('Offices response:', response.data); // Debugging line
             if (response.data.success) {
                 setOffices(response.data.data);
@@ -207,8 +207,8 @@ function EmployeeList() {
         console.log('Formatted Form Data:', formattedFormData); // Log formatted data
 
         const url = formMode === 'add'
-            ? 'https://namami-infotech.com/HR-SMILE-BACKEND/src/employee/add_employee.php'
-            : 'https://namami-infotech.com/HR-SMILE-BACKEND/src/employee/edit_employee.php';
+            ? 'https://namami-infotech.com/CFBackend/src/employee/add_employee.php'
+            : 'https://namami-infotech.com/CFBackend/src/employee/edit_employee.php';
 
         try {
             const response = await axios.post(url, formattedFormData);
@@ -250,7 +250,7 @@ function EmployeeList() {
             return;
         }
         try {
-            const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/employee/disable_employee.php', {
+            const response = await axios.post('https://namami-infotech.com/CFBackend/src/employee/disable_employee.php', {
                 EmpId: employee.EmpId,
                 action: 'disable'
             });
@@ -291,7 +291,7 @@ function EmployeeList() {
         };
 
         try {
-            const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/leave/add_comp_off.php', compOffData);
+            const response = await axios.post('https://namami-infotech.com/CFBackend/src/leave/add_comp_off.php', compOffData);
             if (response.data.success) {
                 alert('CompOff added successfully');
                 fetchEmployees(); // Refresh employee list to reflect changes

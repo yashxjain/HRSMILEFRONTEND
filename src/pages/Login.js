@@ -46,7 +46,7 @@ function Login() {
         e.preventDefault();
         setLoading(true);
         try {
-            const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/auth/login.php', {
+            const response = await axios.post('https://namami-infotech.com/CFBackend/src/auth/login.php', {
                 EmpId: empId,
                 password: password,
             });
@@ -82,7 +82,7 @@ function Login() {
     const handleForgotPasswordSubmit = async () => {
         try {
             setLoading(true);
-            const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/auth/forget_password.php', {
+            const response = await axios.post('https://namami-infotech.com/CFBackend/src/auth/forget_password.php', {
                 email: forgotEmail,
             });
 

@@ -45,7 +45,7 @@ const UserProfile = () => {
         setError('');
         setSuccess('');
         try {
-            const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/auth/change_password.php', {
+            const response = await axios.post('https://namami-infotech.com/CFBackend/src/auth/change_password.php', {
                 EmpId: user?.emp_id,
                 currentPassword,
                 newPassword,

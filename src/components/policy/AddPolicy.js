@@ -28,7 +28,7 @@ function AddPolicyDialog({ open, onClose, onPolicyAdded }) {
 
         try {
             const response = await axios.post(
-                'https://namami-infotech.com/HR-SMILE-BACKEND/src/policy/add_policy.php',
+                'https://namami-infotech.com/CFBackend/src/policy/add_policy.php',
                 {
                     PolicyName: policyName,
                     PolicyDescription: policyDescription,

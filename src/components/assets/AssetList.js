@@ -82,7 +82,7 @@ const AssetList = () => {
                 page,
                 limit: rowsPerPage
             };
-            const response = await axios.get(`https://namami-infotech.com/CFBackend/src/assets/get_issue_asset.php`, { params });
+            const response = await axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/assets/get_issue_asset.php`, { params });
             if (response.data.success) {
                 setAssets(response.data.data);
             } else {
@@ -97,7 +97,7 @@ const AssetList = () => {
 
     const fetchAvailableAssets = async () => {
         try {
-            const response = await axios.get('https://namami-infotech.com/CFBackend/src/assets/get_asset.php');
+            const response = await axios.get('https://namami-infotech.com/HR-SMILE-BACKEND/src/assets/get_asset.php');
             if (response.data.success) {
                 setAvailableAssets(response.data.data);
             } else {
@@ -117,7 +117,7 @@ const AssetList = () => {
     const handleIssueAssetSubmit = async () => {
         setLoading(true);
         try {
-            const response = await axios.post('https://namami-infotech.com/CFBackend/src/assets/issue_asset.php', {
+            const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/assets/issue_asset.php', {
                 EmpId: manualEmpId, // Use the manually entered EmpId
                 assets: [
                     {
@@ -155,7 +155,7 @@ const AssetList = () => {
 
     const handleAddNewAsset = async () => {
         try {
-            const response = await axios.post('https://namami-infotech.com/CFBackend/src/assets/add_asset.php', {
+            const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/assets/add_asset.php', {
                 product_name: newAssetData.productName,
                 added_date: newAssetData.addedDate
             });
@@ -195,7 +195,7 @@ const AssetList = () => {
     const handleStatusChangeSubmit = async () => {
         setLoading(true);
         try {
-            const response = await axios.post('https://namami-infotech.com/CFBackend/src/assets/update_asset_status.php', {
+            const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/assets/update_asset_status.php', {
                 issue_id: menuIssueId,
                 status: statusData.status
             });

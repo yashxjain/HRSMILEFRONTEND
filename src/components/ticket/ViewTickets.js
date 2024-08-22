@@ -28,7 +28,7 @@ function ViewTickets() {
     useEffect(() => {
         const fetchTickets = async () => {
             try {
-                const response = await axios.get('https://namami-infotech.com/CFBackend/src/support/get_ticket.php', {
+                const response = await axios.get('https://namami-infotech.com/HR-SMILE-BACKEND/src/support/get_ticket.php', {
                     params: { EmpId: user.emp_id, role: user.role }
                 });
 
@@ -60,7 +60,7 @@ function ViewTickets() {
 
     const handleStatusChange = async (id, status) => {
         try {
-            const response = await axios.post('https://namami-infotech.com/CFBackend/src/support/update_status.php', {
+            const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/support/update_status.php', {
                 id,
                 status
             });

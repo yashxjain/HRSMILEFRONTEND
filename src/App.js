@@ -19,6 +19,7 @@ import Travel from './pages/Travel';
 import Ticket from './pages/Ticket';
 import EmployeeProfile from './pages/EmployeeProfile';
 import Assets from './pages/Assets';
+import Dealer from './pages/Dealer';
 
 function App() {
   return (
@@ -26,20 +27,22 @@ function App() {
       <AuthProvider>
         <Router>
           <Routes>
-            <Route path="/computer-factory" element={<Login />} />
-            <Route path="/computer-factory/dashboard" element={<PrivateRoute element={Dashboard} />} />
-            <Route path="/computer-factory/employees" element={<PrivateRoute element={Employee} requiredRole="HR" />} />
-            <Route path="/computer-factory/employees/:empId" element={<PrivateRoute element={EmployeeProfile} requiredRole="HR" />} />
-            <Route path="/computer-factory/holiday" element={<PrivateRoute element={Holiday} />} />
-            <Route path="/computer-factory/policy" element={<PrivateRoute element={Policy} />} />
-            <Route path="/computer-factory/attendance" element={<PrivateRoute element={Attendance} />} />
-            <Route path="/computer-factory/notification" element={<PrivateRoute element={Notification} />} />
-            <Route path="/computer-factory/leave" element={<PrivateRoute element={Leave} />} />
-            <Route path="/computer-factory/expense" element={<PrivateRoute element={Expense} />} />
-            <Route path="/computer-factory/profile" element={<PrivateRoute element={EmpProfile} />} />
-            <Route path="/computer-factory/travel" element={<PrivateRoute element={Travel} />} />
-            <Route path="/computer-factory/ticket" element={<PrivateRoute element={Ticket} />} />
-            <Route path="/computer-factory/assets" element={<PrivateRoute element={Assets} />} />
+            <Route path="/" element={<Login />} />
+            <Route path="/computer-factory/" element={<Login />} />
+            <Route path="/dashboard" element={<PrivateRoute element={Dashboard} />} />
+            <Route path="/employees" element={<PrivateRoute element={Employee} requiredRole="HR" />} />
+            <Route path="/employees/:empId" element={<PrivateRoute element={EmployeeProfile} requiredRole="HR" />} />
+            <Route path="/holiday" element={<PrivateRoute element={Holiday} />} />
+            <Route path="/policy" element={<PrivateRoute element={Policy} />} />
+            <Route path="/attendance" element={<PrivateRoute element={Attendance} />} />
+            <Route path="/notification" element={<PrivateRoute element={Notification} />} />
+            <Route path="/leave" element={<PrivateRoute element={Leave} />} />
+            <Route path="/expense" element={<PrivateRoute element={Expense} />} />
+            <Route path="/profile" element={<PrivateRoute element={EmpProfile} />} />
+            <Route path="/travel" element={<PrivateRoute element={Travel} />} />
+            <Route path="/ticket" element={<PrivateRoute element={Ticket} />} />
+            <Route path="/assets" element={<PrivateRoute element={Assets} />} />
+            <Route path="/dealer" element={<PrivateRoute element={Dealer} />} />
           </Routes>
         </Router>
       </AuthProvider>

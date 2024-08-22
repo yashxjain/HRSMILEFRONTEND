@@ -16,7 +16,7 @@ const PrivateRoute = ({ element: Component, requiredRole, ...rest }) => {
     }
 
     // Redirect to login page if not authenticated or if the role doesn't match
-    return <Navigate to="/computer-factory/" />;
+    return <Navigate to="/" />;
 };
 
 export default PrivateRoute;

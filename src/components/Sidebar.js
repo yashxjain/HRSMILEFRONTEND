@@ -13,21 +13,22 @@ function Sidebar({ mobileOpen, onDrawerToggle }) {
     const { user } = useAuth(); // Get the current user from the AuthContext
 
     const routes = [
-        { path: '/computer-factory/dashboard', name: 'Dashboard' },
-        { path: '/computer-factory/holiday', name: 'Holiday' },
-        { path: '/computer-factory/policy', name: 'Policy' },
-        { path: '/computer-factory/attendance', name: 'Attendance' },
-        { path: '/computer-factory/notification', name: 'Notification' },
-        { path: '/computer-factory/leave', name: 'Leave' },
-        { path: '/computer-factory/expense', name: 'Expense' },
-        { path: '/computer-factory/travel', name: 'Travel' },
-        { path: '/computer-factory/ticket', name: 'Tickets' },
-        { path: '/computer-factory/assets', name: 'Assets' },
+        { path: '/dashboard', name: 'Dashboard' },
+        { path: '/holiday', name: 'Holiday' },
+        { path: '/policy', name: 'Policy' },
+        { path: '/attendance', name: 'Attendance' },
+        { path: '/notification', name: 'Notification' },
+        { path: '/leave', name: 'Leave' },
+        { path: '/expense', name: 'Expense' },
+        { path: '/travel', name: 'Travel' },
+        { path: '/ticket', name: 'Tickets' },
+        { path: '/assets', name: 'Assets' },
+        { path: '/dealer', name: 'Dealer' },
     ];
 
     // Conditionally include the "Employees" tab based on the user's role
     if (user && user.role === 'HR') {
-        routes.splice(1, 0, { path: '/computer-factory/employees', name: 'Employees' }); // Insert "Employees" at the desired index
+        routes.splice(1, 0, { path: '/employees', name: 'Employees' }); // Insert "Employees" at the desired index
     }
 
     const drawer = (

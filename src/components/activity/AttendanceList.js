@@ -68,7 +68,7 @@ const AttendanceList = () => {
         if (user.role === 'HR') {
             const fetchEmployees = async () => {
                 try {
-                    const response = await axios.get('https://namami-infotech.com/CFBackend/src/employee/list_employee.php');
+                    const response = await axios.get('https://namami-infotech.com/HR-SMILE-BACKEND/src/employee/list_employee.php');
                     setEmployees(response.data.data);
                 } catch (error) {
                     setError('Error fetching employee list: ' + error.message);
@@ -84,7 +84,7 @@ const AttendanceList = () => {
 
             try {
                 const response = await axios.get(
-                    `https://namami-infotech.com/CFBackend/src/attendance/view_attendance.php`,
+                    `https://namami-infotech.com/HR-SMILE-BACKEND/src/attendance/view_attendance.php`,
                     { params: { EmpId: selectedEmpId } }
                 );
 

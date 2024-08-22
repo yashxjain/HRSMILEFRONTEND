@@ -42,11 +42,11 @@ const DashboardData = () => {
             setLoading(true);
             try {
                 const [employeeResponse, leaveResponse, expenseResponse, attendanceResponse, assetResponse] = await Promise.all([
-                    axios.get(`https://namami-infotech.com/CFBackend/src/employee/view_employee.php?EmpId=${EmpId}`),
-                    axios.get(`https://namami-infotech.com/CFBackend/src/leave/balance_leave.php?empid=${EmpId}`),
-                    axios.get(`https://namami-infotech.com/CFBackend/src/expense/get_expense.php?EmpId=${EmpId}`),
-                    axios.get(`https://namami-infotech.com/CFBackend/src/attendance/view_attendance.php?EmpId=${EmpId}`),
-                    axios.get(`https://namami-infotech.com/CFBackend/src/assets/get_issue_asset.php?EmpId=${EmpId}`)
+                    axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/employee/view_employee.php?EmpId=${EmpId}`),
+                    axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/leave/balance_leave.php?empid=${EmpId}`),
+                    axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/expense/get_expense.php?EmpId=${EmpId}`),
+                    axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/attendance/view_attendance.php?EmpId=${EmpId}`),
+                    axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/assets/get_issue_asset.php?EmpId=${EmpId}`)
                 ]);
 
                 setEmployeeData(employeeResponse.data.data);
@@ -84,8 +84,6 @@ const DashboardData = () => {
         ? expenseDetails.reduce((total, expense) => expense.Status === 'Rejected' ? total + parseFloat(expense.expenseAmount) : total, 0)
         : 0;
 
-
-
     const totalWorkingHours = attendanceDetails
         .sort((a, b) => new Date(b.date) - new Date(a.date)) // Sort in descending order if necessary
         .slice(0, 7) // Get the most recent 7 entries
@@ -93,7 +91,6 @@ const DashboardData = () => {
             const hours = parseFloat(day.workingHours);
             return !isNaN(hours) ? total + hours : total; // Only add valid numbers
         }, 0);
-    console.log(totalWorkingHours)
     return (
         <Box sx={{ padding: 1 }}>
             <Grid container spacing={3} alignItems="center">

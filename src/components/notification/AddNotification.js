@@ -30,7 +30,7 @@ function AddNotification({ open, onClose, onNotificationAdded }) {
             formData.append('image', base64Image); // Use the base64 image string
 
             const response = await axios.post(
-                'https://namami-infotech.com/CFBackend/src/notification/add_notification.php',
+                'https://namami-infotech.com/HR-SMILE-BACKEND/src/notification/add_notification.php',
                 formData,
                 {
                     headers: {

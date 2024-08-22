@@ -26,7 +26,7 @@ function ApplyLeave({ open, onClose, onLeaveApplied }) {
     useEffect(() => {
         const fetchLeaveBalances = async () => {
             try {
-                const response = await axios.get(`https://namami-infotech.com/CFBackend/src/leave/balance_leave.php?empid=${user.emp_id}`);
+                const response = await axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/leave/balance_leave.php?empid=${user.emp_id}`);
                 if (response.data.success) {
                     const data = response.data.data;
                     const availableCategories = Object.keys(data)
@@ -58,7 +58,7 @@ function ApplyLeave({ open, onClose, onLeaveApplied }) {
         }
 
         try {
-            const response = await axios.post('https://namami-infotech.com/CFBackend/src/leave/apply_leave.php', leaveDetails);
+            const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/leave/apply_leave.php', leaveDetails);
             if (response.data.success) {
                 onLeaveApplied();
                 onClose();

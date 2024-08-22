@@ -29,16 +29,16 @@ function Navbar() {
     };
     const handlePro = (event) => {
         setAnchorEl(null);
-        navigate("/computer-factory/profile");
+        navigate("/profile");
     };
 
     const handleNotification = () => {
-        navigate("/computer-factory/notification");
+        navigate("/notification");
     };
 
     const handleLogout = () => {
         logout();
-        navigate('/computer-factory/');
+        navigate('/');
     };
 
     const handleDrawerToggle = () => {
@@ -46,17 +46,19 @@ function Navbar() {
     };
 
     const routes = [
-        { path: '/computer-factory/dashboard', name: 'Dashboard' },
-        { path: '/computer-factory/employees', name: 'Employees' },
-        { path: '/computer-factory/holiday', name: 'Holiday' },
-        { path: '/computer-factory/policy', name: 'Policy' },
-        { path: '/computer-factory/attendance', name: 'Attendance' },
-        { path: '/computer-factory/notification', name: 'Notification' },
-        { path: '/computer-factory/leave', name: 'Leave' },
-        { path: '/computer-factory/expense', name: 'Expense' },
-        { path: '/computer-factory/travel', name: 'Travel' },
-        { path: '/computer-factory/ticket', name: 'Tickets' },
-        { path: '/computer-factory/assets', name: 'Assets' },
+        { path: '/dashboard', name: 'Dashboard' },
+        { path: '/employees', name: 'Employees' },
+        { path: '/holiday', name: 'Holiday' },
+        { path: '/policy', name: 'Policy' },
+        { path: '/attendance', name: 'Attendance' },
+        { path: '/notification', name: 'Notification' },
+        { path: '/leave', name: 'Leave' },
+        { path: '/expense', name: 'Expense' },
+        { path: '/travel', name: 'Travel' },
+        { path: '/ticket', name: 'Tickets' },
+        { path: '/assets', name: 'Assets' },
+        { path: '/dealer', name: 'Dealer' },
+
     ];
 
     const drawer = (

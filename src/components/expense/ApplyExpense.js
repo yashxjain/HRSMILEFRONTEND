@@ -48,7 +48,7 @@ function ApplyExpense({ open, onClose, onExpenseApplied }) {
             const payload = {
                 expenses: expenseEntries
             };
-            const response = await axios.post('https://namami-infotech.com/CFBackend/src/expense/apply_expense.php', payload);
+            const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/expense/apply_expense.php', payload);
             if (response.data.success) {
                 onExpenseApplied();
                 onClose();

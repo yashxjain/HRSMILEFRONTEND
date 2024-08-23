@@ -237,11 +237,11 @@ const AttendanceList = () => {
                         </Select>
                     </FormControl>
                     <div
-                        
+
                         style={{
                             color: "#1B3156",
-                            fontSize: '1rem', 
-                            cursor:"pointer"
+                            fontSize: '1rem',
+                            cursor: "pointer"
                         }}
                         onClick={() => setViewMode(viewMode === 'calendar' ? 'table' : 'calendar')}
                     >

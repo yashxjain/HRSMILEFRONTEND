@@ -177,7 +177,7 @@ function Login() {
                             />
 
                             <Typography variant="h4" align="center" sx={{ color: '#6695AF' }} gutterBottom>
-                                HR SMILE Login
+                                HR Smile Login
                             </Typography>
                             {error && (
                                 <Typography variant="body2" color="error" align="center">

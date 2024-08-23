@@ -101,7 +101,7 @@ function Navbar() {
                             </IconButton>
                         )}
                         <Typography variant="h6" sx={{ fontWeight: 'bold', letterSpacing: 1 }}>
-                            HR SMILE
+                            HR Smile
                         </Typography>
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>

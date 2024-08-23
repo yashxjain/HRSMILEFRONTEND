@@ -513,10 +513,10 @@ function EmployeeList() {
                                         onChange={(e) => setFormData({ ...formData, Shift: e.target.value })}
                                         label="Shift"
                                     >
-                                        <MenuItem value="9 AM - 6 PM">9 AM - 6 PM</MenuItem>
+                                        <MenuItem value="9:00 AM - 6:00 PM">9:00 AM - 6:00 PM</MenuItem>
                                         <MenuItem value="9:30 AM - 6:30 PM">9:30 AM - 6:30 PM</MenuItem>
-                                        <MenuItem value="10 AM - 7 PM">10 AM - 7 PM</MenuItem>
-                                        <MenuItem value="11 AM - 8 PM">11 AM - 8 PM</MenuItem>
+                                        <MenuItem value="10:00 AM - 7:00 PM">10:00 AM - 7:00 PM</MenuItem>
+                                        <MenuItem value="11:00 AM - 8:00 PM">11:00 AM - 8:00 PM</MenuItem>
                                     </Select>
                                 </FormControl>
                             </Grid>

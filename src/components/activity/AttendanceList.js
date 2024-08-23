@@ -43,14 +43,26 @@ const CustomEvent = ({ event }) => (
 );
 
 const generateMapUrl = (geoLocation) => {
-    if (!geoLocation || geoLocation === 'N/A') {
+    if (!geoLocation) {
         return '#'; // Return a dummy link or handle it as needed
     }
+
     const [latitude, longitude] = geoLocation.split(',');
+
+    // Check if latitude and longitude are present after splitting
     if (!latitude || !longitude) {
         return '#'; // Handle missing latitude or longitude
     }
-    return `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}&zoom=15&basemap=satellite&markercolor=red`;
+
+    // Ensure latitude and longitude are valid numbers
+    const lat = parseFloat(latitude);
+    const lon = parseFloat(longitude);
+
+    if (isNaN(lat) || isNaN(lon)) {
+        return '#'; // Handle invalid latitude or longitude
+    }
+
+    return `https://www.google.com/maps/search/?api=1&query=${lat},${lon}&zoom=15&basemap=satellite&markercolor=red`;
 };
 
 const AttendanceList = () => {
@@ -59,10 +71,59 @@ const AttendanceList = () => {
     const [selectedEmpId, setSelectedEmpId] = useState(user.role === 'HR' ? '' : user.emp_id);
     const [activities, setActivities] = useState([]);
     const [error, setError] = useState(null);
-    const [viewMode, setViewMode] = useState('calendar'); // State to control the view mode
+    const [viewMode, setViewMode] = useState('calendar');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const isMobile = useMediaQuery('(max-width:600px)');
+
+    const getShiftStartTime = (shift) => {
+        const [startTime] = shift.split(' - ');
+        return startTime;
+    };
+
+    const parseTime = (timeString) => {
+        const [time, modifier] = timeString.split(' ');
+        let [hours, minutes] = time.split(':');
+
+        // Ensure hours is a string before calling padStart
+        hours = String(hours);
+
+        if (hours === '12') {
+            hours = '00';
+        }
+        if (modifier === 'PM' && hours !== '12') {
+            hours = String(parseInt(hours, 10) + 12);
+        } else if (modifier === 'AM' && hours === '12') {
+            hours = '00';
+        }
+
+        return `${hours.padStart(2, '0')}:${minutes}`;
+    };
+
+    const compareTimes = (attendanceTime, shiftTime) => {
+        if (attendanceTime === 'N/A') {
+            return 'red';
+        }
+
+        const shiftStartTime = parseTime(shiftTime.split(' - ')[0]); // Convert shift start time to 24-hour format
+        const attendanceTime24 = parseTime(attendanceTime); // Convert attendance time to 24-hour format
+
+        const shiftStart = new Date(`1970-01-01T${shiftStartTime}:00`);
+        const attendance = new Date(`1970-01-01T${attendanceTime24}:00`);
+
+        const diffInMinutes = (attendance - shiftStart) / (1000 * 60); // Difference in minutes
+
+        // Time comparison logic
+        if (diffInMinutes >= -10) {
+            // Early or on time within 10 minutes
+            return 'green';
+        } else {
+            // Late by more than 30 minutes
+            return 'red';
+        }
+    };
+
+
 
     useEffect(() => {
         if (user.role === 'HR') {
@@ -93,15 +154,25 @@ const AttendanceList = () => {
                         const [day, month, year] = activity.date.split('/');
                         const formattedDate = new Date(`${year}-${month}-${day}`);
 
+                        const shiftStartTime = getShiftStartTime(user.shift); // Parse shift start time from user
+                        const eventColor = compareTimes(shiftStartTime, activity.firstIn); // Compare times and get color
+
                         return {
                             title: `First In: ${activity.firstIn}, Last Out: ${activity.lastOut}, Hours: ${activity.workingHours}`,
                             start: formattedDate,
                             end: formattedDate,
                             firstIn: activity.firstIn,
                             lastOut: activity.lastOut,
+                            firstInLocation: activity.firstInLocation,
+                            lastOutLocation: activity.lastOutLocation,
                             workingHours: activity.workingHours,
-                            allDay: true
+                            allDay: true,
+                            color: eventColor // Add color to the event
                         };
+                    });
+                    attendanceData.forEach((record) => {
+                        const attendanceColor = compareTimes(record.firstIn, user.shift);
+                        console.log(`Date: ${record.date}, First In: ${record.firstIn}, Color: ${attendanceColor}`);
                     });
                     setActivities(attendanceData);
                 } else {
@@ -115,7 +186,7 @@ const AttendanceList = () => {
         if (selectedEmpId) {
             fetchAttendance();
         }
-    }, [selectedEmpId]);
+    }, [selectedEmpId, user.shift]);
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -165,13 +236,18 @@ const AttendanceList = () => {
                             ))}
                         </Select>
                     </FormControl>
-                    <Button
-                        variant="contained"
-                        style={{ backgroundColor: "#1B3156", color: "white" }}
+                    <div
+                        
+                        style={{
+                            color: "#1B3156",
+                            fontSize: '1rem', 
+                            cursor:"pointer"
+                        }}
                         onClick={() => setViewMode(viewMode === 'calendar' ? 'table' : 'calendar')}
                     >
                         {viewMode === 'calendar' ? 'View in Tabular Form' : 'View in Calendar Form'}
-                    </Button>
+                    </div>
+
                 </div>
             )}
 
@@ -190,7 +266,7 @@ const AttendanceList = () => {
                         defaultView="month"
                         eventPropGetter={(event) => ({
                             style: {
-                                backgroundColor: '#1B3156',
+                                backgroundColor: event.color, // Use the color from the event
                                 color: '#fff',
                                 fontSize: "10px"
                             }
@@ -213,7 +289,6 @@ const AttendanceList = () => {
                             <Table>
                                 <TableHead style={{ backgroundColor: "#1B3156" }}>
                                     <TableRow>
-                                        <TableCell style={{ color: "white" }}>Emp ID</TableCell>
                                         <TableCell style={{ color: "white" }}>Date</TableCell>
                                         {!isMobile && <TableCell style={{ color: "white" }}>Work Mode</TableCell>}
                                         {!isMobile && <TableCell style={{ color: "white" }}>In</TableCell>}
@@ -224,8 +299,8 @@ const AttendanceList = () => {
                                 <TableBody>
                                     {activities.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((activity, index) => (
                                         <TableRow key={index}>
-                                            <TableCell>{activity.empId}</TableCell>
                                             <TableCell>{format(activity.start, 'dd/MM/yyyy')}</TableCell>
+                                            <TableCell>{(activity.firstIn)} </TableCell>
                                             {!isMobile && (
                                                 <TableCell>
                                                     <a
@@ -256,16 +331,14 @@ const AttendanceList = () => {
                                 </TableBody>
                             </Table>
                         </TableContainer>
-
                         <TablePagination
-                            rowsPerPageOptions={[5, 10, 25]}
+                            rowsPerPageOptions={[10, 25, 50]}
                             component="div"
                             count={activities.length}
                             rowsPerPage={rowsPerPage}
                             page={page}
                             onPageChange={handleChangePage}
                             onRowsPerPageChange={handleChangeRowsPerPage}
-                            sx={{ backgroundColor: "#1B3156", color: "white" }}
                         />
                     </Paper>
                 </div>
@@ -273,5 +346,6 @@ const AttendanceList = () => {
         </>
     );
 };
+
 
 export default AttendanceList;

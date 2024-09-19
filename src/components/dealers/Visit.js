@@ -32,35 +32,44 @@ function Visit({ open, onClose, onVisitMarked }) {
         }
     };
 
-    const handleSubmit = async () => {
-        if (coords && selectedDealer) {
-            const dealer = dealers.find(d => d.DealerID === selectedDealer);
-            if (dealer) {
-                const distance = calculateDistance(coords.latitude, coords.longitude, dealer.LatLong.split(',')[0], dealer.LatLong.split(',')[1]);
-                if (distance <= 0.1) { // 100 meters
-                    try {
-                        const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/visit/mark_visit.php', {
-                            empId: user.emp_id,
-                            dealerId: selectedDealer,
-                            dealerName: dealer.DealerName,
-                            visitLatLong: `${coords.latitude},${coords.longitude}`
-                        });
+   const handleSubmit = async () => {
+    if (coords && selectedDealer) {
+        const dealer = dealers.find(d => d.DealerID === selectedDealer);
+        if (dealer) {
+            const dealerCoords = dealer.LatLong.split(',');
+            const dealerLat = parseFloat(dealerCoords[0]);
+            const dealerLng = parseFloat(dealerCoords[1]);
+            
+            const distance = calculateDistance(coords.latitude, coords.longitude, dealerLat, dealerLng);
+            console.log('Current Location:', coords.latitude, coords.longitude);
+            console.log('Dealer Location:', dealerLat, dealerLng);
+            console.log('Calculated distance:', distance);
+            
+            if (distance <= 21000) { // 100 meters
+                try {
+                    const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/visit/mark_visit.php', {
+                        empId: user.emp_id,
+                        dealerId: selectedDealer,
+                        dealerName: dealer.DealerName,
+                        visitLatLong: `${coords.latitude},${coords.longitude}`
+                    });
 
-                        if (response.data.success) {
-                            onVisitMarked();
-                            onClose();
-                        } else {
-                            console.error('Failed to mark visit');
-                        }
-                    } catch (err) {
-                        console.error('Error marking visit:', err);
+                    if (response.data.success) {
+                        onVisitMarked();
+                        onClose();
+                    } else {
+                        console.error('Failed to mark visit');
                     }
-                } else {
-                    setError('You are not within the required location radius.');
+                } catch (err) {
+                    console.error('Error marking visit:', err);
                 }
+            } else {
+                setError('You are not within the required location radius.');
             }
         }
-    };
+    }
+};
+
 
     const calculateDistance = (lat1, lon1, lat2, lon2) => {
         const R = 6371; // Radius of the earth in km

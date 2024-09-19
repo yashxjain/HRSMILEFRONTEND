@@ -332,7 +332,7 @@ function EmployeeList() {
                     <Table>
                         <TableHead style={{ backgroundColor: "#1B3156" }}>
                             <TableRow>
-                                <TableCell style={{ color: "white" }}>Employee ID</TableCell>
+                                <TableCell style={{ color: "white" }}>EmpID</TableCell>
                                 <TableCell style={{ color: "white" }}>Name</TableCell>
                                 <TableCell style={{ color: "white" }}>Mobile</TableCell>
                                 <TableCell style={{ color: "white" }}>Email</TableCell>

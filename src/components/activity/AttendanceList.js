@@ -167,7 +167,8 @@ const AttendanceList = () => {
                             lastOutLocation: activity.lastOutLocation,
                             workingHours: activity.workingHours,
                             allDay: true,
-                            color: eventColor // Add color to the event
+                            color: eventColor,
+                            firstEvent: activity.firstEvent
                         };
                     });
                     attendanceData.forEach((record) => {
@@ -300,7 +301,7 @@ const AttendanceList = () => {
                                     {activities.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((activity, index) => (
                                         <TableRow key={index}>
                                             <TableCell>{format(activity.start, 'dd/MM/yyyy')}</TableCell>
-                                            <TableCell>{(activity.firstIn)} </TableCell>
+                                            <TableCell>{(activity.firstEvent)} </TableCell>
                                             {!isMobile && (
                                                 <TableCell>
                                                     <a

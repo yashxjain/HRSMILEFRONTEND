@@ -10,7 +10,11 @@ export function AuthProvider({ children }) {
         // Load user from localStorage on initialization
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
-            setUser(JSON.parse(storedUser));
+            try {
+                setUser(JSON.parse(storedUser)); // Only parse if valid JSON
+            } catch (error) {
+                console.error("Failed to parse stored user data:", error);
+            }
         }
         setLoading(false); // Set loading to false after checking localStorage
     }, []);

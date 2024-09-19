@@ -28,7 +28,6 @@ function App() {
         <Router>
           <Routes>
             <Route path="/" element={<Login />} />
-            <Route path="/computer-factory/" element={<Login />} />
             <Route path="/dashboard" element={<PrivateRoute element={Dashboard} />} />
             <Route path="/employees" element={<PrivateRoute element={Employee} requiredRole="HR" />} />
             <Route path="/employees/:empId" element={<PrivateRoute element={EmployeeProfile} requiredRole="HR" />} />

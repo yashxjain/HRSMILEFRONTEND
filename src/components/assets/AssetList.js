@@ -36,6 +36,7 @@ const AssetList = () => {
     const [selectedAsset, setSelectedAsset] = useState('');
     const [issueDialogOpen, setIssueDialogOpen] = useState(false);
     const [loading, setLoading] = useState(false);
+const [employeeMap, setEmployeeMap] = useState({});
 
     // New state for manual EmpId entry
     const [manualEmpId, setManualEmpId] = useState('');
@@ -68,6 +69,7 @@ const AssetList = () => {
         setAnchorEl(null);
     };
 
+    
 
     useEffect(() => {
         fetchAssets();
@@ -75,25 +77,52 @@ const AssetList = () => {
     }, [page, rowsPerPage]);
 
     const fetchAssets = async () => {
-        try {
-            const params = {
-                role: user.role === 'HR' ? 'HR' : undefined,
-                EmpId: user.role === 'HR' ? undefined : user.emp_id,
-                page,
-                limit: rowsPerPage
-            };
-            const response = await axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/assets/get_issue_asset.php`, { params });
-            if (response.data.success) {
-                setAssets(response.data.data);
+    try {
+        const params = {
+            role: user.role === 'HR' ? 'HR' : undefined,
+            EmpId: user.role === 'HR' ? undefined : user.emp_id,
+            page,
+            limit: rowsPerPage
+        };
+
+        const [assetsResponse, employeesResponse] = await Promise.all([
+            axios.get('https://namami-infotech.com/HR-SMILE-BACKEND/src/assets/get_issue_asset.php', { params }),
+            axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/employee/list_employee.php?Tenent_Id=${user.tenent_id}`)
+        ]);
+
+        if (employeesResponse.data.success) {
+            const employees = employeesResponse.data.data.filter(emp => emp.Tenent_Id === user.tenent_id); // Filter employees by Tenent_Id
+            
+            const employeeMap = employees.reduce((map, emp) => {
+                map[emp.EmpId] = emp.Name; // Map EmpId to Name
+                return map;
+            }, {});
+
+            setEmployeeMap(employeeMap);
+
+            if (assetsResponse.data.success) {
+                const filteredAssets = assetsResponse.data.data
+                    .filter(asset => employeeMap[asset.emp_id]) // Show only assets for employees in the same Tenent_Id
+                    .map(asset => ({
+                        ...asset,
+                        emp_name: employeeMap[asset.emp_id] || 'Unknown' // Replace EmpId with Name
+                    }));
+
+                setAssets(filteredAssets);
             } else {
-                setSnackbarMessage(response.data.message);
+                setSnackbarMessage(assetsResponse.data.message);
                 setOpenSnackbar(true);
             }
-        } catch (error) {
-            setSnackbarMessage('Error fetching assets.');
+        } else {
+            setSnackbarMessage(employeesResponse.data.message);
             setOpenSnackbar(true);
         }
-    };
+    } catch (error) {
+        setSnackbarMessage('Error fetching assets.');
+        setOpenSnackbar(true);
+    }
+};
+
 
     const fetchAvailableAssets = async () => {
         try {
@@ -254,7 +283,7 @@ const AssetList = () => {
                     <TableBody>
                         {assets.map((asset) => (
                             <TableRow key={asset.id}>
-                                <TableCell>{asset.emp_id}</TableCell>
+                                <TableCell>{asset.emp_name}</TableCell>
                                 <TableCell>{asset.asset_name}</TableCell>
                                 <TableCell>{asset.serial_number}</TableCell>
                                 <TableCell>{asset.status}</TableCell>

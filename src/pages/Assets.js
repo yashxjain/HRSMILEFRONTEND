@@ -6,7 +6,7 @@ import AssetList from '../components/assets/AssetList';
 
 function Assets() {
     const isMobile = useMediaQuery('(max-width:600px)');
-    const drawerWidth = isMobile ? 0 : 240;
+    const drawerWidth = isMobile ? 0 : 100;
 
     return (
         <Box sx={{ display: 'flex', height: '100vh' }}>
@@ -14,9 +14,9 @@ function Assets() {
             <Box sx={{ width: drawerWidth, flexShrink: 0 }}>
                 <Sidebar />
             </Box>
-            <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+            <Box component="main" sx={{ flexGrow: 1, p: 0 }}>
                 <Navbar />
-                <Box sx={{ mt: 4 }}>
+                <Box sx={{ mt: 1, p: 1 }}>
                     <AssetList />
                 </Box>
             </Box>

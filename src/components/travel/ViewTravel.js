@@ -4,13 +4,16 @@ import axios from 'axios';
 import CheckIcon from '@mui/icons-material/Check';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { useAuth } from '../auth/AuthContext';
+
 function ViewTravel({ EmpId }) {
     const [travelExpenses, setTravelExpenses] = useState([]);
+    const [employeeData, setEmployeeData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
-    const { user } = useAuth()
+    const { user } = useAuth();
+
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         const day = String(date.getDate()).padStart(2, '0');
@@ -19,34 +22,70 @@ function ViewTravel({ EmpId }) {
         return `${day}/${month}/${year}`;
     };
 
-    useEffect(() => {
-        const fetchTravelExpenses = async () => {
-            try {
-                if (!EmpId) {
-                    setError('Employee ID is missing');
-                    setLoading(false);
-                    return;
-                }
+   useEffect(() => {
+    const fetchEmployeeData = async () => {
+        try {
+            const response = await axios.get('https://namami-infotech.com/HR-SMILE-BACKEND/src/employee/list_employee.php', {
+                params: { Tenent_Id: user.tenent_id }
+            });
 
-                const response = await axios.get('https://namami-infotech.com/HR-SMILE-BACKEND/src/travel/get_travel.php', {
-                    params: { empId: user.emp_id, role: user.role }
-                });
-
-                if (response.data.success) {
-                    setTravelExpenses(response.data.data);
-                } else {
-                    setError(response.data.message);
-                }
-            } catch (error) {
-                setError('Error fetching travel expenses data');
-                console.error('Error:', error);
-            } finally {
-                setLoading(false);
+            if (response.data.success) {
+                // Filter employees by Tenent_Id
+                const filteredEmployees = response.data.data.filter(emp => emp.Tenent_Id === user.tenent_id);
+                setEmployeeData(filteredEmployees);
+            } else {
+                setError(response.data.message);
             }
-        };
+        } catch (error) {
+            setError('Error fetching employee data');
+            console.error('Error:', error);
+        }
+    };
 
-        fetchTravelExpenses();
-    }, [EmpId, user.emp_id, user.role]); // Include user.emp_id and user.role here
+    fetchEmployeeData();
+}, [user.tenent_id]);
+
+useEffect(() => {
+    const fetchTravelExpenses = async () => {
+        try {
+            if (!EmpId) {
+                setError('Employee ID is missing');
+                setLoading(false);
+                return;
+            }
+
+            const response = await axios.get('https://namami-infotech.com/HR-SMILE-BACKEND/src/travel/get_travel.php', {
+                params: { empId: user.emp_id, role: user.role }
+            });
+
+            if (response.data.success) {
+                // Filter travel expenses by EmpId matching Tenent_Id
+                const updatedTravelExpenses = response.data.data.filter(expense => 
+                    employeeData.some(emp => emp.EmpId === expense.empId && emp.Tenent_Id === user.tenent_id)
+                );
+
+                // Map travel expenses with employee names
+                const travelWithNames = updatedTravelExpenses.map(expense => {
+                    const employee = employeeData.find(emp => emp.EmpId === expense.empId);
+                    return {
+                        ...expense,
+                        employeeName: employee ? employee.Name : 'Unknown'
+                    };
+                });
+                setTravelExpenses(travelWithNames);
+            } else {
+                setError(response.data.message);
+            }
+        } catch (error) {
+            setError('Error fetching travel expenses data');
+            console.error('Error:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    fetchTravelExpenses();
+}, [EmpId, user.emp_id, user.role, employeeData, user.tenent_id]);
 
 
     const handleChangePage = (event, newPage) => {
@@ -59,7 +98,6 @@ function ViewTravel({ EmpId }) {
     };
 
     const handleStatusChange = async (id, status) => {
-
         try {
             const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/travel/update_status.php', {
                 id,
@@ -70,7 +108,6 @@ function ViewTravel({ EmpId }) {
                 setTravelExpenses(travelExpenses.map(expense =>
                     expense.id === id ? { ...expense, status } : expense
                 ));
-
             } else {
                 setError(response.data.message);
             }
@@ -79,17 +116,16 @@ function ViewTravel({ EmpId }) {
             console.error('Error:', error);
         }
     };
+
     const exportToCsv = () => {
-        // Define the CSV header
         const csvRows = [
-            ['Employee Id', 'Date', 'Destination', 'From', 'To', 'Type', 'Status']
+            ['Employee Name', 'Date', 'Destination', 'From', 'To', 'Type', 'Status']
         ];
 
-        // Populate the CSV rows with leave data
-        travelExpenses.forEach(({ empId, travelDate, travelDestination, travelFrom, travelTo, travelType, status }) => {
+        travelExpenses.forEach(({ employeeName, travelDate, travelDestination, travelFrom, travelTo, travelType, status }) => {
             csvRows.push([
-                empId,
-                formatDate(travelDate), // Assuming formatDate is a function to format the date
+                employeeName,
+                formatDate(travelDate),
                 travelDestination,
                 travelFrom,
                 travelTo,
@@ -98,10 +134,7 @@ function ViewTravel({ EmpId }) {
             ]);
         });
 
-        // Convert the array of rows to CSV format
         const csvContent = csvRows.map(row => row.join(',')).join('\n');
-
-        // Create a Blob and link to download the CSV file
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement('a');
         const url = URL.createObjectURL(blob);
@@ -129,8 +162,7 @@ function ViewTravel({ EmpId }) {
                         <Table>
                             <TableHead style={{ backgroundColor: "#1B3156" }}>
                                 <TableRow>
-                                    <TableCell style={{ color: "white" }}>Employee Id</TableCell>
-
+                                    <TableCell style={{ color: "white" }}>Employee Name</TableCell>
                                     <TableCell style={{ color: "white" }}>Date</TableCell>
                                     <TableCell style={{ color: "white" }}>Destination</TableCell>
                                     <TableCell style={{ color: "white" }}>From</TableCell>
@@ -138,31 +170,32 @@ function ViewTravel({ EmpId }) {
                                     <TableCell style={{ color: "white" }}>Type</TableCell>
                                     <TableCell style={{ color: "white" }}>Status</TableCell>
                                     {user && user.role === 'HR' ? <TableCell style={{ color: "white" }}>Actions</TableCell> : null}
-
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {travelExpenses.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((expense) => (
                                     <TableRow key={expense.id}>
-                                        <TableCell>{(expense.empId)}</TableCell>
-                                        <TableCell>{(expense.travelDate)}</TableCell>
+                                        <TableCell>{expense.employeeName}</TableCell>
+                                        <TableCell>{formatDate(expense.travelDate)}</TableCell>
                                         <TableCell>{expense.travelDestination}</TableCell>
                                         <TableCell>{expense.travelFrom}</TableCell>
                                         <TableCell>{expense.travelTo}</TableCell>
                                         <TableCell>{expense.travelType}</TableCell>
                                         <TableCell>{expense.status}</TableCell>
-                                        {user && user.role === "HR" ? <TableCell>
-                                            {expense.status === 'Pending' && (
-                                                <>
-                                                    <IconButton onClick={() => handleStatusChange(expense.id, 'Approved')} color="primary">
-                                                        <CheckIcon />
-                                                    </IconButton>
-                                                    <IconButton onClick={() => handleStatusChange(expense.id, 'Rejected')} color="secondary">
-                                                        <CancelIcon />
-                                                    </IconButton>
-                                                </>
-                                            )}
-                                        </TableCell> : null}
+                                        {user && user.role === "HR" && (
+                                            <TableCell>
+                                                {expense.status === 'Pending' && (
+                                                    <>
+                                                        <IconButton onClick={() => handleStatusChange(expense.id, 'Approved')} color="primary">
+                                                            <CheckIcon />
+                                                        </IconButton>
+                                                        <IconButton onClick={() => handleStatusChange(expense.id, 'Rejected')} color="secondary">
+                                                            <CancelIcon />
+                                                        </IconButton>
+                                                    </>
+                                                )}
+                                            </TableCell>
+                                        )}
                                     </TableRow>
                                 ))}
                             </TableBody>

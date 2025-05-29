@@ -11,7 +11,7 @@ function Ticket() {
     const { user } = useAuth();
 
     const isMobile = useMediaQuery('(max-width:600px)');
-    const drawerWidth = isMobile ? 0 : 25;
+    const drawerWidth = isMobile ? 0 : 11;
 
 
 
@@ -21,15 +21,9 @@ function Ticket() {
             <Box sx={{ width: drawerWidth, flexShrink: 0 }}>
                 <Sidebar />
             </Box>
-            <Box component="main" sx={{ flexGrow: 1, p: 3, ml: drawerWidth }}>
+            <Box component="main" sx={{ flexGrow: 1, p: 0, ml: drawerWidth }}>
                 <Navbar />
-                <div style={{ marginTop: "20px" }}>
-
-
-
-
-                    <br />
-                    <br />
+                <div style={{ marginTop: "20px", marginLeft: "10px" }}>
                     {/* Uncomment and update the ViewLeave component as needed */}
                     {user && user.emp_id && <ViewTickets empId={user.emp_id} />}
                 </div>

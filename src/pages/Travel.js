@@ -12,7 +12,7 @@ function Travel() {
     const [openApplyExpenseDialog, setOpenApplyExpenseDialog] = useState(false);
 
     const isMobile = useMediaQuery('(max-width:600px)');
-    const drawerWidth = isMobile ? 0 : 25;
+    const drawerWidth = isMobile ? 0 : 11;
 
     const handleOpenApplyExpenseDialog = () => setOpenApplyExpenseDialog(true);
     const handleCloseApplyExpenseDialog = () => setOpenApplyExpenseDialog(false);
@@ -31,9 +31,9 @@ function Travel() {
             <Box sx={{ width: drawerWidth, flexShrink: 0 }}>
                 <Sidebar />
             </Box>
-            <Box component="main" sx={{ flexGrow: 1, p: 3, ml: drawerWidth }}>
+            <Box component="main" sx={{ flexGrow: 1, p: 0, ml: drawerWidth }}>
                 <Navbar />
-                <div style={{ marginTop: "20px" }}>
+                <div style={{ marginTop: "20px", marginLeft: "10px" }}>
 
                     <Button variant="contained" color="primary" onClick={handleOpenApplyExpenseDialog} style={{ marginLeft: '10px', backgroundColor: "#1B3156" }} >
                         Apply for Expense

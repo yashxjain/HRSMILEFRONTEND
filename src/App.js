@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import { AuthProvider } from './components/auth/AuthContext';
@@ -15,13 +15,33 @@ import Leave from './pages/Leave';
 import Expense from './pages/Expense';
 import EmpProfile from './pages/User';
 import PrivateRoute from './components/auth/PrivateRoute';
-import Travel from './pages/Travel';
-import Ticket from './pages/Ticket';
-import EmployeeProfile from './pages/EmployeeProfile';
 import Assets from './pages/Assets';
-import Dealer from './pages/Dealer';
+import EmployeeProfile from './pages/EmployeeProfile';
+import Visit from './pages/Dealer';
+import Registration from './pages/Registration';
+import VisitReport from './pages/VisitReport';
+import Maps from './pages/Maps';
+import Ticket from './pages/Ticket';
+import Travel from './pages/Travel';
+import Checkpoints from './pages/Checkpoints';
+import Menus from './pages/Menus';
+import HRMSLayout from './styles/HRMSLayout';
+import EmployeeSalarySlip from './components/employee/EmployeeSalarySlip';
+import Regularise from './pages/Regularise';
+import Docket from './pages/Docket';
 
 function App() {
+   useEffect(() => {
+        const handleRightClick = (event) => {
+            event.preventDefault();
+        };
+
+        document.addEventListener('contextmenu', handleRightClick);
+
+        return () => {
+            document.removeEventListener('contextmenu', handleRightClick);
+        };
+    }, []);
   return (
     <ThemeProvider theme={theme}>
       <AuthProvider>
@@ -38,10 +58,24 @@ function App() {
             <Route path="/leave" element={<PrivateRoute element={Leave} />} />
             <Route path="/expense" element={<PrivateRoute element={Expense} />} />
             <Route path="/profile" element={<PrivateRoute element={EmpProfile} />} />
-            <Route path="/travel" element={<PrivateRoute element={Travel} />} />
-            <Route path="/ticket" element={<PrivateRoute element={Ticket} />} />
+            <Route path="/visit" element={<PrivateRoute element={Visit} />} />
+            <Route path="/plan-visit" element={<PrivateRoute element={Visit} />} />
+            <Route path="/registration" element={<PrivateRoute element={Registration} />} />
+            <Route path="/report" element={<PrivateRoute element={VisitReport} />} />
+            <Route path="/maps" element={<PrivateRoute element={Maps} />} />
+            <Route path="/live-track" element={<PrivateRoute element={Maps} />} />
             <Route path="/assets" element={<PrivateRoute element={Assets} />} />
-            <Route path="/dealer" element={<PrivateRoute element={Dealer} />} />
+            <Route path="/tickets" element={<PrivateRoute element={Ticket} />} />
+            <Route path="/travel" element={<PrivateRoute element={Travel} />} />
+            <Route path="/regularise" element={<PrivateRoute element={Regularise} requiredRole="HR"/>} />
+
+            <Route path="/checkpoints" element={<PrivateRoute element={Checkpoints} />} />
+            <Route path="/add-checkpoint" element={<PrivateRoute element={Checkpoints} />} />
+            <Route path="/menus" element={<PrivateRoute element={Menus} />} />
+            <Route path="/add-menu" element={<PrivateRoute element={Menus} />} />
+            <Route path="/docket" element={<PrivateRoute element={Docket} />} />
+            {/* <Route path="/salary-slip/:EmpId" element={<EmployeeSalarySlip />} /> */}
+            {/* <Route path="/hrms" element={<PrivateRoute element={HRMSLayout} />} /> */}
           </Routes>
         </Router>
       </AuthProvider>

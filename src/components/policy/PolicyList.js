@@ -3,7 +3,9 @@ import axios from 'axios';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, TablePagination } from '@mui/material';
 import AddPolicyDialog from './AddPolicy';
 import { useAuth } from '../auth/AuthContext';
-
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import DoneIcon from '@mui/icons-material/Done';
+import CloseIcon from '@mui/icons-material/Close';
 function PolicyList() {
     const { user } = useAuth();
 
@@ -14,7 +16,7 @@ function PolicyList() {
 
     const fetchPolicies = async () => {
         try {
-            const response = await axios.get('https://namami-infotech.com/HR-SMILE-BACKEND/src/policy/view_policy.php');
+            const response = await axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/policy/view_policy.php?Tenent_Id=${user.tenent_id}`);
             if (response.data.success) {
                 setPolicies(response.data.data);
             } else {
@@ -44,7 +46,7 @@ function PolicyList() {
 
     useEffect(() => {
         fetchPolicies();
-    }, []);
+    });
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -86,12 +88,12 @@ function PolicyList() {
             </Button> : null}
 
             <TableContainer component={Paper}>
-                <Table>
+                <Table size='small'> 
                     <TableHead style={{ backgroundColor: "#1B3156" }}>
                         <TableRow>
                             <TableCell style={{ color: "white" }}>Policy Name</TableCell>
                             <TableCell style={{ color: "white" }}>Description</TableCell>
-                            <TableCell style={{ color: "white" }}>URL</TableCell>
+                            {/* <TableCell style={{ color: "white" }}>URL</TableCell> */}
                             <TableCell style={{ color: "white" }}>Policy</TableCell>
                             {user && user.role === 'HR' ? <TableCell style={{ color: "white" }}>Action</TableCell> : null}
 
@@ -111,43 +113,19 @@ function PolicyList() {
                                 <TableRow key={policy.PolicyId}>
                                     <TableCell>{policy.PolicyName}</TableCell>
                                     <TableCell>{policy.PolicyDescription}</TableCell>
+                                   
                                     <TableCell>
-                                        <a
-                                            href={policy.PolicyURL}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            style={{ textDecoration: "none", color: "blue" }}
-                                        >
-                                            {policy.PolicyName}
-                                        </a>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Button
-                                            variant="contained"
-                                            color="primary"
-                                            onClick={() => handleViewPDF(policy.PolicyPDF)}
-                                        >
-                                            View PDF
-                                        </Button>
+                                        <PictureAsPdfIcon onClick={() => handleViewPDF(policy.PolicyPDF)} style={{cursor:'pointer'}}/>
+                                        
                                     </TableCell>
                                     {user && user.role === 'HR' && (
                                         <TableCell>
                                             {policy.IsActive ? (
-                                                <Button
-                                                    variant="contained"
-                                                    color="secondary"
-                                                    onClick={() => handleTogglePolicyStatus(policy.Id, 'disable')}
-                                                >
-                                                    Disable
-                                                </Button>
+                                                
+                                                <CloseIcon  onClick={() => handleTogglePolicyStatus(policy.Id, 'disable')} style={{cursor:'pointer'}}/>
                                             ) : (
-                                                <Button
-                                                    variant="contained"
-                                                    color="primary"
-                                                    onClick={() => handleTogglePolicyStatus(policy.Id, 'enable')}
-                                                >
-                                                    Enable
-                                                </Button>
+                                                    <DoneIcon onClick={() => handleTogglePolicyStatus(policy.Id, 'enable')} style={{cursor:'pointer'}}/>
+                                                
                                             )}
                                         </TableCell>
                                     )}

@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, CircularProgress } from '@mui/material';
 import axios from 'axios';
+import { useAuth } from '../auth/AuthContext';
 
 function AddPolicyDialog({ open, onClose, onPolicyAdded }) {
+    const { user } = useAuth(); // Get user from AuthContext
     const [policyName, setPolicyName] = useState('');
     const [policyDescription, setPolicyDescription] = useState('');
-    const [policyURL, setPolicyURL] = useState(''); // State to store the policy URL
-    const [pdfBase64, setPdfBase64] = useState(''); // State to store the base64 encoded PDF
+    const [pdfBase64, setPdfBase64] = useState('');
+    const [loading, setLoading] = useState(false); // State to manage loading
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -21,19 +23,21 @@ function AddPolicyDialog({ open, onClose, onPolicyAdded }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!pdfBase64 || !policyURL) {
-            alert('Please provide a PDF file and a policy URL.');
+        if (!pdfBase64) {
+            alert('Please provide a PDF file.');
             return;
         }
+
+        setLoading(true); // Set loading to true before making the request
 
         try {
             const response = await axios.post(
                 'https://namami-infotech.com/HR-SMILE-BACKEND/src/policy/add_policy.php',
                 {
-                    PolicyName: policyName,
-                    PolicyDescription: policyDescription,
-                    PolicyURL: policyURL,
-                    PolicyPDF: pdfBase64
+                    subject: policyName, // Send as 'subject'
+                    body: policyDescription, // Send as 'body'
+                    pdf: pdfBase64, // Send PDF data
+                    Tenent_Id: user?.tenent_id, // Include Tenent_Id from user context
                 }
             );
 
@@ -41,7 +45,6 @@ function AddPolicyDialog({ open, onClose, onPolicyAdded }) {
                 onPolicyAdded(); // Refresh the list
                 setPolicyName('');
                 setPolicyDescription('');
-                setPolicyURL('');
                 setPdfBase64('');
                 onClose();
             } else {
@@ -49,9 +52,10 @@ function AddPolicyDialog({ open, onClose, onPolicyAdded }) {
             }
         } catch (error) {
             console.error('Error adding policy:', error);
+        } finally {
+            setLoading(false); // Set loading to false after request is done
         }
     };
-
 
     return (
         <Dialog open={open} onClose={onClose}>
@@ -76,28 +80,19 @@ function AddPolicyDialog({ open, onClose, onPolicyAdded }) {
                         value={policyDescription}
                         onChange={(e) => setPolicyDescription(e.target.value)}
                     />
-                    <TextField
-                        fullWidth
-                        label="Policy URL"
-                        margin="normal"
-                        variant="outlined"
-                        value={policyURL}
-                        onChange={(e) => setPolicyURL(e.target.value)}
-                    />
                     <input
                         accept="application/pdf"
                         type="file"
                         onChange={handleFileChange}
                         style={{ marginTop: '16px', marginBottom: '16px' }}
                     />
-
-                    <Button type="submit" color="primary" variant="contained" sx={{ mt: 2 }}>
-                        Add Policy
-                    </Button>
                 </form>
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose} color="primary">
+                <Button type="submit" color="primary" variant="contained" onClick={handleSubmit} disabled={loading}>
+                    {loading ? <CircularProgress size={24} color="inherit" /> : 'Submit'}
+                </Button>
+                <Button onClick={onClose} color="primary" disabled={loading}>
                     Cancel
                 </Button>
             </DialogActions>

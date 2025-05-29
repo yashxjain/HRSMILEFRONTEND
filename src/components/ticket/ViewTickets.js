@@ -11,6 +11,7 @@ import { useAuth } from '../auth/AuthContext';
 
 function ViewTickets() {
     const [tickets, setTickets] = useState([]);
+    const [employeeMap, setEmployeeMap] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [page, setPage] = useState(0);
@@ -26,28 +27,53 @@ function ViewTickets() {
     };
 
     useEffect(() => {
-        const fetchTickets = async () => {
-            try {
-                const response = await axios.get('https://namami-infotech.com/HR-SMILE-BACKEND/src/support/get_ticket.php', {
-                    params: { EmpId: user.emp_id, role: user.role }
+    const fetchTickets = async () => {
+        try {
+            const [ticketsResponse, employeesResponse] = await Promise.all([
+                axios.get('https://namami-infotech.com/HR-SMILE-BACKEND/src/support/get_ticket.php', {
+                    params: { EmpId: user.emp_id, role: user.role },
+                }),
+                axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/employee/list_employee.php?Tenent_Id=${user.tenent_id}`),
+            ]);
+
+            if (employeesResponse.data.success) {
+                // Filter employees by matching Tenent_Id
+                const filteredEmployees = employeesResponse.data.data.filter(emp => emp.Tenent_Id === user.tenent_id);
+
+                // Create a map of employee IDs that belong to the user's tenant
+                const employeeMap = {};
+                const validEmpIds = new Set();
+
+                filteredEmployees.forEach(emp => {
+                    employeeMap[emp.EmpId] = emp.Name;
+                    validEmpIds.add(emp.EmpId);
                 });
 
-                if (response.data.success) {
-                    setTickets(response.data.data);
-                    console.log(response.data.data)
-                } else {
-                    setError(response.data.message);
-                }
-            } catch (error) {
-                setError('Error fetching tickets data');
-                console.error('Error:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
+                setEmployeeMap(employeeMap);
 
-        fetchTickets();
-    }, [user.emp_id, user.role]);
+                if (ticketsResponse.data.success) {
+                    // Filter tickets by checking if the EmpId exists in the validEmpIds set
+                    const filteredTickets = ticketsResponse.data.data.filter(ticket => validEmpIds.has(ticket.EmpId));
+                    setTickets(filteredTickets);
+                } else {
+                    setError(ticketsResponse.data.message);
+                }
+            } else {
+                setError(employeesResponse.data.message);
+            }
+        } catch (error) {
+            setError('Error fetching tickets or employee data');
+            console.error('Error:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    fetchTickets();
+}, [user.emp_id, user.role, user.tenent_id]);
+
+   
+
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -62,7 +88,7 @@ function ViewTickets() {
         try {
             const response = await axios.post('https://namami-infotech.com/HR-SMILE-BACKEND/src/support/update_status.php', {
                 id,
-                status
+                status,
             });
 
             if (response.data.success) {
@@ -80,17 +106,17 @@ function ViewTickets() {
 
     const exportToCsv = () => {
         const csvRows = [
-            ['Employee Id', 'Category', 'SubCategory', 'Remark', 'Date', 'Status']
+            ['Employee Name', 'Category', 'SubCategory', 'Remark', 'Date', 'Status']
         ];
 
-        tickets.forEach(({ empId, cat, subCat, remark, date, status }) => {
+        tickets.forEach(({ EmpId, Cat, SubCat, Remark, Date, Status }) => {
             csvRows.push([
-                empId,
-                cat,
-                subCat,
-                remark,
-                formatDate(date),
-                status
+                employeeMap[EmpId] || 'Unknown',
+                Cat,
+                SubCat,
+                Remark,
+                formatDate(Date),
+                Status,
             ]);
         });
 
@@ -122,7 +148,7 @@ function ViewTickets() {
                         <Table>
                             <TableHead style={{ backgroundColor: "#1B3156" }}>
                                 <TableRow>
-                                    <TableCell style={{ color: "white" }}>Employee Id</TableCell>
+                                    <TableCell style={{ color: "white" }}>Employee Name</TableCell>
                                     <TableCell style={{ color: "white" }}>Category</TableCell>
                                     <TableCell style={{ color: "white" }}>SubCategory</TableCell>
                                     <TableCell style={{ color: "white" }}>Remark</TableCell>
@@ -134,7 +160,7 @@ function ViewTickets() {
                             <TableBody>
                                 {tickets.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((ticket) => (
                                     <TableRow key={ticket.id}>
-                                        <TableCell>{ticket.EmpId}</TableCell>
+                                        <TableCell>{employeeMap[ticket.EmpId] || 'Unknown'}</TableCell>
                                         <TableCell>{ticket.Cat}</TableCell>
                                         <TableCell>{ticket.SubCat}</TableCell>
                                         <TableCell>{ticket.Remark}</TableCell>
@@ -142,7 +168,7 @@ function ViewTickets() {
                                         <TableCell>{ticket.Status}</TableCell>
                                         {user.role === 'HR' && (
                                             <TableCell>
-                                                {ticket.status === 'Pending' && (
+                                                {ticket.Status === 'Pending' && (
                                                     <>
                                                         <IconButton onClick={() => handleStatusChange(ticket.id, 'Approved')} color="primary">
                                                             <CheckIcon />

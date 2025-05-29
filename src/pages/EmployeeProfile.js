@@ -7,7 +7,7 @@ import { useParams } from 'react-router-dom';
 
 function EmployeeProfile() {
     const isMobile = useMediaQuery('(max-width:600px)');
-    const drawerWidth = isMobile ? 0 : 240;
+    const drawerWidth = isMobile ? 0 : 100;
     const { empId } = useParams();
 
     return (
@@ -16,9 +16,9 @@ function EmployeeProfile() {
             <Box sx={{ width: drawerWidth, flexShrink: 0 }}>
                 <Sidebar />
             </Box>
-            <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+            <Box component="main" sx={{ flexGrow: 1, p: 0 }}>
                 <Navbar />
-                <Box sx={{ mt: 4 }}>
+                <Box sx={{ mt: 1 }}>
                     <EmployeeData EmpId={empId} />
                 </Box>
             </Box>

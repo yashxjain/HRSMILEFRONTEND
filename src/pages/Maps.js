@@ -155,7 +155,6 @@ function Maps() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <Paper elevation={1} sx={{ mx: 2, mb: 2, p: 2, borderRadius: 3 }}>
            
 
             <Stack
@@ -178,12 +177,11 @@ function Maps() {
                 description={tabConfig.liveField.description}
               />
             </Stack>
-          </Paper>
         </motion.div>
 
         {/* Content Area */}
         <Box sx={{ flexGrow: 1, mx: 2, mb: 2, overflow: "hidden" }}>
-          <Paper elevation={2} sx={{ height: "100%", borderRadius: 3, overflow: "hidden" }}>
+         
             <AnimatePresence mode="wait">
               <motion.div
                 key={selectedTab}
@@ -196,7 +194,6 @@ function Maps() {
                 <Box sx={{ height: "100%", p: 1 }}>{selectedTab === "visitMap" ? <MapPage /> : <LiveTrack />}</Box>
               </motion.div>
             </AnimatePresence>
-          </Paper>
         </Box>
       </Box>
     </Box>

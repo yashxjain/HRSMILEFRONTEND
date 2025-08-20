@@ -1,191 +1,280 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+"use client"
+
+import { useState, useEffect } from "react"
+import axios from "axios"
 import {
-    Typography,
-    Box,
-    // Table,
-    // TableBody,
-    // TableCell,
-    // TableContainer,
-    // TableHead,
-    // TableRow,
-    // Paper,
-    Button,
-    // TablePagination,
-    Select,
-    MenuItem,
-    InputLabel,
-    FormControl,
-    // IconButton,
-} from '@mui/material';
-import GetAppIcon from '@mui/icons-material/GetApp';
+  Typography,
+  Box,
+  Button,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  Card,
+  CardContent,
+  Grid,
+  Stack,
+  Chip,
+  Alert,
+  CircularProgress,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material"
+import { GetApp, AccountBalance, CalendarMonth, TrendingUp } from "@mui/icons-material"
 
 function SalaryList() {
-    const [salaries, setSalaries] = useState([]);
-    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
-    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [salaries, setSalaries] = useState([])
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1)
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
 
-    const fetchSalaries = async (month, year) => {
-        try {
-            const response = await axios.get(`https://namami-infotech.com/HR-SMILE-BACKEND/src/salary/salary_records.php?month=${month}&year=${year}`);
-            if (response.data.success) {
-                setSalaries(response.data.data);
-            } else {
-                console.error('Failed to fetch salary data:', response.data.message);
-            }
-        } catch (err) {
-            console.error('Error fetching salary data:', err);
-        }
-    };
+  const fetchSalaries = async (month, year) => {
+    setLoading(true)
+    setError("")
+    try {
+      const response = await axios.get(
+        `https://namami-infotech.com/HR-SMILE-BACKEND/src/salary/salary_records.php?month=${month}&year=${year}`,
+      )
+      if (response.data.success) {
+        setSalaries(response.data.data)
+      } else {
+        setError("Failed to fetch salary data")
+        setSalaries([])
+      }
+    } catch (err) {
+      setError("Error fetching salary data")
+      setSalaries([])
+    } finally {
+      setLoading(false)
+    }
+  }
 
-    useEffect(() => {
-        fetchSalaries(selectedMonth, selectedYear);
-    }, [selectedMonth, selectedYear]);
+  useEffect(() => {
+    fetchSalaries(selectedMonth, selectedYear)
+  }, [selectedMonth, selectedYear])
 
-   
+  const handleMonthChange = (event) => {
+    setSelectedMonth(event.target.value)
+  }
 
-    const handleMonthChange = (event) => {
-        setSelectedMonth(event.target.value);
-    };
+  const handleYearChange = (event) => {
+    setSelectedYear(event.target.value)
+  }
 
-    const handleYearChange = (event) => {
-        setSelectedYear(event.target.value);
-    };
+  const exportToCSV = () => {
+    const csvRows = []
+    csvRows.push([
+      "Employee ID",
+      "Name",
+      "Designation",
+      "Basic Salary",
+      "Total Days in Month",
+      "Holidays",
+      "Week Offs",
+      "Present Days",
+      "Leave Days",
+      "Actual Working Days",
+      "Final Salary",
+    ])
 
-    const exportToCSV = () => {
-        const csvRows = [];
-        // Add header row
-        csvRows.push([
-            'Employee ID',
-            'Name',
-            'Designation',
-            'Salary',
-            'Total Days in Month',
-            'Holidays',
-            'Week Offs',
-            'Present Days',
-            'Leave Days',
-            'Actual Working Days',
-            'Salary'
-        ].join(','));
+    salaries.forEach((salary) => {
+      csvRows.push([
+        salary.EmpId,
+        salary.Name,
+        salary.Designation,
+        salary.BasicSalary,
+        salary.TotalDaysInMonth,
+        salary.Holidays,
+        salary.WeekOffs,
+        salary.PresentDays,
+        salary.LeaveDays,
+        salary.ActualWorkingDays,
+        salary.Salary,
+      ])
+    })
 
-        // Add data rows
-        salaries.forEach((salary) => {
-            csvRows.push([
-                salary.EmpId,
-                salary.Name,
-                salary.Designation,
-                salary.BasicSalary,
-                salary.TotalDaysInMonth,
-                salary.Holidays,
-                salary.WeekOffs,
-                salary.PresentDays,
-                salary.LeaveDays,
-                salary.ActualWorkingDays,
-                salary.Salary
-            ].join(','));
-        });
+    const csvString = csvRows.map((row) => row.join(",")).join("\n")
+    const blob = new Blob([csvString], { type: "text/csv" })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = `salary_records_${selectedMonth}_${selectedYear}.csv`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
 
-        // Create CSV Blob and download
-        const csvString = csvRows.join('\n');
-        const blob = new Blob([csvString], { type: 'text/csv' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `salary_records_${selectedMonth}_${selectedYear}.csv`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    };
+  const getSalaryStats = () => {
+    if (!salaries.length) return { totalEmployees: 0, totalSalary: 0, avgSalary: 0 }
 
-    return (
-        <Box sx={{ padding: 2 }}>
-            <Typography variant="h5" component="h2" sx={{ marginBottom: 2 }}>
-                Salary Report
+    const totalSalary = salaries.reduce((sum, salary) => sum + parseFloat(salary.Salary || 0), 0)
+    return {
+      totalEmployees: salaries.length,
+      totalSalary: totalSalary.toFixed(2),
+      avgSalary: (totalSalary / salaries.length).toFixed(2),
+    }
+  }
+
+  const stats = getSalaryStats()
+
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ]
+
+  return (
+    <Card sx={{ boxShadow: 3 }}>
+      <CardContent>
+        <Typography variant="h5" component="h2" sx={{ mb: 3, color: "primary.main", fontWeight: 600 }}>
+          <AccountBalance sx={{ mr: 1, verticalAlign: "middle" }} />
+          Salary Report
+        </Typography>
+
+        {/* Controls */}
+        <Grid container spacing={2} alignItems="center" sx={{ mb: 3 }}>
+          <Grid item xs={12} md={3}>
+            <FormControl fullWidth size="small">
+              <InputLabel>Month</InputLabel>
+              <Select
+                value={selectedMonth}
+                onChange={handleMonthChange}
+                label="Month"
+                startAdornment={<CalendarMonth sx={{ mr: 1, color: "action.active" }} />}
+              >
+                {monthNames.map((month, index) => (
+                  <MenuItem key={index + 1} value={index + 1}>
+                    {month}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} md={3}>
+            <FormControl fullWidth size="small">
+              <InputLabel>Year</InputLabel>
+              <Select value={selectedYear} onChange={handleYearChange} label="Year">
+                {[2024, 2025, 2026].map((year) => (
+                  <MenuItem key={year} value={year}>
+                    {year}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <Stack direction={isMobile ? "column" : "row"} spacing={2} justifyContent="flex-end">
+              <Button
+                variant="contained"
+                onClick={exportToCSV}
+                startIcon={<GetApp />}
+                disabled={loading || !salaries.length}
+                sx={{
+                  bgcolor: "primary.main",
+                  "&:hover": { bgcolor: "primary.dark" },
+                }}
+              >
+                Export Summary
+              </Button>
+            </Stack>
+          </Grid>
+        </Grid>
+
+        {/* Stats Cards */}
+        {!loading && salaries.length > 0 && (
+          <Grid container spacing={2} sx={{ mb: 3 }}>
+            <Grid item xs={12} md={4}>
+              <Card sx={{ bgcolor: "primary.50", border: "1px solid", borderColor: "primary.200" }}>
+                <CardContent sx={{ textAlign: "center", py: 2 }}>
+                  <Typography variant="h4" color="primary.main" fontWeight="bold">
+                    {stats.totalEmployees}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Total Employees
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Card sx={{ bgcolor: "success.50", border: "1px solid", borderColor: "success.200" }}>
+                <CardContent sx={{ textAlign: "center", py: 2 }}>
+                  <Typography variant="h4" color="success.main" fontWeight="bold">
+                    ₹{stats.totalSalary}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Total Salary
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Card sx={{ bgcolor: "info.50", border: "1px solid", borderColor: "info.200" }}>
+                <CardContent sx={{ textAlign: "center", py: 2 }}>
+                  <Typography variant="h4" color="info.main" fontWeight="bold">
+                    ₹{stats.avgSalary}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Average Salary
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        )}
+
+        {/* Loading State */}
+        {loading && (
+          <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", py: 4 }}>
+            <CircularProgress size={40} sx={{ mr: 2 }} />
+            <Typography variant="body1" color="text.secondary">
+              Loading salary data...
             </Typography>
+          </Box>
+        )}
 
-            {/* Date Range Controls */}
-            <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-                <FormControl size="small">
-                    <InputLabel>Month</InputLabel>
-                    <Select value={selectedMonth} onChange={handleMonthChange}>
-                        {[...Array(12).keys()].map((i) => (
-                            <MenuItem key={i + 1} value={i + 1}>
-                                {new Date(2024, i).toLocaleString('default', { month: 'long' })}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-                <FormControl size="small">
-                    <InputLabel>Year</InputLabel>
-                    <Select value={selectedYear} onChange={handleYearChange}>
-                        {[2024,2025].map((year) => (
-                            <MenuItem key={year} value={year}>
-                                {year}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-                <Button
-                    variant="contained"
-                    size="small"
-                    onClick={exportToCSV}
-                    sx={{ backgroundColor: '#1B3156' }}
-                >
-                   Summary <GetAppIcon sx={{ color: 'white' }} />
-                </Button>
-            </Box>
+        {/* Error State */}
+        {error && (
+          <Alert severity="error" sx={{ mt: 2 }}>
+            {error}
+          </Alert>
+        )}
 
-            {/* <TableContainer component={Paper}>
-                <Table size='small'>
-                    <TableHead style={{ backgroundColor: "#1B3156" }}>
-                        <TableRow>
-                            {['Employee ID', 'Name', 'Designation', 'Salary', 'Total Days in Month', 'Holidays', 'Week Offs', 'Present Days', 'Leave Days', 'Actual Working Days', 'Salary'].map((header) => (
-                                <TableCell key={header} style={{ color: "white" }}>{header}</TableCell>
-                            ))}
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {salaries.length === 0 ? (
-                            <TableRow>
-                                <TableCell colSpan={12} style={{ textAlign: 'center' }}>
-                                    No data found
-                                </TableCell>
-                            </TableRow>
-                        ) : (
-                            salaries
-                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                .map((salary) => (
-                                    <TableRow key={salary.EmpId}>
-                                        <TableCell>{salary.EmpId || 'N/A'}</TableCell>
-                                        <TableCell>{salary.Name || 'N/A'}</TableCell>
-                                        <TableCell>{salary.Designation || 'N/A'}</TableCell>
-                                        <TableCell>{salary.BasicSalary !== undefined ? salary.BasicSalary : 'N/A'}</TableCell>
-                                        <TableCell>{salary.TotalDaysInMonth !== undefined ? salary.TotalDaysInMonth : 'N/A'}</TableCell>
-                                        <TableCell>{salary.Holidays !== undefined ? salary.Holidays : 'N/A'}</TableCell>
-                                        <TableCell>{salary.WeekOffs !== undefined ? salary.WeekOffs : 'N/A'}</TableCell>
-                                        <TableCell>{salary.PresentDays !== undefined ? salary.PresentDays : 'N/A'}</TableCell>
-                                        <TableCell>{salary.LeaveDays !== undefined ? salary.LeaveDays : 'N/A'}</TableCell>
-                                        <TableCell>{salary.ActualWorkingDays !== undefined ? salary.ActualWorkingDays : 'N/A'}</TableCell>
-                                        <TableCell>{!isNaN(Number(salary.Salary)) ? Number(salary.Salary).toFixed(2) : 'N/A'}</TableCell>
-                                    </TableRow>
-                                ))
-                        )}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-            <TablePagination
-                component="div"
-                count={salaries.length}
-                page={page}
-                onPageChange={handleChangePage}
-                rowsPerPage={rowsPerPage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-                rowsPerPageOptions={[5, 10, 25]}
-            /> */}
-        </Box>
-    );
+        {/* No Data State */}
+        {!loading && !error && salaries.length === 0 && (
+          <Alert severity="info" sx={{ mt: 2 }}>
+            No salary records found for {monthNames[selectedMonth - 1]} {selectedYear}
+          </Alert>
+        )}
+
+        {/* Summary Info */}
+        {!loading && salaries.length > 0 && (
+          <Box sx={{ mt: 2, p: 2, bgcolor: "grey.50", borderRadius: 1 }}>
+            <Typography variant="body2" color="text.secondary">
+              <strong>Report Period:</strong> {monthNames[selectedMonth - 1]} {selectedYear}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              <strong>Generated:</strong> {new Date().toLocaleDateString()}
+            </Typography>
+          </Box>
+        )}
+      </CardContent>
+    </Card>
+  )
 }
 
-export default SalaryList;
+export default SalaryList

@@ -797,7 +797,7 @@ const AttendanceList = () => {
   }
 
   return (
-    <Box sx={{ p: { xs: 2, md: 3 }, backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
+    <Box sx={{ p: { xs: 0, md: 0 }, backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
       {/* Header Section */}
       <Paper sx={{ p: 3, mb: 3, borderRadius: 2 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>

@@ -308,7 +308,7 @@ const DashboardData = () => {
   }
 
   return (
-    <Box sx={{ maxWidth: 1500, mx: 'auto', p: { xs: 1, md: 3 }, bgcolor: '#f5f7fa', minHeight: '100vh' }}>
+    <Box sx={{ maxWidth: 1500, mx: 'auto', p: { xs: 0, md: 0 }, bgcolor: '#f5f7fa', minHeight: '100vh' }}>
       {/* Header with Profile */}
       <Paper 
         elevation={2} 
